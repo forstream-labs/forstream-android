@@ -1,0 +1,13 @@
+*.log
+*.iml
+.gradle
+.idea
+.DS_Store
+build
+gradle
+gradlew
+gradlew.bat
+local.properties
+/app/dev
+/app/prod
+/app/release

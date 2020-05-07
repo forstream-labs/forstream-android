@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+
+android {
+  compileSdkVersion 29
+
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion 29
+    versionCode 1
+    versionName '1.0.0'
+  }
+
+  buildTypes {
+    release {
+      buildConfigField 'String', 'API_URL', "\"${System.getProperty("RELEASE_API_URL")}\""
+      minifyEnabled false
+      shrinkResources false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+    debug {
+      buildConfigField 'String', 'API_URL', "\"${System.getProperty("DEBUG_API_URL")}\""
+      minifyEnabled false
+      shrinkResources false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+dependencies {
+  implementation 'androidx.preference:preference:1.1.1'
+  implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+  implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
+  implementation 'com.onehilltech.promises:promises-jvm:0.10.3'
+  implementation 'com.onehilltech.promises:promises-android:0.10.3'
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="google_oauth_client_id">385457463040-ov7cq2lk7d7h1h92htoo6utsqd1vd5q8.apps.googleusercontent.com</string>
+  <string name="sign_in_with_google">Sign in with Google</string>
+  <string name="connect_youtube">Connect YouTube</string>
+  <string name="error_unexpected">An unexpected error happened, please try again later.</string>
+  <string name="create_live_stream">Create live stream</string>
+  <string name="start_live_stream">Start live stream</string>
+</resources>

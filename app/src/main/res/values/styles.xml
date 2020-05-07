@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <item name="android:fontFamily">@font/ubuntu</item>
+    <item name="fontFamily">@font/ubuntu</item>
+
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primary_dark</item>
+    <item name="colorPrimaryVariant">@color/primary_dark</item>
+    <item name="colorOnPrimary">@android:color/white</item>
+
+    <item name="colorSecondary">@color/secondary</item>
+    <item name="colorSecondaryVariant">@color/secondary_dark</item>
+    <item name="colorOnSecondary">@android:color/white</item>
+
+    <item name="colorError">@color/error</item>
+    <item name="colorOnError">@android:color/white</item>
+
+    <item name="colorSurface">@android:color/white</item>
+    <item name="colorOnSurface">@color/text_primary</item>
+
+    <item name="android:colorBackground">@color/background</item>
+    <item name="colorOnBackground">@color/text_primary</item>
+
+    <item name="materialCardViewStyle">@style/Card</item>
+  </style>
+
+  <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+    <item name="titleTextAppearance">@style/ToolbarTitle</item>
+  </style>
+
+  <style name="ToolbarSurface" parent="Widget.MaterialComponents.Toolbar.Surface">
+    <item name="titleTextAppearance">@style/ToolbarTitle</item>
+  </style>
+
+  <style name="ToolbarTitle">
+    <item name="android:textSize">@dimen/text_xlg</item>
+  </style>
+
+  <style name="TabLayout" parent="Widget.MaterialComponents.TabLayout.Colored">
+    <item name="tabIndicatorHeight">3dp</item>
+  </style>
+
+  <style name="DrawerMenuTextAppearence">
+    <item name="android:textSize">@dimen/text_md</item>
+  </style>
+
+  <!-- Card view -->
+  <style name="Card" parent="Widget.MaterialComponents.CardView">
+    <item name="cardElevation">4dp</item>
+    <item name="contentPadding">@dimen/margin_md</item>
+  </style>
+
+  <!-- Filled button -->
+  <style name="Button" parent="Widget.MaterialComponents.Button">
+    <item name="android:textAllCaps">false</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+
+  <style name="Button.Large">
+    <item name="android:paddingTop">14dp</item>
+    <item name="android:paddingBottom">14dp</item>
+    <item name="android:textSize">@dimen/text_md</item>
+    <item name="iconSize">22dp</item>
+  </style>
+
+</resources>

@@ -27,6 +27,13 @@
       android:text="@string/connect_youtube"/>
 
     <com.google.android.material.button.MaterialButton
+      android:id="@+id/connect_facebook_channel_button"
+      style="@style/Button.Large"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/connect_facebook"/>
+
+    <com.google.android.material.button.MaterialButton
       android:id="@+id/create_live_stream_button"
       style="@style/Button.Large"
       android:layout_width="match_parent"

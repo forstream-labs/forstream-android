@@ -10,7 +10,7 @@ public class LiveStream extends Entity {
   private User owner;
   private String title;
   private String description;
-  private List<StreamProvider> streamProviders;
+  private List<StreamProvider> providers;
   private Date startDate;
   private Date registrationDate;
 
@@ -38,12 +38,12 @@ public class LiveStream extends Entity {
     this.description = description;
   }
 
-  public List<StreamProvider> getStreamProviders() {
-    return streamProviders;
+  public List<StreamProvider> getProviders() {
+    return providers;
   }
 
-  public void setStreamProviders(List<StreamProvider> streamProviders) {
-    this.streamProviders = streamProviders;
+  public void setProviders(List<StreamProvider> providers) {
+    this.providers = providers;
   }
 
   public Date getStartDate() {

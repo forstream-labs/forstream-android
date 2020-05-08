@@ -1,14 +1,15 @@
 package io.livestream.api.model;
 
+import io.livestream.api.enums.StreamStatus;
+
 public class StreamProvider extends Entity {
 
   private static final long serialVersionUID = -429385756607589770L;
 
   private ConnectedChannel connectedChannel;
   private String broadcastId;
-  private String streamId;
-  private String streamName;
-  private String ingestionAddress;
+  private String streamUrl;
+  private StreamStatus streamStatus;
 
   public ConnectedChannel getConnectedChannel() {
     return connectedChannel;
@@ -26,27 +27,19 @@ public class StreamProvider extends Entity {
     this.broadcastId = broadcastId;
   }
 
-  public String getStreamId() {
-    return streamId;
+  public String getStreamUrl() {
+    return streamUrl;
   }
 
-  public void setStreamId(String streamId) {
-    this.streamId = streamId;
+  public void setStreamUrl(String streamUrl) {
+    this.streamUrl = streamUrl;
   }
 
-  public String getStreamName() {
-    return streamName;
+  public StreamStatus getStreamStatus() {
+    return streamStatus;
   }
 
-  public void setStreamName(String streamName) {
-    this.streamName = streamName;
-  }
-
-  public String getIngestionAddress() {
-    return ingestionAddress;
-  }
-
-  public void setIngestionAddress(String ingestionAddress) {
-    this.ingestionAddress = ingestionAddress;
+  public void setStreamStatus(StreamStatus streamStatus) {
+    this.streamStatus = streamStatus;
   }
 }

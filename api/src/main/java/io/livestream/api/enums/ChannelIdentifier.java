@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 public enum ChannelIdentifier {
 
   @SerializedName("youtube")
-  YOUTUBE
+  YOUTUBE,
+  @SerializedName("facebook")
+  FACEBOOK
 
 }

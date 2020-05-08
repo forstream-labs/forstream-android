@@ -7,6 +7,7 @@ import com.onehilltech.promises.Promise;
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.User;
+import io.livestream.api.model.payload.AccessTokenPayload;
 import io.livestream.api.model.payload.AuthCodePayload;
 import io.livestream.api.service.api.UserApi;
 import io.livestream.api.util.PromiseUtils;
@@ -30,6 +31,13 @@ public class UserService {
     });
   }
 
+  public Promise<User> signInWithFacebook(String accessToken) {
+    return PromiseUtils.build(api.signInWithFacebook(new AccessTokenPayload(accessToken))).then(result -> {
+      TokenManager.setToken(context, result.getToken());
+      return value(result.getUser());
+    });
+  }
+
   public Promise<Void> signOut() {
     return PromiseUtils.build(api.signOut()).then(result -> {
       TokenManager.setToken(context, null);
@@ -39,6 +47,10 @@ public class UserService {
 
   public Promise<ConnectedChannel> connectYouTubeChannel(String authCode) {
     return PromiseUtils.build(api.connectYouTubeChannel(new AuthCodePayload(authCode)));
+  }
+
+  public Promise<ConnectedChannel> connectFacebookChannel(String accessToken) {
+    return PromiseUtils.build(api.connectFacebookChannel(new AccessTokenPayload(accessToken)));
   }
 
   public Promise<LiveStream> createLiveStream() {

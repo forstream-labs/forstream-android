@@ -41,9 +41,28 @@ public class MainViewModel extends BaseViewModel {
     }));
   }
 
+  public void signInWithFacebook(String accessToken) {
+    userService.signInWithFacebook(accessToken).then(user -> {
+      authenticatedUser.set(user);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error signing in with Facebook");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
   public void connectYouTubeChannel(String authCode) {
     userService.connectYouTubeChannel(authCode).then(connectedChannel -> null)._catch((reason -> {
       Timber.e(reason, "Error connecting YouTube channel");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void connectFacebookChannel(String accessToken) {
+    userService.connectFacebookChannel(accessToken).then(connectedChannel -> null)._catch((reason -> {
+      Timber.e(reason, "Error connecting Facebook channel");
       error.postValue(reason);
       return null;
     }));

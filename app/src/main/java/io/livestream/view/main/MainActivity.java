@@ -11,6 +11,11 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -21,6 +26,8 @@ import com.google.android.gms.tasks.Task;
 import com.pedro.rtplibrary.rtmp.RtmpCamera2;
 
 import net.ossrs.rtmp.ConnectCheckerRtmp;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -33,9 +40,10 @@ import io.livestream.api.model.LiveStream;
 import io.livestream.util.AlertUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
+import timber.log.Timber;
 
 @RuntimePermissions
-public class MainActivity extends DaggerAppCompatActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback {
+public class MainActivity extends DaggerAppCompatActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback, FacebookCallback<LoginResult> {
 
   private static final int GOOGLE_SIGN_IN_REQUEST_CODE = 0;
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
@@ -47,6 +55,8 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
 
   private GoogleSignInClient googleSignInClient;
   private GoogleSignInClient youtubeChannelSignInClient;
+  private CallbackManager callbackManager = CallbackManager.Factory.create();
+
   private RtmpCamera2 rtmpCamera;
 
   private LiveStream liveStream;
@@ -65,6 +75,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    callbackManager.onActivityResult(requestCode, resultCode, data);
     super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode) {
       case GOOGLE_SIGN_IN_REQUEST_CODE:
@@ -84,93 +95,19 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
     MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
   }
 
-  @OnClick(R.id.sign_in_with_google_button)
-  public void onSignInWithGoogleClick() {
-    Intent signInIntent = googleSignInClient.getSignInIntent();
-    startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE);
+  @Override
+  public void onSuccess(LoginResult loginResult) {
+    mainViewModel.connectFacebookChannel(loginResult.getAccessToken().getToken());
   }
 
-  @OnClick(R.id.connect_youtube_channel_button)
-  public void onConnectYouTubeChannelClick() {
-    Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
-    startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
+  @Override
+  public void onCancel() {
+
   }
 
-  @OnClick(R.id.create_live_stream_button)
-  public void onCreateLiveStreamButtonClick() {
-    mainViewModel.createLiveStream();
-  }
-
-  @OnClick(R.id.start_live_stream_button)
-  public void onStartLiveStreamButtonClick() {
-    MainActivityPermissionsDispatcher.startLiveStreamWithPermissionCheck(this);
-  }
-
-  @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
-  public void startLiveStream() {
-    if (liveStream != null) {
-      if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
-        rtmpCamera.startStream(liveStream.getStreamProviders().get(0).getIngestionAddress() + "/" + liveStream.getStreamProviders().get(0).getStreamName());
-      } else {
-        /**This device cant init encoders, this could be for 2 reasons: The encoder selected doesnt support any configuration setted or your device hasnt a H264 or AAC encoder (in this case you can see log error valid encoder not found)*/
-      }
-    }
-  }
-
-  private void setupGoogleSignIn() {
-    String googleAuthClientId = getString(R.string.google_oauth_client_id);
-    GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestId()
-      .requestEmail()
-      .requestProfile()
-      .requestIdToken(googleAuthClientId)
-      .requestServerAuthCode(googleAuthClientId)
-      .build();
-    googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
-  }
-
-  private void setupYouTubeChannelSignIn() {
-    String googleAuthClientId = getString(R.string.google_oauth_client_id);
-    GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestId()
-      .requestEmail()
-      .requestProfile()
-      .requestIdToken(googleAuthClientId)
-      .requestServerAuthCode(googleAuthClientId)
-      .requestScopes(YOUTUBE_SIGN_IN_SCOPE)
-      .build();
-    youtubeChannelSignInClient = GoogleSignIn.getClient(this, signInOptions);
-  }
-
-  private void setupCamera() {
-    rtmpCamera = new RtmpCamera2(surfaceView, this);
-    rtmpCamera.setReTries(10);
-    surfaceView.getHolder().addCallback(this);
-  }
-
-  private void setupObservers() {
-    mainViewModel.getCreateLiveStream().observe(this, liveStream -> this.liveStream = liveStream);
-    mainViewModel.getStartLiveStream().observe(this, liveStream -> {
-
-    });
-  }
-
-  private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
-    try {
-      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
-      mainViewModel.signInWithGoogle(googleSignInAccount.getServerAuthCode());
-    } catch (ApiException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {
-    try {
-      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
-      mainViewModel.connectYouTubeChannel(googleSignInAccount.getServerAuthCode());
-    } catch (ApiException e) {
-      e.printStackTrace();
-    }
+  @Override
+  public void onError(FacebookException error) {
+    Timber.e(error);
   }
 
   @Override
@@ -224,5 +161,101 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
   @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
 
+  }
+
+  @OnClick(R.id.sign_in_with_google_button)
+  public void onSignInWithGoogleClick() {
+    Intent signInIntent = googleSignInClient.getSignInIntent();
+    startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE);
+  }
+
+  @OnClick(R.id.connect_youtube_channel_button)
+  public void onConnectYouTubeChannelClick() {
+    Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
+    startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
+  }
+
+  @OnClick(R.id.connect_facebook_channel_button)
+  public void onConnectFacebookChannelClick() {
+    LoginManager loginManager = LoginManager.getInstance();
+    loginManager.registerCallback(callbackManager, this);
+    loginManager.logInWithPublishPermissions(this, Collections.singletonList("publish_video"));
+  }
+
+  @OnClick(R.id.create_live_stream_button)
+  public void onCreateLiveStreamButtonClick() {
+    mainViewModel.createLiveStream();
+  }
+
+  @OnClick(R.id.start_live_stream_button)
+  public void onStartLiveStreamButtonClick() {
+    MainActivityPermissionsDispatcher.startLiveStreamWithPermissionCheck(this);
+  }
+
+  @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
+  public void startLiveStream() {
+    if (liveStream != null) {
+      if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
+        rtmpCamera.startStream(liveStream.getProviders().get(0).getStreamUrl());
+      } else {
+        /**This device cant init encoders, this could be for 2 reasons: The encoder selected doesnt support any configuration setted or your device hasnt a H264 or AAC encoder (in this case you can see log error valid encoder not found)*/
+      }
+    }
+  }
+
+  private void setupGoogleSignIn() {
+    String googleAuthClientId = getString(R.string.google_oauth2_client_id);
+    GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+      .requestId()
+      .requestEmail()
+      .requestProfile()
+      .requestIdToken(googleAuthClientId)
+      .requestServerAuthCode(googleAuthClientId)
+      .build();
+    googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
+  }
+
+  private void setupYouTubeChannelSignIn() {
+    String googleAuthClientId = getString(R.string.google_oauth2_client_id);
+    GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+      .requestId()
+      .requestEmail()
+      .requestProfile()
+      .requestIdToken(googleAuthClientId)
+      .requestServerAuthCode(googleAuthClientId)
+      .requestScopes(YOUTUBE_SIGN_IN_SCOPE)
+      .build();
+    youtubeChannelSignInClient = GoogleSignIn.getClient(this, signInOptions);
+  }
+
+  private void setupCamera() {
+    rtmpCamera = new RtmpCamera2(surfaceView, this);
+    rtmpCamera.setReTries(10);
+    surfaceView.getHolder().addCallback(this);
+  }
+
+  private void setupObservers() {
+    mainViewModel.getCreateLiveStream().observe(this, liveStream -> this.liveStream = liveStream);
+    mainViewModel.getStartLiveStream().observe(this, liveStream -> {
+
+    });
+  }
+
+  private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
+    try {
+      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
+      mainViewModel.signInWithGoogle(googleSignInAccount.getServerAuthCode());
+    } catch (ApiException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {
+    try {
+      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
+      mainViewModel.connectYouTubeChannel(googleSignInAccount.getServerAuthCode());
+    } catch (ApiException e) {
+      e.printStackTrace();
+    }
   }
 }

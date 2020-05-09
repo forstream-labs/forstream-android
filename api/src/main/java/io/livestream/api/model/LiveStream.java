@@ -3,6 +3,8 @@ package io.livestream.api.model;
 import java.util.Date;
 import java.util.List;
 
+import io.livestream.api.enums.StreamStatus;
+
 public class LiveStream extends Entity {
 
   private static final long serialVersionUID = -1626500447999436237L;
@@ -10,7 +12,8 @@ public class LiveStream extends Entity {
   private User owner;
   private String title;
   private String description;
-  private List<StreamProvider> providers;
+  private StreamStatus status;
+  private List<ProviderStream> providers;
   private Date startDate;
   private Date registrationDate;
 
@@ -38,11 +41,19 @@ public class LiveStream extends Entity {
     this.description = description;
   }
 
-  public List<StreamProvider> getProviders() {
+  public StreamStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(StreamStatus status) {
+    this.status = status;
+  }
+
+  public List<ProviderStream> getProviders() {
     return providers;
   }
 
-  public void setProviders(List<StreamProvider> providers) {
+  public void setProviders(List<ProviderStream> providers) {
     this.providers = providers;
   }
 

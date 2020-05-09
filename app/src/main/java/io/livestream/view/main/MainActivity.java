@@ -23,7 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
-import com.pedro.rtplibrary.rtmp.RtmpCamera2;
 
 import net.ossrs.rtmp.ConnectCheckerRtmp;
 
@@ -37,7 +36,9 @@ import butterknife.OnClick;
 import dagger.android.support.DaggerAppCompatActivity;
 import io.livestream.R;
 import io.livestream.api.model.LiveStream;
+import io.livestream.api.model.ProviderStream;
 import io.livestream.util.AlertUtils;
+import io.livestream.util.component.RtmpCamera;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
@@ -47,7 +48,9 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
 
   private static final int GOOGLE_SIGN_IN_REQUEST_CODE = 0;
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
-  private static final Scope YOUTUBE_SIGN_IN_SCOPE = new Scope("https://www.googleapis.com/auth/youtube");
+
+  private static final String YOUTUBE_MANAGE_SCOPE = "https://www.googleapis.com/auth/youtube";
+  private static final String FACEBOOK_PUBLISH_VIDEO_SCOPE = "publish_video";
 
   @BindView(R.id.surface_view) SurfaceView surfaceView;
 
@@ -57,8 +60,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
   private GoogleSignInClient youtubeChannelSignInClient;
   private CallbackManager callbackManager = CallbackManager.Factory.create();
 
-  private RtmpCamera2 rtmpCamera;
-
+  private RtmpCamera rtmpCamera;
   private LiveStream liveStream;
 
   @Override
@@ -179,7 +181,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
   public void onConnectFacebookChannelClick() {
     LoginManager loginManager = LoginManager.getInstance();
     loginManager.registerCallback(callbackManager, this);
-    loginManager.logInWithPublishPermissions(this, Collections.singletonList("publish_video"));
+    loginManager.logInWithPublishPermissions(this, Collections.singletonList(FACEBOOK_PUBLISH_VIDEO_SCOPE));
   }
 
   @OnClick(R.id.create_live_stream_button)
@@ -195,10 +197,17 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
   @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
   public void startLiveStream() {
     if (liveStream != null) {
+      rtmpCamera.setReTries(10);
       if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
-        rtmpCamera.startStream(liveStream.getProviders().get(0).getStreamUrl());
+        StringBuilder urlsBuilder = new StringBuilder();
+        for (ProviderStream providerStream : liveStream.getProviders()) {
+          urlsBuilder.append(providerStream.getStreamUrl()).append(",");
+        }
+        rtmpCamera.startStream(urlsBuilder.toString());
       } else {
-        /**This device cant init encoders, this could be for 2 reasons: The encoder selected doesnt support any configuration setted or your device hasnt a H264 or AAC encoder (in this case you can see log error valid encoder not found)*/
+        // This device can't init encoders, this could be for 2 reasons:
+        // The selected encoder doesn't support any configuration provided
+        // The device hasn't a H264 or AAC encoder (in this case you can see log error "valid encoder not found")
       }
     }
   }
@@ -223,19 +232,21 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
       .requestProfile()
       .requestIdToken(googleAuthClientId)
       .requestServerAuthCode(googleAuthClientId)
-      .requestScopes(YOUTUBE_SIGN_IN_SCOPE)
+      .requestScopes(new Scope(YOUTUBE_MANAGE_SCOPE))
       .build();
     youtubeChannelSignInClient = GoogleSignIn.getClient(this, signInOptions);
   }
 
   private void setupCamera() {
-    rtmpCamera = new RtmpCamera2(surfaceView, this);
-    rtmpCamera.setReTries(10);
+    rtmpCamera = new RtmpCamera(surfaceView, this);
     surfaceView.getHolder().addCallback(this);
   }
 
   private void setupObservers() {
-    mainViewModel.getCreateLiveStream().observe(this, liveStream -> this.liveStream = liveStream);
+    mainViewModel.getCreateLiveStream().observe(this, liveStream -> {
+      this.liveStream = liveStream;
+      rtmpCamera.setupMuxers(liveStream.getProviders().size());
+    });
     mainViewModel.getStartLiveStream().observe(this, liveStream -> {
 
     });

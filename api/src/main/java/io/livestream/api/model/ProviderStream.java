@@ -1,8 +1,11 @@
 package io.livestream.api.model;
 
+import java.io.Serializable;
+import java.util.List;
+
 import io.livestream.api.enums.StreamStatus;
 
-public class StreamProvider extends Entity {
+public class ProviderStream implements Serializable {
 
   private static final long serialVersionUID = -429385756607589770L;
 
@@ -10,6 +13,7 @@ public class StreamProvider extends Entity {
   private String broadcastId;
   private String streamUrl;
   private StreamStatus streamStatus;
+  private List<ProviderMessage> messages;
 
   public ConnectedChannel getConnectedChannel() {
     return connectedChannel;
@@ -41,5 +45,13 @@ public class StreamProvider extends Entity {
 
   public void setStreamStatus(StreamStatus streamStatus) {
     this.streamStatus = streamStatus;
+  }
+
+  public List<ProviderMessage> getMessages() {
+    return messages;
+  }
+
+  public void setMessages(List<ProviderMessage> messages) {
+    this.messages = messages;
   }
 }

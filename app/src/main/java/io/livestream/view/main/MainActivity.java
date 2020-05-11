@@ -46,7 +46,6 @@ import timber.log.Timber;
 @RuntimePermissions
 public class MainActivity extends DaggerAppCompatActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback, FacebookCallback<LoginResult> {
 
-  private static final int GOOGLE_SIGN_IN_REQUEST_CODE = 0;
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
 
   private static final String YOUTUBE_MANAGE_SCOPE = "https://www.googleapis.com/auth/youtube";
@@ -56,7 +55,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
 
   @Inject MainViewModel mainViewModel;
 
-  private GoogleSignInClient googleSignInClient;
   private GoogleSignInClient youtubeChannelSignInClient;
   private CallbackManager callbackManager = CallbackManager.Factory.create();
 
@@ -69,7 +67,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
-    setupGoogleSignIn();
     setupYouTubeChannelSignIn();
     setupCamera();
     setupObservers();
@@ -80,10 +77,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
     callbackManager.onActivityResult(requestCode, resultCode, data);
     super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode) {
-      case GOOGLE_SIGN_IN_REQUEST_CODE:
-        Task<GoogleSignInAccount> googleSignInTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-        handleGoogleSignInResult(googleSignInTask);
-        break;
       case YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE:
         Task<GoogleSignInAccount> youtubeChannelSignInTask = GoogleSignIn.getSignedInAccountFromIntent(data);
         handleYouTubeChannelSignInResult(youtubeChannelSignInTask);
@@ -165,12 +158,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
 
   }
 
-  @OnClick(R.id.sign_in_with_google_button)
-  public void onSignInWithGoogleClick() {
-    Intent signInIntent = googleSignInClient.getSignInIntent();
-    startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE);
-  }
-
   @OnClick(R.id.connect_youtube_channel_button)
   public void onConnectYouTubeChannelClick() {
     Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
@@ -212,18 +199,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
     }
   }
 
-  private void setupGoogleSignIn() {
-    String googleAuthClientId = getString(R.string.google_oauth2_client_id);
-    GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestId()
-      .requestEmail()
-      .requestProfile()
-      .requestIdToken(googleAuthClientId)
-      .requestServerAuthCode(googleAuthClientId)
-      .build();
-    googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
-  }
-
   private void setupYouTubeChannelSignIn() {
     String googleAuthClientId = getString(R.string.google_oauth2_client_id);
     GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -250,15 +225,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
     mainViewModel.getStartLiveStream().observe(this, liveStream -> {
 
     });
-  }
-
-  private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {
-    try {
-      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
-      mainViewModel.signInWithGoogle(googleSignInAccount.getServerAuthCode());
-    } catch (ApiException e) {
-      e.printStackTrace();
-    }
   }
 
   private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {

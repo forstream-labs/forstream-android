@@ -13,13 +13,6 @@
     android:padding="@dimen/margin_md">
 
     <com.google.android.material.button.MaterialButton
-      android:id="@+id/sign_in_with_google_button"
-      style="@style/Button.Large"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="@string/sign_in_with_google"/>
-
-    <com.google.android.material.button.MaterialButton
       android:id="@+id/connect_youtube_channel_button"
       style="@style/Button.Large"
       android:layout_width="match_parent"

@@ -24,6 +24,10 @@ public class UserService {
     this.api = ApiFactory.build(UserApi.class, context);
   }
 
+  public Promise<User> getMyUser() {
+    return PromiseUtils.build(api.getMyUser());
+  }
+
   public Promise<User> signInWithGoogle(String authCode) {
     return PromiseUtils.build(api.signInWithGoogle(new AuthCodePayload(authCode))).then(result -> {
       TokenManager.setToken(context, result.getToken());

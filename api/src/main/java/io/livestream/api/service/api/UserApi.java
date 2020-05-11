@@ -3,14 +3,19 @@ package io.livestream.api.service.api;
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.SignInResult;
+import io.livestream.api.model.User;
 import io.livestream.api.model.payload.AccessTokenPayload;
 import io.livestream.api.model.payload.AuthCodePayload;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface UserApi {
+
+  @GET("users/me")
+  Call<User> getMyUser();
 
   @POST("users/sign_in/google")
   Call<SignInResult> signInWithGoogle(@Body AuthCodePayload payload);

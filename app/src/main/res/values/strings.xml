@@ -6,10 +6,12 @@
   <string name="facebook_app_id" translatable="false">2605017349737935</string>
   <string name="facebook_login_protocol_scheme" translatable="false">fb2605017349737935</string>
   <!-- Others -->
-  <string name="sign_in_with_google">Sign in with Google</string>
   <string name="connect_youtube">Connect YouTube</string>
   <string name="connect_facebook">Connect Facebook</string>
-  <string name="error_unexpected">An unexpected error happened, please try again later.</string>
   <string name="create_live_stream">Create live stream</string>
   <string name="start_live_stream">Start live stream</string>
+  <string name="sign_in_with_google">Sign in with Google</string>
+  <string name="sign_in_with_facebook">Sign in with Facebook</string>
+  <!-- Errors -->
+  <string name="error_unexpected">An unexpected error happened, please try again later.</string>
 </resources>

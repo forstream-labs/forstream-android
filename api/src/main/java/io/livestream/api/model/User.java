@@ -65,4 +65,8 @@ public class User extends Entity implements Serializable {
   public void setRegistrationDate(Date registrationDate) {
     this.registrationDate = registrationDate;
   }
+
+  public String getFullName() {
+    return firstName.concat(" ").concat(lastName);
+  }
 }

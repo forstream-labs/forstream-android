@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 
+import io.livestream.api.model.Channel;
 import io.livestream.api.model.User;
 import io.livestream.util.component.LetterTileProvider;
 
@@ -20,6 +21,10 @@ public class ImageUtils {
 
   public static void loadImage(Context context, User user, ImageView imageView) {
     loadImage(context, user.getImageUrl(), user.getFirstName(), imageView);
+  }
+
+  public static void loadImage(Context context, Channel channel, ImageView imageView) {
+    loadImage(context, channel.getImageUrl(), channel.getName(), imageView);
   }
 
   private static void loadImage(Context context, @Nullable String url, String name, ImageView imageView) {

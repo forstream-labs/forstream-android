@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
   <!-- Google -->
   <string name="google_oauth2_client_id">385457463040-ov7cq2lk7d7h1h92htoo6utsqd1vd5q8.apps.googleusercontent.com</string>
+
   <!-- Facebook -->
   <string name="facebook_app_id" translatable="false">2605017349737935</string>
   <string name="facebook_login_protocol_scheme" translatable="false">fb2605017349737935</string>
+
+  <!-- Drawer menu -->
+  <string name="menu_open">Open menu</string>
+  <string name="menu_close">Close menu</string>
+  <string name="menu_profile">Profile</string>
+  <string name="menu_share">Share</string>
+  <string name="menu_rate_us">Rate us</string>
+  <string name="menu_log_out">Log out</string>
+
+  <!-- Menus -->
+  <string name="menu_lives">Lives</string>
+  <string name="menu_channels">Channels</string>
+
+  <!-- Main activity -->
+  <string name="activity_main_share_title">Share LiveStream</string>
+  <string name="activity_main_share_message">This app is awesome: %1$s</string>
+
   <!-- Others -->
   <string name="connect_youtube">Connect YouTube</string>
   <string name="connect_facebook">Connect Facebook</string>
@@ -12,6 +31,8 @@
   <string name="start_live_stream">Start live stream</string>
   <string name="sign_in_with_google">Sign in with Google</string>
   <string name="sign_in_with_facebook">Sign in with Facebook</string>
+
   <!-- Errors -->
   <string name="error_unexpected">An unexpected error happened, please try again later.</string>
+
 </resources>

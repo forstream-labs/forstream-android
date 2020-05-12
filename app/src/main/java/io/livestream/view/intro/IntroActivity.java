@@ -127,7 +127,6 @@ public class IntroActivity extends BaseActivity implements FacebookCallback<Logi
 
   private void setupViews() {
     signInWithFacebookButton.setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_facebook_square));
-    signInWithGoogleButton.setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_google));
   }
 
   private void handleGoogleSignInResult(Task<GoogleSignInAccount> completedTask) {

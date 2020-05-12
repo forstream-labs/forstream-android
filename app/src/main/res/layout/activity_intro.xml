@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@android:color/white"
   android:clipToPadding="false"
   android:orientation="vertical"
   android:padding="@dimen/margin_lg">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+
+  </LinearLayout>
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/sign_in_with_facebook_button"
@@ -19,6 +27,8 @@
     style="@style/GoogleButton.Large"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/sign_in_with_google"/>
+    android:text="@string/sign_in_with_google"
+    app:icon="@drawable/ic_google"
+    app:iconTint="@null"/>
 
 </LinearLayout>

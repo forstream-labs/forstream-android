@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.onehilltech.promises.Promise;
 
-import io.livestream.api.model.ConnectedChannel;
-import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.User;
 import io.livestream.api.model.payload.AccessTokenPayload;
 import io.livestream.api.model.payload.AuthCodePayload;
@@ -47,21 +45,5 @@ public class UserService {
       TokenManager.setToken(context, null);
       return value(null);
     });
-  }
-
-  public Promise<ConnectedChannel> connectYouTubeChannel(String authCode) {
-    return PromiseUtils.build(api.connectYouTubeChannel(new AuthCodePayload(authCode)));
-  }
-
-  public Promise<ConnectedChannel> connectFacebookChannel(String accessToken) {
-    return PromiseUtils.build(api.connectFacebookChannel(new AccessTokenPayload(accessToken)));
-  }
-
-  public Promise<LiveStream> createLiveStream() {
-    return PromiseUtils.build(api.createLiveStream());
-  }
-
-  public Promise<LiveStream> startLiveStream(LiveStream liveStream) {
-    return PromiseUtils.build(api.startLiveStream(liveStream.getId()));
   }
 }

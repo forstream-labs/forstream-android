@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <color name="primary">#125196</color>
-  <color name="primary_dark">#0c3869</color>
-  <color name="secondary">#5a31b9</color>
-  <color name="secondary_dark">#3e2281</color>
+  <color name="primary">#6200ee</color>
+  <color name="primary_dark">#3700b3</color>
+  <color name="secondary">#6200ee</color>
+  <color name="secondary_dark">#3700b3</color>
+
   <color name="error">#ed4956</color>
+  <color name="success">#4caf50</color>
 
   <color name="text_primary">#212121</color>
   <color name="text_secondary_dark">#515151</color>
   <color name="text_secondary">#757575</color>
-  <color name="text_red">#ed4956</color>
 
   <color name="background">#fafafa</color>
   <color name="divider">#f1f1f1</color>
-  <color name="heart">#ed4956</color>
-  <color name="star">#ffc107</color>
-  <color name="success">#4caf50</color>
+
+  <color name="google_btn_text">#757575</color>
 
   <array name="tile_colors">
     <item>#ed4956</item>

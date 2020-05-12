@@ -1,65 +1,55 @@
 package io.livestream.view.main;
 
-import android.Manifest;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager.widget.ViewPager;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.IconicsSize;
+import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
 
-import net.ossrs.rtmp.ConnectCheckerRtmp;
-
-import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import dagger.android.support.DaggerAppCompatActivity;
 import io.livestream.R;
-import io.livestream.api.model.LiveStream;
-import io.livestream.api.model.ProviderStream;
+import io.livestream.api.model.User;
+import io.livestream.common.BaseActivity;
 import io.livestream.util.AlertUtils;
-import io.livestream.util.component.RtmpCamera;
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
-import timber.log.Timber;
+import io.livestream.util.ImageUtils;
+import io.livestream.view.intro.IntroActivity;
+import io.livestream.view.main.profile.ProfileActivity;
 
-@RuntimePermissions
-public class MainActivity extends DaggerAppCompatActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback, FacebookCallback<LoginResult> {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-  private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
+  private static final String GOOGLE_PLAY_URI = "https://play.google.com/store/apps/details?id=%s";
+  private static final String GOOGLE_PLAY_PACKAGE_NAME = "com.android.vending";
 
-  private static final String YOUTUBE_MANAGE_SCOPE = "https://www.googleapis.com/auth/youtube";
-  private static final String FACEBOOK_PUBLISH_VIDEO_SCOPE = "publish_video";
-
-  @BindView(R.id.surface_view) SurfaceView surfaceView;
+  @BindView(R.id.toolbar) Toolbar toolbar;
+  @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+  @BindView(R.id.navigation_view) NavigationView navigationView;
+  @BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
+  @BindView(R.id.view_pager) ViewPager viewPager;
 
   @Inject MainViewModel mainViewModel;
-
-  private GoogleSignInClient youtubeChannelSignInClient;
-  private CallbackManager callbackManager = CallbackManager.Factory.create();
-
-  private RtmpCamera rtmpCamera;
-  private LiveStream liveStream;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -67,172 +57,164 @@ public class MainActivity extends DaggerAppCompatActivity implements ConnectChec
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
-    setupYouTubeChannelSignIn();
-    setupCamera();
+    setupToolbar();
+    setupDrawer();
+    setupNavigation();
     setupObservers();
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    callbackManager.onActivityResult(requestCode, resultCode, data);
-    super.onActivityResult(requestCode, resultCode, data);
-    switch (requestCode) {
-      case YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE:
-        Task<GoogleSignInAccount> youtubeChannelSignInTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-        handleYouTubeChannelSignInResult(youtubeChannelSignInTask);
+  public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.profile:
+        onProfileClick();
+        break;
+      case R.id.share:
+        onShareClick();
+        break;
+      case R.id.rate_us:
+        onRateUsClick();
+        break;
+      case R.id.log_out:
+        onLogOutClick();
         break;
     }
+    drawerLayout.closeDrawer(GravityCompat.START);
+    return true;
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-  }
-
-  @Override
-  public void onSuccess(LoginResult loginResult) {
-    mainViewModel.connectFacebookChannel(loginResult.getAccessToken().getToken());
-  }
-
-  @Override
-  public void onCancel() {
-
-  }
-
-  @Override
-  public void onError(FacebookException error) {
-    Timber.e(error);
-  }
-
-  @Override
-  public void onConnectionSuccessRtmp() {
-    new Handler(Looper.getMainLooper()).postDelayed(() -> mainViewModel.startLiveStream(liveStream), 15000);
-    runOnUiThread(() -> AlertUtils.alert(MainActivity.this, "onConnectionSuccessRtmp"));
-  }
-
-  @Override
-  public void onConnectionFailedRtmp(@NonNull String reason) {
-    runOnUiThread(() -> {
-      AlertUtils.alert(MainActivity.this, "onConnectionFailedRtmp " + reason);
-      if (rtmpCamera.shouldRetry(reason)) {
-        rtmpCamera.reTry(5000, reason);
-      } else {
-        rtmpCamera.stopStream();
-      }
-    });
-  }
-
-  @Override
-  public void onNewBitrateRtmp(long bitrate) {
-    runOnUiThread(() -> AlertUtils.alert(MainActivity.this, "onNewBitrateRtmp " + bitrate));
-  }
-
-  @Override
-  public void onDisconnectRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(MainActivity.this, "onDisconnectRtmp"));
-  }
-
-  @Override
-  public void onAuthErrorRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(MainActivity.this, "onAuthErrorRtmp"));
-  }
-
-  @Override
-  public void onAuthSuccessRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(MainActivity.this, "onAuthSuccessRtmp"));
-  }
-
-  @Override
-  public void surfaceCreated(SurfaceHolder holder) {
-
-  }
-
-  @Override
-  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    rtmpCamera.startPreview();
-  }
-
-  @Override
-  public void surfaceDestroyed(SurfaceHolder holder) {
-
-  }
-
-  @OnClick(R.id.connect_youtube_channel_button)
-  public void onConnectYouTubeChannelClick() {
-    Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
-    startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
-  }
-
-  @OnClick(R.id.connect_facebook_channel_button)
-  public void onConnectFacebookChannelClick() {
-    LoginManager loginManager = LoginManager.getInstance();
-    loginManager.registerCallback(callbackManager, this);
-    loginManager.logInWithPublishPermissions(this, Collections.singletonList(FACEBOOK_PUBLISH_VIDEO_SCOPE));
-  }
-
-  @OnClick(R.id.create_live_stream_button)
-  public void onCreateLiveStreamButtonClick() {
-    mainViewModel.createLiveStream();
-  }
-
-  @OnClick(R.id.start_live_stream_button)
-  public void onStartLiveStreamButtonClick() {
-    MainActivityPermissionsDispatcher.startLiveStreamWithPermissionCheck(this);
-  }
-
-  @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
-  public void startLiveStream() {
-    if (liveStream != null) {
-      rtmpCamera.setReTries(10);
-      if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
-        StringBuilder urlsBuilder = new StringBuilder();
-        for (ProviderStream providerStream : liveStream.getProviders()) {
-          urlsBuilder.append(providerStream.getStreamUrl()).append(",");
-        }
-        rtmpCamera.startStream(urlsBuilder.toString());
-      } else {
-        // This device can't init encoders, this could be for 2 reasons:
-        // The selected encoder doesn't support any configuration provided
-        // The device hasn't a H264 or AAC encoder (in this case you can see log error "valid encoder not found")
-      }
+  public void onBackPressed() {
+    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+      drawerLayout.closeDrawer(GravityCompat.START);
+    } else {
+      super.onBackPressed();
     }
   }
 
-  private void setupYouTubeChannelSignIn() {
-    String googleAuthClientId = getString(R.string.google_oauth2_client_id);
-    GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestId()
-      .requestEmail()
-      .requestProfile()
-      .requestIdToken(googleAuthClientId)
-      .requestServerAuthCode(googleAuthClientId)
-      .requestScopes(new Scope(YOUTUBE_MANAGE_SCOPE))
-      .build();
-    youtubeChannelSignInClient = GoogleSignIn.getClient(this, signInOptions);
+  private void setupToolbar() {
+    setSupportActionBar(toolbar);
+    updateToolbarTitle(0);
   }
 
-  private void setupCamera() {
-    rtmpCamera = new RtmpCamera(surfaceView, this);
-    surfaceView.getHolder().addCallback(this);
+  private void setupDrawer() {
+    ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.menu_open, R.string.menu_close);
+    drawerLayout.addDrawerListener(drawerToggle);
+    drawerToggle.syncState();
+    navigationView.setNavigationItemSelectedListener(this);
+
+    User user = mainViewModel.getAuthenticatedUser();
+
+    // Drawer header
+    View headerView = navigationView.getHeaderView(0);
+    TextView nameView = headerView.findViewById(R.id.user_name);
+    nameView.setText(user.getFullName());
+    ImageView imageView = headerView.findViewById(R.id.user_image);
+    ImageUtils.loadImage(this, user, imageView);
+
+    // Menu icons
+    Menu menu = navigationView.getMenu();
+    menu.findItem(R.id.profile).setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_user_alt).size(IconicsSize.res(R.dimen.icon_menu)));
+    menu.findItem(R.id.share).setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_share_alt).size(IconicsSize.res(R.dimen.icon_menu)));
+    menu.findItem(R.id.rate_us).setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_star1).size(IconicsSize.res(R.dimen.icon_menu)));
+    menu.findItem(R.id.log_out).setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_sign_out_alt).size(IconicsSize.res(R.dimen.icon_menu)));
+  }
+
+  private void setupNavigation() {
+    MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this);
+    viewPager.setAdapter(mainPagerAdapter);
+    viewPager.setOffscreenPageLimit(mainPagerAdapter.getCount());
+
+    int index = 0;
+    bottomNavigationView.getMenu().getItem(index++).setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_video).size(IconicsSize.res(R.dimen.icon_tab)));
+    bottomNavigationView.getMenu().getItem(index++).setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_layer_group).size(IconicsSize.res(R.dimen.icon_tab)));
+
+    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override
+      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+      }
+
+      @Override
+      public void onPageSelected(int position) {
+        int menuId = 0;
+        switch (position) {
+          case 0:
+            menuId = R.id.live;
+            break;
+          case 1:
+            menuId = R.id.channels;
+            break;
+        }
+        bottomNavigationView.setSelectedItemId(menuId);
+        updateToolbarTitle(position);
+      }
+
+      @Override
+      public void onPageScrollStateChanged(int state) {
+
+      }
+    });
+    bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+      Menu bottomNavigationMenu = bottomNavigationView.getMenu();
+      for (int i = 0; i < bottomNavigationMenu.size(); i++) {
+        MenuItem menuItem = bottomNavigationMenu.getItem(i);
+        menuItem.setChecked(menuItem.getItemId() == item.getItemId());
+      }
+      int position = 0;
+      switch (item.getItemId()) {
+        case R.id.live:
+          position = 0;
+          break;
+        case R.id.channels:
+          position = 1;
+          break;
+      }
+      viewPager.setCurrentItem(position);
+      updateToolbarTitle(position);
+      return true;
+    });
   }
 
   private void setupObservers() {
-    mainViewModel.getCreateLiveStream().observe(this, liveStream -> {
-      this.liveStream = liveStream;
-      rtmpCamera.setupMuxers(liveStream.getProviders().size());
+    mainViewModel.getSignOut().observe(this, user -> {
+      Intent intent = new Intent(this, IntroActivity.class);
+      startActivity(intent);
+      finish();
     });
-    mainViewModel.getStartLiveStream().observe(this, liveStream -> {
-
-    });
+    mainViewModel.getError().observe(this, throwable -> AlertUtils.alert(this, throwable));
   }
 
-  private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {
-    try {
-      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
-      mainViewModel.connectYouTubeChannel(googleSignInAccount.getServerAuthCode());
-    } catch (ApiException e) {
-      e.printStackTrace();
+  private void updateToolbarTitle(int position) {
+    MenuItem menuItem = bottomNavigationView.getMenu().getItem(position);
+    setTitle(menuItem.getTitle());
+  }
+
+  private void onProfileClick() {
+    Intent intent = new Intent(this, ProfileActivity.class);
+    startActivity(intent);
+  }
+
+  private void onShareClick() {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.activity_main_share_message, String.format(GOOGLE_PLAY_URI, getPackageName())));
+    startActivity(Intent.createChooser(intent, getString(R.string.activity_main_share_title)));
+  }
+
+  private void onRateUsClick() {
+    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(GOOGLE_PLAY_URI, getPackageName())));
+    PackageManager packageManager = getPackageManager();
+    List<ApplicationInfo> installedApplications = packageManager.getInstalledApplications(0);
+    for (ApplicationInfo installedApplication : installedApplications) {
+      if (GOOGLE_PLAY_PACKAGE_NAME.equals(installedApplication.packageName)) {
+        intent.setPackage(GOOGLE_PLAY_PACKAGE_NAME);
+      }
     }
+    startActivity(intent);
+  }
+
+  private void onLogOutClick() {
+    mainViewModel.signOut();
   }
 }

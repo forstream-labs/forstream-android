@@ -1,5 +1,7 @@
 package io.livestream.api.service.api;
 
+import java.util.List;
+
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.SignInResult;
@@ -11,11 +13,18 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface UserApi {
 
   @GET("users/me")
   Call<User> getMyUser();
+
+  @GET("users/me/channels")
+  Call<List<ConnectedChannel>> listMyConnectedChannels(@Query("populate") String populate);
+
+  @GET("users/me/streams")
+  Call<List<LiveStream>> listMyLiveStreams();
 
   @POST("users/sign_in/google")
   Call<SignInResult> signInWithGoogle(@Body AuthCodePayload payload);

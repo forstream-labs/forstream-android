@@ -87,14 +87,14 @@ public class IntroActivity extends BaseActivity implements FacebookCallback<Logi
   }
 
   @OnClick(R.id.sign_in_with_facebook_button)
-  public void onSignInWithFacebookButtonClick() {
+  void onSignInWithFacebookButtonClick() {
     LoginManager loginManager = LoginManager.getInstance();
     loginManager.registerCallback(callbackManager, this);
     loginManager.logInWithReadPermissions(this, Collections.singletonList(FACEBOOK_SCOPE_EMAIL));
   }
 
   @OnClick(R.id.sign_in_with_google_button)
-  public void onSignInWithGoogleButtonClick() {
+  void onSignInWithGoogleButtonClick() {
     Intent signInIntent = googleSignInClient.getSignInIntent();
     startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE);
   }

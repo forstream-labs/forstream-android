@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clipChildren="false"
+      android:clipToPadding="false"
+      android:orientation="vertical"
+      android:padding="@dimen/margin_md">
+
+      <LinearLayout
+        android:id="@+id/connected_channels_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_md"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/margin_md"
+          android:text="@string/activity_main_connected_channels"
+          android:textColor="@color/text_secondary_dark"
+          android:textSize="@dimen/text_xlg"
+          android:textStyle="bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/connected_channels_view"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:clipToPadding="false"
+          android:orientation="vertical"/>
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:id="@+id/streams_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/margin_md"
+          android:text="@string/activity_main_live_streams"
+          android:textColor="@color/text_secondary_dark"
+          android:textSize="@dimen/text_xlg"
+          android:textStyle="bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/live_streams_view"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:clipToPadding="false"
+          android:orientation="vertical"/>
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </androidx.core.widget.NestedScrollView>
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/create_live_stream_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:layout_margin="@dimen/margin_md"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

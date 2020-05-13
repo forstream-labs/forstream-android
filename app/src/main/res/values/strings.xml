@@ -20,17 +20,18 @@
   <string name="menu_lives">Lives</string>
   <string name="menu_channels">Channels</string>
 
+  <!-- Intro activity -->
+  <string name="activity_intro_sign_in_with_google">Sign in with Google</string>
+  <string name="activity_intro_sign_in_with_facebook">Sign in with Facebook</string>
+
   <!-- Main activity -->
   <string name="activity_main_share_title">Share LiveStream</string>
   <string name="activity_main_share_message">This app is awesome: %1$s</string>
-
-  <!-- Others -->
-  <string name="connect_youtube">Connect YouTube</string>
-  <string name="connect_facebook">Connect Facebook</string>
-  <string name="create_live_stream">Create live stream</string>
-  <string name="start_live_stream">Start live stream</string>
-  <string name="sign_in_with_google">Sign in with Google</string>
-  <string name="sign_in_with_facebook">Sign in with Facebook</string>
+  <string name="activity_main_connected_channels">Connected channels</string>
+  <string name="activity_main_live_streams">Live streams</string>
+  <string name="activity_main_title">Title</string>
+  <string name="activity_main_description">Description</string>
+  <string name="activity_main_create_live_stream">Create live stream</string>
 
   <!-- Errors -->
   <string name="error_unexpected">An unexpected error happened, please try again later.</string>

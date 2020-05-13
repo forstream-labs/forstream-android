@@ -4,6 +4,10 @@ import android.content.Context;
 
 import com.onehilltech.promises.Promise;
 
+import java.util.List;
+
+import io.livestream.api.model.ConnectedChannel;
+import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.User;
 import io.livestream.api.model.payload.AccessTokenPayload;
 import io.livestream.api.model.payload.AuthCodePayload;
@@ -24,6 +28,14 @@ public class UserService {
 
   public Promise<User> getMyUser() {
     return PromiseUtils.build(api.getMyUser());
+  }
+
+  public Promise<List<ConnectedChannel>> listMyConnectedChannels(String populate) {
+    return PromiseUtils.build(api.listMyConnectedChannels(populate));
+  }
+
+  public Promise<List<LiveStream>> listMyLiveStreams() {
+    return PromiseUtils.build(api.listMyLiveStreams());
   }
 
   public Promise<User> signInWithGoogle(String authCode) {

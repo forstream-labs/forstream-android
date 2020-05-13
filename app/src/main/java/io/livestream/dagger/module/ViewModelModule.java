@@ -43,8 +43,8 @@ public class ViewModelModule {
   @Provides
   @IntoMap
   @ViewModelKey(LiveViewModel.class)
-  ViewModel provideLiveViewModel(StreamService streamService) {
-    return new LiveViewModel(streamService);
+  ViewModel provideLiveViewModel(UserService userService, StreamService streamService) {
+    return new LiveViewModel(userService, streamService);
   }
 
   @Provides

@@ -18,7 +18,7 @@ import io.livestream.view.main.MainActivity;
 public class SplashActivity extends BaseActivity {
 
   private static final String TOKEN_EXPIRED_ERROR = "token_expired";
-  private static final String USER_NOT_FOUND = "user_not_found";
+  private static final String AUTHENTICATION_REQUIRED = "authentication_required";
 
   @Inject SplashViewModel splashViewModel;
 
@@ -50,7 +50,7 @@ public class SplashActivity extends BaseActivity {
   private boolean mustSignOut(Throwable throwable) {
     if (throwable instanceof ApiException) {
       ApiException apiException = (ApiException) throwable;
-      return TOKEN_EXPIRED_ERROR.equals(apiException.getCode()) || USER_NOT_FOUND.equals(apiException.getCode());
+      return TOKEN_EXPIRED_ERROR.equals(apiException.getCode()) || AUTHENTICATION_REQUIRED.equals(apiException.getCode());
     }
     return false;
   }

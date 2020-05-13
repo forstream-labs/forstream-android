@@ -23,18 +23,18 @@ public class ChannelsViewModel extends BaseViewModel {
     return channels;
   }
 
-  public void listChannels() {
+  public void loadChannels() {
     channelService.listChannels().then(channels -> {
       this.channels.postValue(channels);
       return null;
     })._catch((reason -> {
-      Timber.e(reason, "Error listing channels");
+      Timber.e(reason, "Error loading channels");
       error.postValue(reason);
       return null;
     }));
   }
 
-  public void listConnectedChannels() {
+  public void loadConnectedChannels() {
 
   }
 

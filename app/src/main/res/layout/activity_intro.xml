@@ -20,14 +20,14 @@
     style="@style/FacebookButton.Large"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/sign_in_with_facebook"/>
+    android:text="@string/activity_intro_sign_in_with_facebook"/>
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/sign_in_with_google_button"
     style="@style/GoogleButton.Large"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/sign_in_with_google"
+    android:text="@string/activity_intro_sign_in_with_google"
     app:icon="@drawable/ic_google"
     app:iconTint="@null"/>
 

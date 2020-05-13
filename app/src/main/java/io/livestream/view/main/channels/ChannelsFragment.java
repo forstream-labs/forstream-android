@@ -134,8 +134,8 @@ public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Ad
   }
 
   private void setupContent() {
-    channelsViewModel.listChannels();
-    channelsViewModel.listConnectedChannels();
+    channelsViewModel.loadChannels();
+    channelsViewModel.loadConnectedChannels();
   }
 
   private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {

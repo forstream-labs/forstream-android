@@ -16,6 +16,10 @@
   <color name="background">#fafafa</color>
   <color name="divider">#f1f1f1</color>
 
+  <color name="stream_status_ready">#4caf50</color>
+  <color name="stream_status_live">#ed4956</color>
+  <color name="stream_status_complete">#757575</color>
+
   <color name="google_btn_text">#757575</color>
 
   <array name="tile_colors">

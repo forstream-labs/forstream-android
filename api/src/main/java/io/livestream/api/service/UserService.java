@@ -34,8 +34,8 @@ public class UserService {
     return PromiseUtils.build(api.listMyConnectedChannels(populate));
   }
 
-  public Promise<List<LiveStream>> listMyLiveStreams() {
-    return PromiseUtils.build(api.listMyLiveStreams());
+  public Promise<List<LiveStream>> listMyLiveStreams(String populate) {
+    return PromiseUtils.build(api.listMyLiveStreams(populate));
   }
 
   public Promise<User> signInWithGoogle(String authCode) {

@@ -14,7 +14,7 @@
 
     <ImageView
       android:id="@+id/channel_image"
-      android:layout_width="wrap_content"
+      android:layout_width="@dimen/image_xlg"
       android:layout_height="@dimen/image_xlg"
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="@dimen/margin_sm"/>

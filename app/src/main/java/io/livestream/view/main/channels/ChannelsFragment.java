@@ -39,7 +39,7 @@ import io.livestream.common.livedata.list.ListUpdateType;
 import io.livestream.util.AlertUtils;
 import io.livestream.util.component.SpaceItemDecoration;
 
-public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.AdapterListener {
+public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Listener {
 
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
 
@@ -107,7 +107,7 @@ public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Ad
   }
 
   private void setupViews() {
-    channelsAdapter.setAdapterListener(this);
+    channelsAdapter.setListener(this);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
     SpaceItemDecoration itemDecoration = new SpaceItemDecoration(context.getResources().getDimensionPixelSize(R.dimen.margin_md), layoutManager.getOrientation());

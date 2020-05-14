@@ -12,13 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import butterknife.OnCheckedChanged;
 import io.livestream.R;
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.common.adapter.base.BaseViewHolder;
@@ -26,27 +29,76 @@ import io.livestream.util.ImageUtils;
 
 public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChannelsAdapter.ViewHolder> {
 
+  public static final int VIEW_STYLE_NONE = 0;
+  public static final int VIEW_STYLE_CARD = 1;
+
+  private static final Map<Integer, Integer> LAYOUT_BY_TYPE = new HashMap<>();
+
+  static {
+    LAYOUT_BY_TYPE.put(VIEW_STYLE_NONE, R.layout.item_connected_channel);
+    LAYOUT_BY_TYPE.put(VIEW_STYLE_CARD, R.layout.item_connected_channel_card);
+  }
+
   private Context context;
-  private AdapterListener adapterListener;
   private List<ConnectedChannel> connectedChannels;
+  private int viewType = VIEW_STYLE_CARD;
+  private boolean showEnabledSwitch;
+  private boolean showMenuIcon;
+
+  private Map<ConnectedChannel, Boolean> enableStates = new HashMap<>();
 
   @Inject
   public ConnectedChannelsAdapter(Context context) {
     this.context = context;
   }
 
-  public void setAdapterListener(AdapterListener adapterListener) {
-    this.adapterListener = adapterListener;
-  }
-
   public void setConnectedChannels(List<ConnectedChannel> connectedChannels) {
     this.connectedChannels = connectedChannels;
+    enableStates.clear();
+    for (ConnectedChannel connectedChannel : connectedChannels) {
+      enableStates.put(connectedChannel, true);
+    }
+  }
+
+  public void setViewType(int viewType) {
+    this.viewType = viewType;
+  }
+
+  public boolean isShowEnabledSwitch() {
+    return showEnabledSwitch;
+  }
+
+  public void setShowEnabledSwitch(boolean showEnabledSwitch) {
+    this.showEnabledSwitch = showEnabledSwitch;
+  }
+
+  public boolean isShowMenuIcon() {
+    return showMenuIcon;
+  }
+
+  public void setShowMenuIcon(boolean showMenuIcon) {
+    this.showMenuIcon = showMenuIcon;
+  }
+
+  public List<ConnectedChannel> getEnabledConnectedChannels() {
+    List<ConnectedChannel> enabledConnectedChannels = new ArrayList<>();
+    for (Map.Entry<ConnectedChannel, Boolean> entry : enableStates.entrySet()) {
+      if (entry.getValue()) {
+        enabledConnectedChannels.add(entry.getKey());
+      }
+    }
+    return enabledConnectedChannels;
+  }
+
+  @Override
+  public int getItemViewType(int position) {
+    return viewType;
   }
 
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view = LayoutInflater.from(context).inflate(R.layout.item_connected_channel, parent, false);
+    View view = LayoutInflater.from(context).inflate(LAYOUT_BY_TYPE.get(viewType), parent, false);
     return new ViewHolder(view);
   }
 
@@ -59,12 +111,6 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
   @Override
   public int getItemCount() {
     return connectedChannels != null ? connectedChannels.size() : 0;
-  }
-
-  public interface AdapterListener {
-
-    void onConnectedChannelClick(ConnectedChannel connectedChannel);
-
   }
 
   class ViewHolder extends BaseViewHolder<ConnectedChannel> {
@@ -81,15 +127,15 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
     @Override
     public void bindView(ConnectedChannel connectedChannel) {
       channelNameView.setText(connectedChannel.getChannel().getName());
-      channelEnabledView.setChecked(connectedChannel.getEnabled());
+      channelEnabledView.setChecked(true);
+      channelEnabledView.setVisibility(showEnabledSwitch ? View.VISIBLE : View.GONE);
       ImageUtils.loadImage(context, connectedChannel.getChannel(), channelImageView);
     }
 
-    @OnClick(R.id.connected_channel_view)
+    @OnCheckedChanged(R.id.channel_enabled)
     void onConnectedChannelViewClick() {
-      if (adapterListener != null) {
-        adapterListener.onConnectedChannelClick(connectedChannels.get(getAdapterPosition()));
-      }
+      ConnectedChannel connectedChannel = connectedChannels.get(getAdapterPosition());
+      enableStates.put(connectedChannel, channelEnabledView.isChecked());
     }
   }
 }

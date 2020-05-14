@@ -10,6 +10,7 @@ public class ProviderStream implements Serializable {
   private static final long serialVersionUID = -429385756607589770L;
 
   private ConnectedChannel connectedChannel;
+  private Boolean enabled;
   private String broadcastId;
   private String streamUrl;
   private StreamStatus streamStatus;
@@ -21,6 +22,14 @@ public class ProviderStream implements Serializable {
 
   public void setConnectedChannel(ConnectedChannel connectedChannel) {
     this.connectedChannel = connectedChannel;
+  }
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
   }
 
   public String getBroadcastId() {

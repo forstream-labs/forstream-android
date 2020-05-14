@@ -25,7 +25,7 @@ import io.livestream.util.ImageUtils;
 public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHolder> {
 
   private Context context;
-  private AdapterListener adapterListener;
+  private Listener listener;
   private List<Channel> channels;
 
   @Inject
@@ -33,8 +33,8 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
     this.context = context;
   }
 
-  public void setAdapterListener(AdapterListener adapterListener) {
-    this.adapterListener = adapterListener;
+  public void setListener(Listener listener) {
+    this.listener = listener;
   }
 
   public void setChannels(List<Channel> channels) {
@@ -59,7 +59,7 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
     return channels != null ? channels.size() : 0;
   }
 
-  public interface AdapterListener {
+  public interface Listener {
 
     void onChannelClick(Channel channel);
 
@@ -83,8 +83,8 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
 
     @OnClick(R.id.channel_view)
     void onChannelViewClick() {
-      if (adapterListener != null) {
-        adapterListener.onChannelClick(channels.get(getAdapterPosition()));
+      if (listener != null) {
+        listener.onChannelClick(channels.get(getAdapterPosition()));
       }
     }
   }

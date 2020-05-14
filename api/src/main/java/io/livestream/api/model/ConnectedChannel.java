@@ -10,7 +10,6 @@ public class ConnectedChannel extends Entity implements Serializable {
   private User user;
   private Channel channel;
   private String targetId;
-  private Boolean enabled;
   private Date registrationDate;
 
   public User getUser() {
@@ -35,14 +34,6 @@ public class ConnectedChannel extends Entity implements Serializable {
 
   public void setTargetId(String targetId) {
     this.targetId = targetId;
-  }
-
-  public Boolean getEnabled() {
-    return enabled;
-  }
-
-  public void setEnabled(Boolean enabled) {
-    this.enabled = enabled;
   }
 
   public Date getRegistrationDate() {

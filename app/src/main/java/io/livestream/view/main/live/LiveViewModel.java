@@ -3,6 +3,9 @@ package io.livestream.view.main.live;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.List;
+
+import io.livestream.api.enums.ChannelIdentifier;
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.model.LiveStream;
 import io.livestream.api.service.StreamService;
@@ -15,6 +18,7 @@ import timber.log.Timber;
 public class LiveViewModel extends BaseViewModel {
 
   private static final String CONNECTED_CHANNELS_POPULATE = "channel";
+  private static final String LIVE_STREAM_POPULATE = "providers->connected_channel.channel";
 
   private UserService userService;
   private StreamService streamService;
@@ -57,7 +61,7 @@ public class LiveViewModel extends BaseViewModel {
   }
 
   public void loadLiveStreams() {
-    userService.listMyLiveStreams().then(liveStreams -> {
+    userService.listMyLiveStreams(LIVE_STREAM_POPULATE).then(liveStreams -> {
       this.liveStreams.postValue(liveStreams);
       return null;
     })._catch(reason -> {
@@ -67,8 +71,8 @@ public class LiveViewModel extends BaseViewModel {
     });
   }
 
-  public void createLiveStream(String title, String description) {
-    streamService.createLiveStream(title, description).then(liveStream -> {
+  public void createLiveStream(String title, String description, List<ChannelIdentifier> channelsIdentifiers) {
+    streamService.createLiveStream(title, description, channelsIdentifiers).then(liveStream -> {
       createLiveStream.postValue(liveStream);
       return null;
     })._catch((reason -> {

@@ -15,6 +15,7 @@ public class LiveStream extends Entity {
   private StreamStatus status;
   private List<ProviderStream> providers;
   private Date startDate;
+  private Date endDate;
   private Date registrationDate;
 
   public User getOwner() {
@@ -63,6 +64,14 @@ public class LiveStream extends Entity {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
   }
 
   public Date getRegistrationDate() {

@@ -24,7 +24,7 @@ public interface UserApi {
   Call<List<ConnectedChannel>> listMyConnectedChannels(@Query("populate") String populate);
 
   @GET("users/me/streams")
-  Call<List<LiveStream>> listMyLiveStreams();
+  Call<List<LiveStream>> listMyLiveStreams(@Query("populate") String populate);
 
   @POST("users/sign_in/google")
   Call<SignInResult> signInWithGoogle(@Body AuthCodePayload payload);

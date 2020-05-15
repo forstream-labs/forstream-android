@@ -17,18 +17,23 @@
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/sign_in_with_facebook_button"
-    style="@style/FacebookButton.Large"
+    style="@style/Button.Large"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/activity_intro_sign_in_with_facebook"/>
+    android:text="@string/activity_intro_sign_in_with_facebook"
+    app:backgroundTint="@color/com_facebook_button_background_color"
+    app:rippleColor="@color/com_facebook_button_background_color_pressed"/>
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/sign_in_with_google_button"
-    style="@style/GoogleButton.Large"
+    style="@style/Button.Large"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="@string/activity_intro_sign_in_with_google"
+    android:textColor="@color/google_btn_text"
+    app:backgroundTint="@android:color/white"
     app:icon="@drawable/ic_google"
-    app:iconTint="@null"/>
+    app:iconTint="@null"
+    app:rippleColor="@android:color/darker_gray"/>
 
 </LinearLayout>

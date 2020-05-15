@@ -23,6 +23,7 @@ public class RtmpCamera extends Camera2Base {
   }
 
   public void setupMuxers(int count) {
+    muxers.clear();
     for (int i = 0; i < count; i++) {
       muxers.add(new SrsFlvMuxer(connectChecker));
     }

@@ -1,4 +1,4 @@
-package io.livestream.view.main.live;
+package io.livestream.view.main.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,7 +15,7 @@ import io.livestream.common.livedata.list.ListLiveData;
 import io.livestream.common.viewmodel.BaseViewModel;
 import timber.log.Timber;
 
-public class LiveViewModel extends BaseViewModel {
+public class HomeViewModel extends BaseViewModel {
 
   private static final String CONNECTED_CHANNELS_POPULATE = "channel";
   private static final String LIVE_STREAM_POPULATE = "providers->connected_channel.channel";
@@ -26,9 +26,8 @@ public class LiveViewModel extends BaseViewModel {
   private ListLiveData<ConnectedChannel> connectedChannels = new ListLiveData<>();
   private ListLiveData<LiveStream> liveStreams = new ListLiveData<>();
   private MutableLiveData<LiveStream> createLiveStream = new MutableLiveData<>();
-  private MutableLiveData<LiveStream> startLiveStream = new MutableLiveData<>();
 
-  public LiveViewModel(UserService userService, StreamService streamService) {
+  public HomeViewModel(UserService userService, StreamService streamService) {
     this.userService = userService;
     this.streamService = streamService;
   }
@@ -43,10 +42,6 @@ public class LiveViewModel extends BaseViewModel {
 
   public LiveData<LiveStream> getCreateLiveStream() {
     return createLiveStream;
-  }
-
-  public LiveData<LiveStream> getStartLiveStream() {
-    return startLiveStream;
   }
 
   public void loadConnectedChannels() {
@@ -73,21 +68,11 @@ public class LiveViewModel extends BaseViewModel {
 
   public void createLiveStream(String title, String description, List<ChannelIdentifier> channelsIdentifiers) {
     streamService.createLiveStream(title, description, channelsIdentifiers).then(liveStream -> {
+      liveStreams.add(0, liveStream);
       createLiveStream.postValue(liveStream);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error creating live stream");
-      error.postValue(reason);
-      return null;
-    }));
-  }
-
-  public void startLiveStream(LiveStream liveStream) {
-    streamService.startLiveStream(liveStream).then(updatedLiveStream -> {
-      startLiveStream.postValue(updatedLiveStream);
-      return null;
-    })._catch((reason -> {
-      Timber.e(reason, "Error starting live stream %s", liveStream.getId());
       error.postValue(reason);
       return null;
     }));

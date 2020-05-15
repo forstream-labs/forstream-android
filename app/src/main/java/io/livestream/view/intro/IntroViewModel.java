@@ -11,8 +11,8 @@ import timber.log.Timber;
 
 public class IntroViewModel extends BaseViewModel {
 
-  private final AuthenticatedUser authenticatedUser;
-  private final UserService userService;
+  private AuthenticatedUser authenticatedUser;
+  private UserService userService;
 
   private MutableLiveData<User> signInWithFacebook = new MutableLiveData<>();
   private MutableLiveData<User> signInWithGoogle = new MutableLiveData<>();

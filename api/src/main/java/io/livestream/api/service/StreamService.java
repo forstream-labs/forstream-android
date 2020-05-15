@@ -20,6 +20,10 @@ public class StreamService {
     this.api = ApiFactory.build(StreamApi.class, context);
   }
 
+  public Promise<LiveStream> getLiveStream(String id, String populate) {
+    return PromiseUtils.build(api.getLiveStream(id, populate));
+  }
+
   public Promise<LiveStream> createLiveStream(String title, String description, List<ChannelIdentifier> channelsIdentifiers) {
     return PromiseUtils.build(api.createLiveStream(new CreateLiveStreamPayload(title, description, channelsIdentifiers)));
   }

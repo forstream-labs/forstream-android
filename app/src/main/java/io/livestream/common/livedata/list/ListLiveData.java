@@ -11,7 +11,7 @@ public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
   private boolean reversed;
 
   public ListLiveData() {
-    this(false);
+    this(true);
   }
 
   public ListLiveData(boolean postByDefault) {

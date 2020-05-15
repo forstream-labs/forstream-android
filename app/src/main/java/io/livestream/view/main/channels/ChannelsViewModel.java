@@ -13,7 +13,7 @@ public class ChannelsViewModel extends BaseViewModel {
 
   private ChannelService channelService;
 
-  private ListLiveData<Channel> channels = new ListLiveData<>(true);
+  private ListLiveData<Channel> channels = new ListLiveData<>();
 
   public ChannelsViewModel(ChannelService channelService) {
     this.channelService = channelService;

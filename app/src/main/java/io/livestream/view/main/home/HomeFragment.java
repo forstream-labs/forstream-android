@@ -1,6 +1,7 @@
-package io.livestream.view.main.live;
+package io.livestream.view.main.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,18 +28,20 @@ import io.livestream.R;
 import io.livestream.api.enums.ChannelIdentifier;
 import io.livestream.api.model.LiveStream;
 import io.livestream.common.BaseFragment;
+import io.livestream.common.Constants;
 import io.livestream.common.livedata.list.ListUpdateType;
 import io.livestream.util.AlertUtils;
 import io.livestream.util.component.SpaceItemDecoration;
+import io.livestream.view.livestream.LiveStreamActivity;
 
-public class LiveFragment extends BaseFragment implements CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener {
+public class HomeFragment extends BaseFragment implements CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener {
 
   @BindView(R.id.connected_channels_view) RecyclerView connectedChannelsView;
   @BindView(R.id.live_streams_view) RecyclerView liveStreamsView;
   @BindView(R.id.create_live_stream_button) FloatingActionButton createLiveStreamButton;
 
   @Inject Context context;
-  @Inject LiveViewModel liveViewModel;
+  @Inject HomeViewModel homeViewModel;
   @Inject ConnectedChannelsAdapter connectedChannelsAdapter;
   @Inject LiveStreamsAdapter liveStreamsAdapter;
   @Inject CreateLiveStreamDialogFragment createLiveStreamDialogFragment;
@@ -46,7 +49,7 @@ public class LiveFragment extends BaseFragment implements CreateLiveStreamDialog
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_live, container, false);
+    View view = inflater.inflate(R.layout.fragment_home, container, false);
     ButterKnife.bind(this, view);
 
     setupObservers();
@@ -59,35 +62,42 @@ public class LiveFragment extends BaseFragment implements CreateLiveStreamDialog
 
   @Override
   public void onLiveStreamClick(LiveStream liveStream) {
-
+    Intent intent = new Intent(context, LiveStreamActivity.class);
+    intent.putExtra(Constants.LIVE_STREAM, liveStream);
+    startActivity(intent);
   }
 
   @Override
   public void onCreateLiveStreamButtonClick(String title, String description, List<ChannelIdentifier> channelsIdentifiers) {
-    liveViewModel.createLiveStream(title, description, channelsIdentifiers);
+    homeViewModel.createLiveStream(title, description, channelsIdentifiers);
   }
 
   @OnClick(R.id.create_live_stream_button)
   void onCreateLiveStreamButtonClick() {
-    createLiveStreamDialogFragment.show(getActivity().getSupportFragmentManager(), LiveFragment.class.getSimpleName());
+    createLiveStreamDialogFragment.show(getActivity().getSupportFragmentManager(), HomeFragment.class.getSimpleName());
   }
 
   private void setupObservers() {
-    liveViewModel.getConnectedChannels().observe(getViewLifecycleOwner(), connectedChannelsHolder -> {
+    homeViewModel.getConnectedChannels().observe(getViewLifecycleOwner(), connectedChannelsHolder -> {
       createLiveStreamDialogFragment.setConnectedChannels(connectedChannelsHolder.getItems());
       if (!ListUpdateType.NONE.equals(connectedChannelsHolder.getUpdateType())) {
         connectedChannelsAdapter.setConnectedChannels(connectedChannelsHolder.getItems());
         connectedChannelsHolder.applyChanges(connectedChannelsAdapter);
       }
     });
-    liveViewModel.getLiveStreams().observe(getViewLifecycleOwner(), liveStreamsHolder -> {
+    homeViewModel.getLiveStreams().observe(getViewLifecycleOwner(), liveStreamsHolder -> {
       if (!ListUpdateType.NONE.equals(liveStreamsHolder.getUpdateType())) {
         liveStreamsAdapter.setLiveStreams(liveStreamsHolder.getItems());
         liveStreamsHolder.applyChanges(liveStreamsAdapter);
       }
     });
-    liveViewModel.getCreateLiveStream().observe(getViewLifecycleOwner(), liveStream -> createLiveStreamDialogFragment.dismiss());
-    liveViewModel.getError().observe(getViewLifecycleOwner(), throwable -> AlertUtils.alert(context, throwable));
+    homeViewModel.getCreateLiveStream().observe(getViewLifecycleOwner(), liveStream -> {
+      createLiveStreamDialogFragment.dismiss();
+      Intent intent = new Intent(context, LiveStreamActivity.class);
+      intent.putExtra(Constants.LIVE_STREAM, liveStream);
+      startActivity(intent);
+    });
+    homeViewModel.getError().observe(getViewLifecycleOwner(), throwable -> AlertUtils.alert(context, throwable));
   }
 
   private void setupViews() {
@@ -125,7 +135,7 @@ public class LiveFragment extends BaseFragment implements CreateLiveStreamDialog
   }
 
   private void setupContent() {
-    liveViewModel.loadConnectedChannels();
-    liveViewModel.loadLiveStreams();
+    homeViewModel.loadConnectedChannels();
+    homeViewModel.loadLiveStreams();
   }
 }

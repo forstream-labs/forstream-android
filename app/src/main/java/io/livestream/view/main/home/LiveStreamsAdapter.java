@@ -1,4 +1,4 @@
-package io.livestream.view.main.live;
+package io.livestream.view.main.home;
 
 import android.content.Context;
 import android.text.format.DateUtils;

@@ -65,16 +65,4 @@
     <item name="iconSize">22dp</item>
   </style>
 
-  <!-- Social button -->
-  <style name="FacebookButton.Large" parent="Button.Large">
-    <item name="backgroundTint">@color/com_facebook_button_background_color</item>
-    <item name="rippleColor">@color/com_facebook_button_background_color_pressed</item>
-  </style>
-
-  <style name="GoogleButton.Large" parent="Button.Large">
-    <item name="android:textColor">@color/google_btn_text</item>
-    <item name="backgroundTint">@android:color/white</item>
-    <item name="rippleColor">@android:color/darker_gray</item>
-  </style>
-
 </resources>

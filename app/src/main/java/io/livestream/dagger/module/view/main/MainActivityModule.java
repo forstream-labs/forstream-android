@@ -10,7 +10,7 @@ import io.livestream.dagger.scope.ActivityScope;
 import io.livestream.dagger.scope.FragmentScope;
 import io.livestream.view.main.MainActivity;
 import io.livestream.view.main.channels.ChannelsFragment;
-import io.livestream.view.main.live.LiveFragment;
+import io.livestream.view.main.home.HomeFragment;
 
 @Module(includes = {ActivityModule.class, MainViewModelModule.class})
 public abstract class MainActivityModule {
@@ -20,8 +20,8 @@ public abstract class MainActivityModule {
   abstract AppCompatActivity provideActivity(MainActivity activity);
 
   @FragmentScope
-  @ContributesAndroidInjector(modules = LiveFragmentModule.class)
-  abstract LiveFragment injectLiveFragment();
+  @ContributesAndroidInjector(modules = HomeFragmentModule.class)
+  abstract HomeFragment injectHomeFragment();
 
   @FragmentScope
   @ContributesAndroidInjector(modules = ChannelsFragmentModule.class)

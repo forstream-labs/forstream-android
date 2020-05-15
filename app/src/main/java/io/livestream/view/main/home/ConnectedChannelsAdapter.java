@@ -1,4 +1,4 @@
-package io.livestream.view.main.live;
+package io.livestream.view.main.home;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -133,7 +133,7 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
     }
 
     @OnCheckedChanged(R.id.channel_enabled)
-    void onConnectedChannelViewClick() {
+    void onChannelEnabledChanged() {
       ConnectedChannel connectedChannel = connectedChannels.get(getAdapterPosition());
       enableStates.put(connectedChannel, channelEnabledView.isChecked());
     }

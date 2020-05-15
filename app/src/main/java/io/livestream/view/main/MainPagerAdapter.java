@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.livestream.view.main.channels.ChannelsFragment;
-import io.livestream.view.main.live.LiveFragment;
+import io.livestream.view.main.home.HomeFragment;
 
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -16,7 +16,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
   public MainPagerAdapter(MainActivity activity) {
     super(activity.getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-    fragments.add(new LiveFragment());
+    fragments.add(new HomeFragment());
     fragments.add(new ChannelsFragment());
   }
 

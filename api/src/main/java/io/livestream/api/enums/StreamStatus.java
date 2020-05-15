@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public enum StreamStatus {
 
+  @SerializedName("error")
+  ERROR,
   @SerializedName("ready")
   READY,
   @SerializedName("live")

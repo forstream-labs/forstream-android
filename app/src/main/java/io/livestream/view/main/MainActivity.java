@@ -36,7 +36,7 @@ import io.livestream.common.BaseActivity;
 import io.livestream.util.AlertUtils;
 import io.livestream.util.ImageUtils;
 import io.livestream.view.intro.IntroActivity;
-import io.livestream.view.main.profile.ProfileActivity;
+import io.livestream.view.profile.ProfileActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 

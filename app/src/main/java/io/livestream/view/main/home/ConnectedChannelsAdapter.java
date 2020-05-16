@@ -126,10 +126,10 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
 
     @Override
     public void bindView(ConnectedChannel connectedChannel) {
+      ImageUtils.loadImage(context, connectedChannel.getChannel(), channelImageView);
       channelNameView.setText(connectedChannel.getChannel().getName());
       channelEnabledView.setChecked(true);
       channelEnabledView.setVisibility(showEnabledSwitch ? View.VISIBLE : View.GONE);
-      ImageUtils.loadImage(context, connectedChannel.getChannel(), channelImageView);
     }
 
     @OnCheckedChanged(R.id.channel_enabled)

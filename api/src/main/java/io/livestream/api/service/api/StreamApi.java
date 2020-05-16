@@ -1,5 +1,6 @@
 package io.livestream.api.service.api;
 
+import io.livestream.api.enums.ChannelIdentifier;
 import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.payload.CreateLiveStreamPayload;
 import retrofit2.Call;
@@ -22,5 +23,11 @@ public interface StreamApi {
 
   @POST("streams/{live_stream}/end")
   Call<LiveStream> endLiveStream(@Path("live_stream") String liveStreamId);
+
+  @POST("streams/{live_stream}/providers/{provider}/enable")
+  Call<LiveStream> enableLiveStreamProvider(@Path("live_stream") String liveStreamId, @Path("provider") ChannelIdentifier channelIdentifier);
+
+  @POST("streams/{live_stream}/providers/{provider}/disable")
+  Call<LiveStream> disableLiveStreamProvider(@Path("live_stream") String liveStreamId, @Path("provider") ChannelIdentifier channelIdentifier);
 
 }

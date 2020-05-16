@@ -106,10 +106,15 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
       }
       UIUtils.setColorFilter(liveStreamStatus.getBackground(), streamStatusColor);
 
-      if (liveStream.getEndDate() != null) {
-        liveStreamDate.setText(DateUtils.formatDateRange(context, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+      if (liveStream.getStartDate() != null) {
+        liveStreamDate.setVisibility(View.VISIBLE);
+        if (liveStream.getEndDate() != null) {
+          liveStreamDate.setText(DateUtils.formatDateRange(context, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+        } else {
+          liveStreamDate.setText(DateUtils.formatDateTime(context, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+        }
       } else {
-        liveStreamDate.setText(DateUtils.formatDateTime(context, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+        liveStreamDate.setVisibility(View.GONE);
       }
     }
 

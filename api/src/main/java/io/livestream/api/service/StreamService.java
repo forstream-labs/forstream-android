@@ -8,6 +8,7 @@ import java.util.List;
 
 import io.livestream.api.enums.ChannelIdentifier;
 import io.livestream.api.model.LiveStream;
+import io.livestream.api.model.ProviderStream;
 import io.livestream.api.model.payload.CreateLiveStreamPayload;
 import io.livestream.api.service.api.StreamApi;
 import io.livestream.api.util.PromiseUtils;
@@ -34,5 +35,13 @@ public class StreamService {
 
   public Promise<LiveStream> endLiveStream(LiveStream liveStream) {
     return PromiseUtils.build(api.endLiveStream(liveStream.getId()));
+  }
+
+  public Promise<LiveStream> enableLiveStreamProvider(LiveStream liveStream, ProviderStream providerStream) {
+    return PromiseUtils.build(api.enableLiveStreamProvider(liveStream.getId(), providerStream.getConnectedChannel().getChannel().getIdentifier()));
+  }
+
+  public Promise<LiveStream> disableLiveStreamProvider(LiveStream liveStream, ProviderStream providerStream) {
+    return PromiseUtils.build(api.disableLiveStreamProvider(liveStream.getId(), providerStream.getConnectedChannel().getChannel().getIdentifier()));
   }
 }

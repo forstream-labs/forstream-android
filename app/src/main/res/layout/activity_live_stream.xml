@@ -39,8 +39,7 @@
         android:paddingBottom="@dimen/margin_xsm"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_md"
-        android:textStyle="bold"
-        android:visibility="gone"/>
+        android:textStyle="bold"/>
 
       <TextView
         android:id="@+id/live_stream_date"

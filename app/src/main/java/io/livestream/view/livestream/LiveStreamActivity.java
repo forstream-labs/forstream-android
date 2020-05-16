@@ -44,7 +44,7 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback {
+public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback, ProviderStreamsAdapter.Listener {
 
   @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnail;
   @BindView(R.id.live_stream_camera_view) SurfaceView liveStreamCameraView;
@@ -81,6 +81,15 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     LiveStreamActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
   }
 
+  @Override
+  public void onProviderStreamEnabledChanged(ProviderStream providerStream) {
+    if (providerStream.getEnabled()) {
+      liveStreamViewModel.enableLiveStreamProvider(liveStream, providerStream);
+    } else {
+      liveStreamViewModel.disableLiveStreamProvider(liveStream, providerStream);
+    }
+  }
+
   @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
   void startCameraPreview() {
     liveStreamThumbnail.setVisibility(View.GONE);
@@ -114,6 +123,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   void onEndLiveStreamButtonClick() {
     if (rtmpCamera.isStreaming()) {
       rtmpCamera.stopStream();
+      rtmpCamera.stopPreview();
     }
     liveStreamViewModel.endLiveStream(liveStream);
   }
@@ -125,25 +135,30 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   private void setupObservers() {
     liveStreamViewModel.getLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
+      providerStreamsAdapter.setListener(this);
       providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
+      providerStreamsAdapter.setStateSwitchEnabled(!liveStream.getStatus().equals(StreamStatus.COMPLETE));
       providerStreamsAdapter.notifyDataSetChanged();
-      updateContent();
-      updateStreamStatus();
+      updateContent(true);
       if (!liveStream.getStatus().equals(StreamStatus.COMPLETE)) {
         LiveStreamActivityPermissionsDispatcher.startCameraPreviewWithPermissionCheck(this);
       }
     });
     liveStreamViewModel.getStartLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
-      updateStreamStatus();
+      updateContent(true);
     });
     liveStreamViewModel.getEndLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
-      updateStreamStatus();
-      if (!liveStream.getStatus().equals(StreamStatus.COMPLETE)) {
-        liveStreamThumbnail.setVisibility(View.VISIBLE);
-        liveStreamCameraView.setVisibility(View.GONE);
-      }
+      updateContent(true);
+      liveStreamThumbnail.setVisibility(View.VISIBLE);
+      liveStreamCameraView.setVisibility(View.GONE);
+    });
+    liveStreamViewModel.getEnableDisableLiveStream().observe(this, liveStream -> {
+      this.liveStream = liveStream;
+      providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
+      providerStreamsAdapter.setStateSwitchEnabled(false);
+      providerStreamsAdapter.notifyDataSetChanged();
     });
     liveStreamViewModel.getError().observe(this, throwable -> AlertUtils.alert(this, throwable));
   }
@@ -167,22 +182,15 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   }
 
   private void setupContent() {
-    updateContent();
+    updateContent(false);
     liveStreamViewModel.loadLiveStream(liveStream.getId());
   }
 
-  private void updateContent() {
+  private void updateContent(boolean updateButtons) {
     ImageUtils.loadImage(this, liveStreamViewModel.getAuthenticatedUser(), liveStreamThumbnail);
     liveStreamTitle.setText(liveStream.getTitle());
     liveStreamDescription.setText(liveStream.getDescription());
-    if (liveStream.getEndDate() != null) {
-      liveStreamDate.setText(DateUtils.formatDateRange(this, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
-    } else {
-      liveStreamDate.setText(DateUtils.formatDateTime(this, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
-    }
-  }
 
-  private void updateStreamStatus() {
     liveStreamStatus.setVisibility(View.VISIBLE);
     liveStreamStatus.setText(AppUtils.getStreamStatusName(this, liveStream.getStatus()));
     int streamStatusColor = 0;
@@ -199,8 +207,21 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     }
     UIUtils.setColorFilter(liveStreamStatus.getBackground(), streamStatusColor);
 
-    startLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.READY) ? View.VISIBLE : View.GONE);
-    endLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.LIVE) ? View.VISIBLE : View.GONE);
+    if (liveStream.getStartDate() != null) {
+      liveStreamDate.setVisibility(View.VISIBLE);
+      if (liveStream.getEndDate() != null) {
+        liveStreamDate.setText(DateUtils.formatDateRange(this, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+      } else {
+        liveStreamDate.setText(DateUtils.formatDateTime(this, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+      }
+    } else {
+      liveStreamDate.setVisibility(View.GONE);
+    }
+
+    if (updateButtons) {
+      startLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.READY) ? View.VISIBLE : View.GONE);
+      endLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.LIVE) ? View.VISIBLE : View.GONE);
+    }
   }
 
   @Override

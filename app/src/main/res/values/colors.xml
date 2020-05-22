@@ -18,10 +18,12 @@
 
   <color name="stream_status_ready">#4caf50</color>
   <color name="stream_status_live">#ed4956</color>
+  <color name="stream_status_paused">#ff9800</color>
   <color name="stream_status_complete">#757575</color>
 
+  <color name="button_stream_options">#99111111</color>
   <color name="button_start_stream">#ed4956</color>
-  <color name="button_end_stream">#757575</color>
+  <color name="button_end_stream">#ed4956</color>
 
   <color name="google_btn_text">#757575</color>
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:fitsSystemWindows="true"
+  android:orientation="vertical">
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+      android:id="@+id/live_stream_thumbnail"
+      android:layout_width="match_parent"
+      android:layout_height="200dp"
+      android:adjustViewBounds="true"
+      android:scaleType="centerCrop"/>
+
+    <TextView
+      android:id="@+id/live_stream_status"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start|top"
+      android:layout_margin="@dimen/margin_md"
+      android:background="@drawable/rounded_corner"
+      android:paddingStart="@dimen/margin_sm"
+      android:paddingTop="@dimen/margin_xsm"
+      android:paddingEnd="@dimen/margin_sm"
+      android:paddingBottom="@dimen/margin_xsm"
+      android:textColor="@android:color/white"
+      android:textSize="@dimen/text_md"
+      android:textStyle="bold"/>
+
+    <TextView
+      android:id="@+id/live_stream_date"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end|bottom"
+      android:layout_margin="@dimen/margin_md"
+      android:background="@drawable/rounded_corner"
+      android:backgroundTint="@android:color/white"
+      android:paddingStart="@dimen/margin_sm"
+      android:paddingTop="@dimen/margin_xsm"
+      android:paddingEnd="@dimen/margin_sm"
+      android:paddingBottom="@dimen/margin_xsm"
+      android:textColor="@color/text_secondary"
+      android:textSize="@dimen/text_sm"/>
+
+  </FrameLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:padding="@dimen/margin_md">
+
+    <TextView
+      android:id="@+id/live_stream_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/margin_sm"
+      android:textColor="@color/text_primary"
+      android:textSize="@dimen/text_lg"/>
+
+    <TextView
+      android:id="@+id/live_stream_description"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/margin_md"
+      android:textColor="@color/text_secondary"
+      android:textSize="@dimen/text_md"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/provider_streams_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:clipToPadding="false"
+      android:orientation="vertical"/>
+
+  </LinearLayout>
+
+</LinearLayout>

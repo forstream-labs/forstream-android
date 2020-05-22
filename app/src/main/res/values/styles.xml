@@ -65,4 +65,10 @@
     <item name="iconSize">22dp</item>
   </style>
 
+  <style name="LiveStreamBottomSheet" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/black</item>
+  </style>
+
 </resources>

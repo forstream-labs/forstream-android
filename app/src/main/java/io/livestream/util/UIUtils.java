@@ -2,6 +2,8 @@ package io.livestream.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
 import android.graphics.PorterDuff;
@@ -17,6 +19,7 @@ import androidx.annotation.ColorRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.livestream.R;
 
@@ -24,6 +27,23 @@ public class UIUtils {
 
   private UIUtils() {
 
+  }
+
+  public static int getStatusBarHeight(Context context) {
+    int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      return context.getResources().getDimensionPixelSize(resourceId);
+    }
+    return 0;
+  }
+
+  public static int getNavigationBarHeight(Context context, int orientation) {
+    Resources resources = context.getResources();
+    int id = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
+    if (id > 0) {
+      return resources.getDimensionPixelSize(id);
+    }
+    return convertDpToPixel(context, 48);
   }
 
   public static void changeStatusBarColor(Activity activity, @ColorRes int color) {
@@ -41,6 +61,11 @@ public class UIUtils {
     activity.setSupportActionBar(toolbar);
     activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     toolbar.setNavigationOnClickListener(view -> activity.finish());
+  }
+
+  public static void defaultSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout, SwipeRefreshLayout.OnRefreshListener onRefreshListener) {
+    swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
+    swipeRefreshLayout.setColorSchemeResources(R.color.primary, R.color.primary, R.color.primary);
   }
 
   public static void showKeyboard(Activity activity, View view) {

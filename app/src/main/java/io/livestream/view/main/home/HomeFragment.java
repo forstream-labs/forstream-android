@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -31,11 +32,13 @@ import io.livestream.common.BaseFragment;
 import io.livestream.common.Constants;
 import io.livestream.common.livedata.list.ListUpdateType;
 import io.livestream.util.AlertUtils;
+import io.livestream.util.UIUtils;
 import io.livestream.util.component.SpaceItemDecoration;
 import io.livestream.view.livestream.LiveStreamActivity;
 
-public class HomeFragment extends BaseFragment implements CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener {
+public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener {
 
+  @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
   @BindView(R.id.connected_channels_view) RecyclerView connectedChannelsView;
   @BindView(R.id.live_streams_view) RecyclerView liveStreamsView;
   @BindView(R.id.create_live_stream_button) FloatingActionButton createLiveStreamButton;
@@ -53,6 +56,7 @@ public class HomeFragment extends BaseFragment implements CreateLiveStreamDialog
     ButterKnife.bind(this, view);
 
     setupObservers();
+    setupSwipeRefreshLayout();
     setupViews();
     setupConnectedChannelsView();
     setupLiveStreamsView();
@@ -68,6 +72,11 @@ public class HomeFragment extends BaseFragment implements CreateLiveStreamDialog
   }
 
   @Override
+  public void onRefresh() {
+    setupContent();
+  }
+
+  @Override
   public void onCreateLiveStreamButtonClick(String title, String description, List<ChannelIdentifier> channelsIdentifiers) {
     homeViewModel.createLiveStream(title, description, channelsIdentifiers);
   }
@@ -79,6 +88,7 @@ public class HomeFragment extends BaseFragment implements CreateLiveStreamDialog
 
   private void setupObservers() {
     homeViewModel.getConnectedChannels().observe(getViewLifecycleOwner(), connectedChannelsHolder -> {
+      swipeRefreshLayout.setRefreshing(false);
       createLiveStreamDialogFragment.setConnectedChannels(connectedChannelsHolder.getItems());
       if (!ListUpdateType.NONE.equals(connectedChannelsHolder.getUpdateType())) {
         connectedChannelsAdapter.setConnectedChannels(connectedChannelsHolder.getItems());
@@ -86,6 +96,7 @@ public class HomeFragment extends BaseFragment implements CreateLiveStreamDialog
       }
     });
     homeViewModel.getLiveStreams().observe(getViewLifecycleOwner(), liveStreamsHolder -> {
+      swipeRefreshLayout.setRefreshing(false);
       if (!ListUpdateType.NONE.equals(liveStreamsHolder.getUpdateType())) {
         liveStreamsAdapter.setLiveStreams(liveStreamsHolder.getItems());
         liveStreamsHolder.applyChanges(liveStreamsAdapter);
@@ -98,6 +109,11 @@ public class HomeFragment extends BaseFragment implements CreateLiveStreamDialog
       startActivity(intent);
     });
     homeViewModel.getError().observe(getViewLifecycleOwner(), throwable -> AlertUtils.alert(context, throwable));
+  }
+
+  private void setupSwipeRefreshLayout() {
+    UIUtils.defaultSwipeRefreshLayout(swipeRefreshLayout, this);
+    swipeRefreshLayout.setProgressViewOffset(false, 0, UIUtils.convertDpToPixel(context, 80));
   }
 
   private void setupViews() {

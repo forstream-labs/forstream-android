@@ -2,24 +2,22 @@ package io.livestream.view.livestream;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.format.DateUtils;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
+import com.pedro.encoder.input.video.CameraHelper;
+import com.pedro.rtplibrary.util.SensorRotationManager;
+import com.pedro.rtplibrary.view.OpenGlView;
 
 import net.ossrs.rtmp.ConnectCheckerRtmp;
 
@@ -36,31 +34,29 @@ import io.livestream.common.BaseActivity;
 import io.livestream.common.Constants;
 import io.livestream.util.AlertUtils;
 import io.livestream.util.AppUtils;
-import io.livestream.util.ImageUtils;
 import io.livestream.util.UIUtils;
 import io.livestream.util.component.RtmpCamera;
-import io.livestream.util.component.SpaceItemDecoration;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback, ProviderStreamsAdapter.Listener {
+public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback {
 
-  @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnail;
-  @BindView(R.id.live_stream_camera_view) SurfaceView liveStreamCameraView;
-  @BindView(R.id.live_stream_title) TextView liveStreamTitle;
-  @BindView(R.id.live_stream_description) TextView liveStreamDescription;
+  @BindView(R.id.live_stream_camera_view) OpenGlView liveStreamCameraView;
   @BindView(R.id.live_stream_status) TextView liveStreamStatus;
-  @BindView(R.id.live_stream_date) TextView liveStreamDate;
-  @BindView(R.id.provider_streams_view) RecyclerView providerStreamsView;
-  @BindView(R.id.start_live_stream_button) MaterialButton startLiveStreamButton;
-  @BindView(R.id.end_live_stream_button) MaterialButton endLiveStreamButton;
+  @BindView(R.id.live_options_layout) View liveOptionsLayout;
+  @BindView(R.id.open_live_stream_info_button) FloatingActionButton openLiveStreamInfoButton;
+  @BindView(R.id.switch_camera_button) FloatingActionButton switchCameraButton;
+  @BindView(R.id.start_live_stream_button) FloatingActionButton startLiveStreamButton;
+  @BindView(R.id.end_live_stream_button) FloatingActionButton endLiveStreamButton;
 
   @Inject LiveStreamViewModel liveStreamViewModel;
-  @Inject ProviderStreamsAdapter providerStreamsAdapter;
+  @Inject LiveStreamDialogFragment liveStreamDialogFragment;
 
-  private RtmpCamera rtmpCamera;
   private LiveStream liveStream;
+  private RtmpCamera rtmpCamera;
+  private SensorRotationManager sensorRotationManager;
+  private CameraHelper.Facing cameraFacing = CameraHelper.Facing.BACK;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,7 +67,6 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     setupLiveStream();
     setupObservers();
     setupViews();
-    setupProviderStreamsView();
     setupContent();
   }
 
@@ -82,41 +77,92 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   }
 
   @Override
-  public void onProviderStreamEnabledChanged(ProviderStream providerStream) {
-    if (providerStream.getEnabled()) {
-      liveStreamViewModel.enableLiveStreamProvider(liveStream, providerStream);
-    } else {
-      liveStreamViewModel.disableLiveStreamProvider(liveStream, providerStream);
+  protected void onResume() {
+    super.onResume();
+    Window window = getWindow();
+    window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+  }
+
+  @Override
+  public void surfaceCreated(SurfaceHolder holder) {
+
+  }
+
+  @Override
+  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    rtmpCamera.startPreview(cameraFacing, 1280, 720);
+    sensorRotationManager.start();
+  }
+
+  @Override
+  public void surfaceDestroyed(SurfaceHolder holder) {
+    sensorRotationManager.stop();
+    if (rtmpCamera.isStreaming()) {
+      rtmpCamera.stopStream();
     }
+    rtmpCamera.stopPreview();
+  }
+
+  @Override
+  public void onConnectionSuccessRtmp() {
+    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "Connection success"));
+  }
+
+  @Override
+  public void onConnectionFailedRtmp(@NonNull String reason) {
+    runOnUiThread(() -> {
+      AlertUtils.alert(LiveStreamActivity.this, "Connection failed: " + reason);
+      if (rtmpCamera.shouldRetry(reason)) {
+        rtmpCamera.reTry(5000, reason);
+      } else {
+        rtmpCamera.stopStream();
+      }
+    });
+  }
+
+  @Override
+  public void onNewBitrateRtmp(long bitrate) {
+
+  }
+
+  @Override
+  public void onDisconnectRtmp() {
+    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "Disconnected"));
+  }
+
+  @Override
+  public void onAuthErrorRtmp() {
+    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "Authentication error"));
+  }
+
+  @Override
+  public void onAuthSuccessRtmp() {
+    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "Authentication success"));
   }
 
   @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
-  void startCameraPreview() {
-    liveStreamThumbnail.setVisibility(View.GONE);
-    liveStreamCameraView.setVisibility(View.VISIBLE);
-    new Handler().post(() -> {
-      rtmpCamera = new RtmpCamera(liveStreamCameraView, this);
-      rtmpCamera.setupMuxers(liveStream.getProviders().size());
-      rtmpCamera.startPreview();
-    });
+  void loadLiveStream() {
+    liveStreamViewModel.loadLiveStream(liveStream.getId());
+  }
+
+  @OnClick(R.id.open_live_stream_info_button)
+  void onOpenLiveStreamInfoButtonClick() {
+    Bundle arguments = new Bundle();
+    arguments.putSerializable(Constants.LIVE_STREAM, liveStream);
+    liveStreamDialogFragment.setArguments(arguments);
+    liveStreamDialogFragment.show(getSupportFragmentManager(), LiveStreamActivity.class.getSimpleName());
+  }
+
+
+  @OnClick(R.id.switch_camera_button)
+  void onSwitchCameraButtonClick() {
+    cameraFacing = cameraFacing.equals(CameraHelper.Facing.BACK) ? CameraHelper.Facing.FRONT : CameraHelper.Facing.BACK;
+    rtmpCamera.switchCamera();
   }
 
   @OnClick(R.id.start_live_stream_button)
   void onStartLiveStreamButtonClick() {
-    rtmpCamera.setReTries(10);
-    if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
-      StringBuilder urlsBuilder = new StringBuilder();
-      for (ProviderStream providerStream : liveStream.getProviders()) {
-        urlsBuilder.append(providerStream.getStreamUrl()).append(",");
-      }
-      rtmpCamera.startStream(urlsBuilder.toString());
-      liveStreamViewModel.startLiveStream(liveStream);
-    } else {
-      // This device can't init encoders, this could be for 2 reasons:
-      // The selected encoder doesn't support any configuration provided
-      // The device hasn't a H264 or AAC encoder (in this case you can see log error "valid encoder not found")
-      AlertUtils.alert(this, "Can't init encoders");
-    }
+    liveStreamViewModel.startLiveStream(liveStream);
   }
 
   @OnClick(R.id.end_live_stream_button)
@@ -135,146 +181,75 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   private void setupObservers() {
     liveStreamViewModel.getLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
-      providerStreamsAdapter.setListener(this);
-      providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
-      providerStreamsAdapter.setStateSwitchEnabled(!liveStream.getStatus().equals(StreamStatus.COMPLETE));
-      providerStreamsAdapter.notifyDataSetChanged();
-      updateContent(true);
-      if (!liveStream.getStatus().equals(StreamStatus.COMPLETE)) {
-        LiveStreamActivityPermissionsDispatcher.startCameraPreviewWithPermissionCheck(this);
-      }
+      updateContent();
     });
     liveStreamViewModel.getStartLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
-      updateContent(true);
+      StringBuilder urlsBuilder = new StringBuilder();
+      for (ProviderStream providerStream : liveStream.getProviders()) {
+        urlsBuilder.append(providerStream.getStreamUrl()).append(",");
+      }
+      rtmpCamera.setupMuxers(liveStream.getProviders().size());
+      if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo(1280, 720, 30, 3000 * 1024, false, CameraHelper.getCameraOrientation(this))) {
+        rtmpCamera.startStream(urlsBuilder.toString());
+      } else {
+        // TODO: What to do when device can't go live?
+      }
+      updateContent();
     });
     liveStreamViewModel.getEndLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
-      updateContent(true);
-      liveStreamThumbnail.setVisibility(View.VISIBLE);
-      liveStreamCameraView.setVisibility(View.GONE);
-    });
-    liveStreamViewModel.getEnableDisableLiveStream().observe(this, liveStream -> {
-      this.liveStream = liveStream;
-      providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
-      providerStreamsAdapter.setStateSwitchEnabled(false);
-      providerStreamsAdapter.notifyDataSetChanged();
+      updateContent();
     });
     liveStreamViewModel.getError().observe(this, throwable -> AlertUtils.alert(this, throwable));
   }
 
   private void setupViews() {
+    rtmpCamera = new RtmpCamera(liveStreamCameraView, this);
+    rtmpCamera.setReTries(10);
+    sensorRotationManager = new SensorRotationManager(this, rotation -> rtmpCamera.getGlInterface().setStreamRotation(rotation));
     liveStreamCameraView.getHolder().addCallback(this);
-    startLiveStreamButton.setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_video));
-    endLiveStreamButton.setIcon(new IconicsDrawable(this, FontAwesome.Icon.faw_stop));
-  }
 
-  private void setupProviderStreamsView() {
-    LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    SpaceItemDecoration itemDecoration = new SpaceItemDecoration(getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());
-    providerStreamsView.setLayoutManager(layoutManager);
-    providerStreamsView.addItemDecoration(itemDecoration);
-    providerStreamsView.setAdapter(providerStreamsAdapter);
-    RecyclerView.ItemAnimator itemAnimator = providerStreamsView.getItemAnimator();
-    if (itemAnimator instanceof SimpleItemAnimator) {
-      ((SimpleItemAnimator) itemAnimator).setSupportsChangeAnimations(false);
-    }
+    int marginMd = getResources().getDimensionPixelSize(R.dimen.margin_md);
+    int marginTop = UIUtils.getStatusBarHeight(this) + UIUtils.convertDpToPixel(this, 20);
+    int marginBottom = UIUtils.getNavigationBarHeight(this, getRequestedOrientation()) + UIUtils.convertDpToPixel(this, 20);
+
+    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) liveStreamStatus.getLayoutParams();
+    layoutParams.setMargins(marginMd, marginTop, 0, 0);
+    liveStreamStatus.requestLayout();
+
+    layoutParams = (ViewGroup.MarginLayoutParams) liveOptionsLayout.getLayoutParams();
+    layoutParams.setMargins(0, marginTop, marginMd, 0);
+    liveOptionsLayout.requestLayout();
+    openLiveStreamInfoButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_info));
+    switchCameraButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_camera));
+
+    startLiveStreamButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_video));
+    layoutParams = (ViewGroup.MarginLayoutParams) startLiveStreamButton.getLayoutParams();
+    layoutParams.setMargins(0, 0, 0, marginBottom);
+    startLiveStreamButton.requestLayout();
+
+    endLiveStreamButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_stop));
+    layoutParams = (ViewGroup.MarginLayoutParams) endLiveStreamButton.getLayoutParams();
+    layoutParams.setMargins(0, 0, 0, marginBottom);
+    endLiveStreamButton.requestLayout();
   }
 
   private void setupContent() {
-    updateContent(false);
-    liveStreamViewModel.loadLiveStream(liveStream.getId());
+    LiveStreamActivityPermissionsDispatcher.loadLiveStreamWithPermissionCheck(this);
   }
 
-  private void updateContent(boolean updateButtons) {
-    ImageUtils.loadImage(this, liveStreamViewModel.getAuthenticatedUser(), liveStreamThumbnail);
-    liveStreamTitle.setText(liveStream.getTitle());
-    liveStreamDescription.setText(liveStream.getDescription());
-
+  private void updateContent() {
     liveStreamStatus.setVisibility(View.VISIBLE);
-    liveStreamStatus.setText(AppUtils.getStreamStatusName(this, liveStream.getStatus()));
-    int streamStatusColor = 0;
-    switch (liveStream.getStatus()) {
-      case READY:
-        streamStatusColor = ContextCompat.getColor(this, R.color.stream_status_ready);
-        break;
-      case LIVE:
-        streamStatusColor = ContextCompat.getColor(this, R.color.stream_status_live);
-        break;
-      case COMPLETE:
-        streamStatusColor = ContextCompat.getColor(this, R.color.stream_status_complete);
-        break;
+    liveStreamStatus.setText(AppUtils.getStreamStatusName(this, liveStream.getStatus(), rtmpCamera));
+    UIUtils.setColorFilter(liveStreamStatus.getBackground(), AppUtils.getStreamStatusColor(this, liveStream.getStatus(), rtmpCamera));
+
+    liveOptionsLayout.setVisibility(View.VISIBLE);
+    startLiveStreamButton.setVisibility(!liveStream.getStatus().equals(StreamStatus.COMPLETE) && (rtmpCamera == null || !rtmpCamera.isStreaming()) ? View.VISIBLE : View.GONE);
+    endLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.LIVE) && rtmpCamera != null && rtmpCamera.isStreaming() ? View.VISIBLE : View.GONE);
+
+    if (liveStream.getStatus().equals(StreamStatus.COMPLETE)) {
+      onOpenLiveStreamInfoButtonClick();
     }
-    UIUtils.setColorFilter(liveStreamStatus.getBackground(), streamStatusColor);
-
-    if (liveStream.getStartDate() != null) {
-      liveStreamDate.setVisibility(View.VISIBLE);
-      if (liveStream.getEndDate() != null) {
-        liveStreamDate.setText(DateUtils.formatDateRange(this, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
-      } else {
-        liveStreamDate.setText(DateUtils.formatDateTime(this, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
-      }
-    } else {
-      liveStreamDate.setVisibility(View.GONE);
-    }
-
-    if (updateButtons) {
-      startLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.READY) ? View.VISIBLE : View.GONE);
-      endLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.LIVE) ? View.VISIBLE : View.GONE);
-    }
-  }
-
-  @Override
-  public void onConnectionSuccessRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "onConnectionSuccessRtmp"));
-  }
-
-  @Override
-  public void onConnectionFailedRtmp(@NonNull String reason) {
-    runOnUiThread(() -> {
-      AlertUtils.alert(LiveStreamActivity.this, "onConnectionFailedRtmp " + reason);
-      if (rtmpCamera.shouldRetry(reason)) {
-        rtmpCamera.reTry(5000, reason);
-      } else {
-        rtmpCamera.stopStream();
-      }
-    });
-  }
-
-  @Override
-  public void onNewBitrateRtmp(long bitrate) {
-    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "onNewBitrateRtmp " + bitrate));
-  }
-
-  @Override
-  public void onDisconnectRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "onDisconnectRtmp"));
-  }
-
-  @Override
-  public void onAuthErrorRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "onAuthErrorRtmp"));
-  }
-
-  @Override
-  public void onAuthSuccessRtmp() {
-    runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "onAuthSuccessRtmp"));
-  }
-
-  @Override
-  public void surfaceCreated(SurfaceHolder holder) {
-
-  }
-
-  @Override
-  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    if (rtmpCamera != null) {
-      rtmpCamera.startPreview();
-    }
-  }
-
-  @Override
-  public void surfaceDestroyed(SurfaceHolder holder) {
-
   }
 }

@@ -1,9 +1,9 @@
 package io.livestream.util.component;
 
 import android.media.MediaCodec;
-import android.view.SurfaceView;
 
 import com.pedro.rtplibrary.base.Camera2Base;
+import com.pedro.rtplibrary.view.OpenGlView;
 
 import net.ossrs.rtmp.ConnectCheckerRtmp;
 import net.ossrs.rtmp.SrsFlvMuxer;
@@ -17,8 +17,8 @@ public class RtmpCamera extends Camera2Base {
   private ConnectCheckerRtmp connectChecker;
   private List<SrsFlvMuxer> muxers = new ArrayList<>();
 
-  public RtmpCamera(SurfaceView surfaceView, ConnectCheckerRtmp connectChecker) {
-    super(surfaceView);
+  public RtmpCamera(OpenGlView openGlView, ConnectCheckerRtmp connectChecker) {
+    super(openGlView);
     this.connectChecker = connectChecker;
   }
 

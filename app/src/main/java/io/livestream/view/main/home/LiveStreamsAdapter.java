@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -90,21 +89,8 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
       ImageUtils.loadImage(context, authenticatedUser.get(), liveStreamThumbnail);
       liveStreamTitle.setText(liveStream.getTitle());
       liveStreamDescription.setText(liveStream.getDescription());
-
-      liveStreamStatus.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus()));
-      int streamStatusColor = 0;
-      switch (liveStream.getStatus()) {
-        case READY:
-          streamStatusColor = ContextCompat.getColor(context, R.color.stream_status_ready);
-          break;
-        case LIVE:
-          streamStatusColor = ContextCompat.getColor(context, R.color.stream_status_live);
-          break;
-        case COMPLETE:
-          streamStatusColor = ContextCompat.getColor(context, R.color.stream_status_complete);
-          break;
-      }
-      UIUtils.setColorFilter(liveStreamStatus.getBackground(), streamStatusColor);
+      liveStreamStatus.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
+      UIUtils.setColorFilter(liveStreamStatus.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
 
       if (liveStream.getStartDate() != null) {
         liveStreamDate.setVisibility(View.VISIBLE);

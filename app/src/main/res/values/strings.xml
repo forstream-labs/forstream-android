@@ -33,13 +33,10 @@
   <string name="activity_main_description">Description</string>
   <string name="activity_main_create_live_stream">Create live stream</string>
 
-  <!-- Live Stream activity -->
-  <string name="activity_live_stream_start_stream">Go Live</string>
-  <string name="activity_live_stream_end_stream">End stream</string>
-
   <!-- Stream statuses -->
   <string name="stream_status_ready">READY</string>
   <string name="stream_status_live">LIVE</string>
+  <string name="stream_status_paused">PAUSED</string>
   <string name="stream_status_complete">COMPLETE</string>
 
   <!-- Errors -->

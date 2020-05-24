@@ -42,8 +42,8 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback {
 
-  @BindView(R.id.live_stream_camera_view) OpenGlView liveStreamCameraView;
-  @BindView(R.id.live_stream_status) TextView liveStreamStatus;
+  @BindView(R.id.live_stream_camera) OpenGlView liveStreamCameraView;
+  @BindView(R.id.live_stream_status) TextView liveStreamStatusView;
   @BindView(R.id.live_options_layout) View liveOptionsLayout;
   @BindView(R.id.open_live_stream_info_button) FloatingActionButton openLiveStreamInfoButton;
   @BindView(R.id.switch_camera_button) FloatingActionButton switchCameraButton;
@@ -214,9 +214,9 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     int marginTop = UIUtils.getStatusBarHeight(this) + UIUtils.convertDpToPixel(this, 20);
     int marginBottom = UIUtils.getNavigationBarHeight(this, getRequestedOrientation()) + UIUtils.convertDpToPixel(this, 20);
 
-    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) liveStreamStatus.getLayoutParams();
+    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) liveStreamStatusView.getLayoutParams();
     layoutParams.setMargins(marginMd, marginTop, 0, 0);
-    liveStreamStatus.requestLayout();
+    liveStreamStatusView.requestLayout();
 
     layoutParams = (ViewGroup.MarginLayoutParams) liveOptionsLayout.getLayoutParams();
     layoutParams.setMargins(0, marginTop, marginMd, 0);
@@ -240,9 +240,9 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   }
 
   private void updateContent() {
-    liveStreamStatus.setVisibility(View.VISIBLE);
-    liveStreamStatus.setText(AppUtils.getStreamStatusName(this, liveStream.getStatus(), rtmpCamera));
-    UIUtils.setColorFilter(liveStreamStatus.getBackground(), AppUtils.getStreamStatusColor(this, liveStream.getStatus(), rtmpCamera));
+    liveStreamStatusView.setVisibility(View.VISIBLE);
+    liveStreamStatusView.setText(AppUtils.getStreamStatusName(this, liveStream.getStatus(), rtmpCamera));
+    UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(this, liveStream.getStatus(), rtmpCamera));
 
     liveOptionsLayout.setVisibility(View.VISIBLE);
     startLiveStreamButton.setVisibility(!liveStream.getStatus().equals(StreamStatus.COMPLETE) && (rtmpCamera == null || !rtmpCamera.isStreaming()) ? View.VISIBLE : View.GONE);

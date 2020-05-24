@@ -5,6 +5,7 @@ import io.livestream.api.model.LiveStream;
 import io.livestream.api.model.payload.CreateLiveStreamPayload;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -17,6 +18,9 @@ public interface StreamApi {
 
   @GET("streams/{live_stream}")
   Call<LiveStream> getLiveStream(@Path("live_stream") String liveStreamId, @Query("populate") String populate);
+
+  @DELETE("streams/{live_stream}")
+  Call<LiveStream> removeLiveStream(@Path("live_stream") String liveStreamId);
 
   @POST("streams/{live_stream}/start")
   Call<LiveStream> startLiveStream(@Path("live_stream") String liveStreamId);

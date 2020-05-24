@@ -27,13 +27,14 @@
           android:layout_marginBottom="@dimen/margin_md"
           android:clipChildren="false"
           android:clipToPadding="false"
-          android:orientation="vertical">
+          android:orientation="vertical"
+          android:visibility="gone">
 
           <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_md"
-            android:text="@string/activity_main_connected_channels"
+            android:text="@string/activity_main_your_channels"
             android:textColor="@color/text_secondary_dark"
             android:textSize="@dimen/text_xlg"
             android:textStyle="bold"/>
@@ -48,18 +49,19 @@
         </LinearLayout>
 
         <LinearLayout
-          android:id="@+id/streams_layout"
+          android:id="@+id/live_streams_layout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:clipChildren="false"
           android:clipToPadding="false"
-          android:orientation="vertical">
+          android:orientation="vertical"
+          android:visibility="gone">
 
           <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_md"
-            android:text="@string/activity_main_live_streams"
+            android:text="@string/activity_main_your_lives"
             android:textColor="@color/text_secondary_dark"
             android:textSize="@dimen/text_xlg"
             android:textStyle="bold"/>

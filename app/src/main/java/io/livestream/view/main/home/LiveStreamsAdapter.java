@@ -9,7 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
 
@@ -69,15 +72,18 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
 
     void onLiveStreamClick(LiveStream liveStream);
 
+    void onRemoveLiveStreamClick(LiveStream liveStream);
+
   }
 
   class ViewHolder extends BaseViewHolder<LiveStream> {
 
     @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnail;
-    @BindView(R.id.live_stream_title) TextView liveStreamTitle;
-    @BindView(R.id.live_stream_description) TextView liveStreamDescription;
-    @BindView(R.id.live_stream_status) TextView liveStreamStatus;
-    @BindView(R.id.live_stream_date) TextView liveStreamDate;
+    @BindView(R.id.live_stream_title) TextView liveStreamTitleView;
+    @BindView(R.id.live_stream_description) TextView liveStreamDescriptionView;
+    @BindView(R.id.live_stream_status) TextView liveStreamStatusView;
+    @BindView(R.id.live_stream_date) TextView liveStreamDateView;
+    @BindView(R.id.live_stream_menu) View liveStreamMenuView;
 
     ViewHolder(View view) {
       super(view);
@@ -87,20 +93,20 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
     @Override
     public void bindView(LiveStream liveStream) {
       ImageUtils.loadImage(context, authenticatedUser.get(), liveStreamThumbnail);
-      liveStreamTitle.setText(liveStream.getTitle());
-      liveStreamDescription.setText(liveStream.getDescription());
-      liveStreamStatus.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
-      UIUtils.setColorFilter(liveStreamStatus.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
+      liveStreamTitleView.setText(liveStream.getTitle());
+      liveStreamDescriptionView.setText(liveStream.getDescription());
+      liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
+      UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
 
       if (liveStream.getStartDate() != null) {
-        liveStreamDate.setVisibility(View.VISIBLE);
+        liveStreamDateView.setVisibility(View.VISIBLE);
         if (liveStream.getEndDate() != null) {
-          liveStreamDate.setText(DateUtils.formatDateRange(context, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+          liveStreamDateView.setText(DateUtils.formatDateRange(context, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
         } else {
-          liveStreamDate.setText(DateUtils.formatDateTime(context, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+          liveStreamDateView.setText(DateUtils.formatDateTime(context, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
         }
       } else {
-        liveStreamDate.setVisibility(View.GONE);
+        liveStreamDateView.setVisibility(View.GONE);
       }
     }
 
@@ -109,6 +115,25 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
       if (listener != null) {
         listener.onLiveStreamClick(liveStreams.get(getAdapterPosition()));
       }
+    }
+
+    @OnClick(R.id.live_stream_menu)
+    void onLiveStreamMenuClick() {
+      LiveStream liveStream = liveStreams.get(getAdapterPosition());
+      PopupMenu popup = new PopupMenu(context, liveStreamMenuView);
+      popup.inflate(R.menu.menu_connected_channel);
+      popup.setOnMenuItemClickListener(item -> {
+        if (item.getItemId() == R.id.remove_connected_channel) {
+          MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.activity_main_dialog_remove_live_stream_message)
+            .setPositiveButton(R.string.remove, (dialog, which) -> listener.onRemoveLiveStreamClick(liveStream))
+            .setNegativeButton(R.string.cancel, null);
+          dialogBuilder.create().show();
+          return true;
+        }
+        return false;
+      });
+      popup.show();
     }
   }
 }

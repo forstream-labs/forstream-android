@@ -44,8 +44,8 @@ public class ViewModelModule {
   @Provides
   @IntoMap
   @ViewModelKey(HomeViewModel.class)
-  ViewModel provideHomeViewModel(UserService userService, StreamService streamService) {
-    return new HomeViewModel(userService, streamService);
+  ViewModel provideHomeViewModel(UserService userService, ChannelService channelService, StreamService streamService) {
+    return new HomeViewModel(userService, channelService, streamService);
   }
 
   @Provides

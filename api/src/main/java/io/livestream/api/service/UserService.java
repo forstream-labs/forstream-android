@@ -53,7 +53,7 @@ public class UserService {
   }
 
   public Promise<Void> signOut() {
-    return PromiseUtils.build(api.signOut()).then(result -> {
+    return PromiseUtils.build(api.signOut()).then(aVoid -> {
       TokenManager.setToken(context, null);
       return value(null);
     });

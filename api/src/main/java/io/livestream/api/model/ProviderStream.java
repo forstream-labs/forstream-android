@@ -5,7 +5,7 @@ import java.util.List;
 
 import io.livestream.api.enums.StreamStatus;
 
-public class ProviderStream implements Serializable {
+public class ProviderStream extends Entity implements Serializable {
 
   private static final long serialVersionUID = -429385756607589770L;
 

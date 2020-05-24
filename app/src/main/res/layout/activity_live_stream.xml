@@ -6,7 +6,7 @@
   android:fitsSystemWindows="true">
 
   <com.pedro.rtplibrary.view.OpenGlView
-    android:id="@+id/live_stream_camera_view"
+    android:id="@+id/live_stream_camera"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:aspectRatioMode="adjust_rotate"

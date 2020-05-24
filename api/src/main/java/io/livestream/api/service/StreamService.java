@@ -29,6 +29,10 @@ public class StreamService {
     return PromiseUtils.build(api.createLiveStream(new CreateLiveStreamPayload(title, description, channelsIdentifiers)));
   }
 
+  public Promise<LiveStream> removeLiveStream(LiveStream liveStream) {
+    return PromiseUtils.build(api.removeLiveStream(liveStream.getId()));
+  }
+
   public Promise<LiveStream> startLiveStream(LiveStream liveStream) {
     return PromiseUtils.build(api.startLiveStream(liveStream.getId()));
   }

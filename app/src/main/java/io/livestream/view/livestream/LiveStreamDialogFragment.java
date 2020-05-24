@@ -35,11 +35,11 @@ import io.livestream.util.component.SpaceItemDecoration;
 
 public class LiveStreamDialogFragment extends BottomSheetDialogFragment implements ProviderStreamsAdapter.Listener {
 
-  @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnail;
-  @BindView(R.id.live_stream_title) TextView liveStreamTitle;
-  @BindView(R.id.live_stream_description) TextView liveStreamDescription;
-  @BindView(R.id.live_stream_status) TextView liveStreamStatus;
-  @BindView(R.id.live_stream_date) TextView liveStreamDate;
+  @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnailView;
+  @BindView(R.id.live_stream_title) TextView liveStreamTitleView;
+  @BindView(R.id.live_stream_description) TextView liveStreamDescriptionView;
+  @BindView(R.id.live_stream_status) TextView liveStreamStatusView;
+  @BindView(R.id.live_stream_date) TextView liveStreamDateView;
   @BindView(R.id.provider_streams_view) RecyclerView providerStreamsView;
 
   private Context context;
@@ -124,21 +124,21 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment implemen
   }
 
   private void updateContent() {
-    ImageUtils.loadImage(context, liveStreamViewModel.getAuthenticatedUser(), liveStreamThumbnail);
-    liveStreamTitle.setText(liveStream.getTitle());
-    liveStreamDescription.setText(liveStream.getDescription());
-    liveStreamStatus.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
-    UIUtils.setColorFilter(liveStreamStatus.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
+    ImageUtils.loadImage(context, liveStreamViewModel.getAuthenticatedUser(), liveStreamThumbnailView);
+    liveStreamTitleView.setText(liveStream.getTitle());
+    liveStreamDescriptionView.setText(liveStream.getDescription());
+    liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
+    UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
 
     if (liveStream.getStartDate() != null) {
-      liveStreamDate.setVisibility(View.VISIBLE);
+      liveStreamDateView.setVisibility(View.VISIBLE);
       if (liveStream.getEndDate() != null) {
-        liveStreamDate.setText(DateUtils.formatDateRange(context, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+        liveStreamDateView.setText(DateUtils.formatDateRange(context, liveStream.getStartDate().getTime(), liveStream.getEndDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
       } else {
-        liveStreamDate.setText(DateUtils.formatDateTime(context, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
+        liveStreamDateView.setText(DateUtils.formatDateTime(context, liveStream.getStartDate().getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_NO_YEAR));
       }
     } else {
-      liveStreamDate.setVisibility(View.GONE);
+      liveStreamDateView.setVisibility(View.GONE);
     }
   }
 }

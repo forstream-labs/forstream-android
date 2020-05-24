@@ -14,10 +14,6 @@ public class User extends Entity implements Serializable {
   private String googleId;
   private Date registrationDate;
 
-  public static long getSerialVersionUID() {
-    return serialVersionUID;
-  }
-
   public String getFirstName() {
     return firstName;
   }

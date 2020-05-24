@@ -32,4 +32,8 @@ public class ChannelService {
   public Promise<ConnectedChannel> connectFacebookChannel(String accessToken) {
     return PromiseUtils.build(api.connectFacebookChannel(new AccessTokenPayload(accessToken)));
   }
+
+  public Promise<Void> disconnectChannel(Channel channel) {
+    return PromiseUtils.build(api.disconnectChannel(channel.getIdentifier()));
+  }
 }

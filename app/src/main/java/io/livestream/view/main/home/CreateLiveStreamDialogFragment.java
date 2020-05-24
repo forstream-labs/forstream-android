@@ -41,12 +41,12 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
 
   private Context context;
   private Listener listener;
-  private ConnectedChannelsAdapter connectedChannelsAdapter;
+  private ConnectedChannelsSelectionAdapter connectedChannelsSelectionAdapter;
 
   @Inject
-  public CreateLiveStreamDialogFragment(Context context, ConnectedChannelsAdapter connectedChannelsAdapter) {
+  public CreateLiveStreamDialogFragment(Context context, ConnectedChannelsSelectionAdapter connectedChannelsSelectionAdapter) {
     this.context = context;
-    this.connectedChannelsAdapter = connectedChannelsAdapter;
+    this.connectedChannelsSelectionAdapter = connectedChannelsSelectionAdapter;
   }
 
   @Nullable
@@ -65,7 +65,7 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
   }
 
   public void setConnectedChannels(List<ConnectedChannel> connectedChannels) {
-    connectedChannelsAdapter.setConnectedChannels(connectedChannels);
+    connectedChannelsSelectionAdapter.setConnectedChannels(connectedChannels);
   }
 
   @OnTextChanged(R.id.live_stream_title_input)
@@ -78,7 +78,7 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
   void onCreateLiveStreamButtonClick() {
     if (listener != null) {
       List<ChannelIdentifier> channelsIdentifiers = new ArrayList<>();
-      for (ConnectedChannel connectedChannel : connectedChannelsAdapter.getEnabledConnectedChannels()) {
+      for (ConnectedChannel connectedChannel : connectedChannelsSelectionAdapter.getEnabledChannels()) {
         channelsIdentifiers.add(connectedChannel.getChannel().getIdentifier());
       }
       listener.onCreateLiveStreamButtonClick(liveStreamTitleInput.getText().toString(), liveStreamDescriptionInput.getText().toString(), channelsIdentifiers);
@@ -91,14 +91,11 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
   }
 
   private void setupConnectedChannelsView() {
-    connectedChannelsAdapter.setViewType(ConnectedChannelsAdapter.VIEW_STYLE_NONE);
-    connectedChannelsAdapter.setShowEnabledSwitch(true);
-
     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
     SpaceItemDecoration itemDecoration = new SpaceItemDecoration(context.getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());
     connectedChannelsView.setLayoutManager(layoutManager);
     connectedChannelsView.addItemDecoration(itemDecoration);
-    connectedChannelsView.setAdapter(connectedChannelsAdapter);
+    connectedChannelsView.setAdapter(connectedChannelsSelectionAdapter);
     RecyclerView.ItemAnimator itemAnimator = connectedChannelsView.getItemAnimator();
     if (itemAnimator instanceof SimpleItemAnimator) {
       ((SimpleItemAnimator) itemAnimator).setSupportsChangeAnimations(false);

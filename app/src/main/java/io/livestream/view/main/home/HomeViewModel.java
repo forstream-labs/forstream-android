@@ -8,6 +8,7 @@ import java.util.List;
 import io.livestream.api.enums.ChannelIdentifier;
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.model.LiveStream;
+import io.livestream.api.service.ChannelService;
 import io.livestream.api.service.StreamService;
 import io.livestream.api.service.UserService;
 import io.livestream.common.livedata.list.ListHolder;
@@ -21,14 +22,16 @@ public class HomeViewModel extends BaseViewModel {
   private static final String LIVE_STREAM_POPULATE = "providers->connected_channel.channel";
 
   private UserService userService;
+  private ChannelService channelService;
   private StreamService streamService;
 
   private ListLiveData<ConnectedChannel> connectedChannels = new ListLiveData<>();
   private ListLiveData<LiveStream> liveStreams = new ListLiveData<>();
   private MutableLiveData<LiveStream> createLiveStream = new MutableLiveData<>();
 
-  public HomeViewModel(UserService userService, StreamService streamService) {
+  public HomeViewModel(UserService userService, ChannelService channelService, StreamService streamService) {
     this.userService = userService;
+    this.channelService = channelService;
     this.streamService = streamService;
   }
 
@@ -73,6 +76,28 @@ public class HomeViewModel extends BaseViewModel {
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error creating live stream");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void removeLiveStream(LiveStream liveStream) {
+    streamService.removeLiveStream(liveStream).then(aVoid -> {
+      liveStreams.remove(liveStream);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error removing live stream %s", liveStream.getId());
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void disconnectChannel(ConnectedChannel connectedChannel) {
+    channelService.disconnectChannel(connectedChannel.getChannel()).then(liveStream -> {
+      connectedChannels.remove(connectedChannel);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error disconnecting channel %s", connectedChannel.getChannel().getIdentifier());
       error.postValue(reason);
       return null;
     }));

@@ -53,6 +53,18 @@
         android:textColor="@color/text_secondary"
         android:textSize="@dimen/text_xsm"/>
 
+      <com.mikepenz.iconics.view.IconicsImageView
+        android:id="@+id/live_stream_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_margin="@dimen/margin_md"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@null"
+        app:iiv_color="@android:color/white"
+        app:iiv_icon="faw-ellipsis-v"
+        app:iiv_size="@dimen/icon_md"/>
+
     </FrameLayout>
 
     <LinearLayout

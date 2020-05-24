@@ -31,7 +31,7 @@ public class MainViewModel extends BaseViewModel {
   }
 
   public void signOut() {
-    userService.signOut().then(result -> {
+    userService.signOut().then(aVoid -> {
       User user = authenticatedUser.get();
       authenticatedUser.remove();
       signOut.postValue(user);

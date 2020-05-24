@@ -27,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.livestream.R;
 import io.livestream.api.enums.ChannelIdentifier;
+import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.model.LiveStream;
 import io.livestream.common.BaseFragment;
 import io.livestream.common.Constants;
@@ -36,10 +37,12 @@ import io.livestream.util.UIUtils;
 import io.livestream.util.component.SpaceItemDecoration;
 import io.livestream.view.livestream.LiveStreamActivity;
 
-public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener {
+public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener, ConnectedChannelsAdapter.Listener {
 
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
+  @BindView(R.id.connected_channels_layout) View connectedChannelsLayout;
   @BindView(R.id.connected_channels_view) RecyclerView connectedChannelsView;
+  @BindView(R.id.live_streams_layout) View liveStreamsLayout;
   @BindView(R.id.live_streams_view) RecyclerView liveStreamsView;
   @BindView(R.id.create_live_stream_button) FloatingActionButton createLiveStreamButton;
 
@@ -65,10 +68,20 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
   }
 
   @Override
+  public void onRemoveConnectedChannelClick(ConnectedChannel connectedChannel) {
+    homeViewModel.disconnectChannel(connectedChannel);
+  }
+
+  @Override
   public void onLiveStreamClick(LiveStream liveStream) {
     Intent intent = new Intent(context, LiveStreamActivity.class);
     intent.putExtra(Constants.LIVE_STREAM, liveStream);
     startActivity(intent);
+  }
+
+  @Override
+  public void onRemoveLiveStreamClick(LiveStream liveStream) {
+    homeViewModel.removeLiveStream(liveStream);
   }
 
   @Override
@@ -88,6 +101,7 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
   private void setupObservers() {
     homeViewModel.getConnectedChannels().observe(getViewLifecycleOwner(), connectedChannelsHolder -> {
+      connectedChannelsLayout.setVisibility(View.VISIBLE);
       swipeRefreshLayout.setRefreshing(false);
       createLiveStreamDialogFragment.setConnectedChannels(connectedChannelsHolder.getItems());
       if (!ListUpdateType.NONE.equals(connectedChannelsHolder.getUpdateType())) {
@@ -96,6 +110,7 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
       }
     });
     homeViewModel.getLiveStreams().observe(getViewLifecycleOwner(), liveStreamsHolder -> {
+      liveStreamsLayout.setVisibility(View.VISIBLE);
       swipeRefreshLayout.setRefreshing(false);
       if (!ListUpdateType.NONE.equals(liveStreamsHolder.getUpdateType())) {
         liveStreamsAdapter.setLiveStreams(liveStreamsHolder.getItems());
@@ -108,7 +123,10 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
       intent.putExtra(Constants.LIVE_STREAM, liveStream);
       startActivity(intent);
     });
-    homeViewModel.getError().observe(getViewLifecycleOwner(), throwable -> AlertUtils.alert(context, throwable));
+    homeViewModel.getError().observe(getViewLifecycleOwner(), throwable -> {
+      swipeRefreshLayout.setRefreshing(false);
+      AlertUtils.alert(context, throwable);
+    });
   }
 
   private void setupSwipeRefreshLayout() {
@@ -122,8 +140,7 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
   }
 
   private void setupConnectedChannelsView() {
-    connectedChannelsAdapter.setShowEnabledSwitch(false);
-    connectedChannelsAdapter.setShowMenuIcon(true);
+    connectedChannelsAdapter.setListener(this);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
     SpaceItemDecoration itemDecoration = new SpaceItemDecoration(context.getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());

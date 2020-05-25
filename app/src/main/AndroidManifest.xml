@@ -47,6 +47,9 @@
       android:name=".view.intro.IntroActivity"
       android:configChanges="orientation|screenSize"/>
     <activity
+      android:name=".view.profile.ProfileActivity"
+      android:configChanges="orientation|screenSize"/>
+    <activity
       android:name=".view.main.MainActivity"
       android:configChanges="orientation|screenSize"/>
     <activity
@@ -70,6 +73,23 @@
         <data android:scheme="@string/facebook_login_protocol_scheme"/>
       </intent-filter>
     </activity>
+
+    <!-- Ucrop activity -->
+    <activity
+      android:name="com.yalantis.ucrop.UCropActivity"
+      android:theme="@style/AppTheme"/>
+
+    <!-- Providers -->
+    <provider
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.fileprovider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths"/>
+    </provider>
+
   </application>
 
 </manifest>

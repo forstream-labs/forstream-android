@@ -30,6 +30,7 @@ import io.livestream.common.Constants;
 import io.livestream.util.AlertUtils;
 import io.livestream.util.AppUtils;
 import io.livestream.util.ImageUtils;
+import io.livestream.util.StringUtils;
 import io.livestream.util.UIUtils;
 import io.livestream.util.component.SpaceItemDecoration;
 
@@ -127,6 +128,7 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment implemen
     ImageUtils.loadImage(context, liveStreamViewModel.getAuthenticatedUser(), liveStreamThumbnailView);
     liveStreamTitleView.setText(liveStream.getTitle());
     liveStreamDescriptionView.setText(liveStream.getDescription());
+    liveStreamDescriptionView.setVisibility(!StringUtils.isEmpty(liveStream.getDescription()) ? View.VISIBLE : View.GONE);
     liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
     UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
 

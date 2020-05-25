@@ -14,9 +14,10 @@ import io.livestream.api.service.UserService;
 import io.livestream.common.livedata.list.ListHolder;
 import io.livestream.common.livedata.list.ListLiveData;
 import io.livestream.common.viewmodel.BaseViewModel;
+import io.livestream.service.NotificationService;
 import timber.log.Timber;
 
-public class HomeViewModel extends BaseViewModel {
+public class HomeViewModel extends BaseViewModel implements NotificationService.ChannelSubscriber {
 
   private static final String CONNECTED_CHANNELS_POPULATE = "channel";
   private static final String LIVE_STREAM_POPULATE = "providers->connected_channel.channel";
@@ -24,15 +25,19 @@ public class HomeViewModel extends BaseViewModel {
   private UserService userService;
   private ChannelService channelService;
   private StreamService streamService;
+  private NotificationService notificationService;
 
   private ListLiveData<ConnectedChannel> connectedChannels = new ListLiveData<>();
   private ListLiveData<LiveStream> liveStreams = new ListLiveData<>();
   private MutableLiveData<LiveStream> createLiveStream = new MutableLiveData<>();
 
-  public HomeViewModel(UserService userService, ChannelService channelService, StreamService streamService) {
+  public HomeViewModel(UserService userService, ChannelService channelService, StreamService streamService, NotificationService notificationService) {
     this.userService = userService;
     this.channelService = channelService;
     this.streamService = streamService;
+    this.notificationService = notificationService;
+
+    notificationService.subscribeChannel(this);
   }
 
   public LiveData<ListHolder<ConnectedChannel>> getConnectedChannels() {
@@ -45,6 +50,22 @@ public class HomeViewModel extends BaseViewModel {
 
   public LiveData<LiveStream> getCreateLiveStream() {
     return createLiveStream;
+  }
+
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    notificationService.unsubscribeChannel(this);
+  }
+
+  @Override
+  public void onChannelConnected(ConnectedChannel connectedChannel) {
+    connectedChannels.add(connectedChannel);
+  }
+
+  @Override
+  public void onChannelDisconnected(ConnectedChannel connectedChannel) {
+
   }
 
   public void loadConnectedChannels() {
@@ -69,6 +90,18 @@ public class HomeViewModel extends BaseViewModel {
     });
   }
 
+  public void disconnectChannel(ConnectedChannel connectedChannel) {
+    channelService.disconnectChannel(connectedChannel.getChannel()).then(liveStream -> {
+      notificationService.notifyChannelDisconnected(connectedChannel);
+      connectedChannels.remove(connectedChannel);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error disconnecting channel %s", connectedChannel.getChannel().getIdentifier());
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
   public void createLiveStream(String title, String description, List<ChannelIdentifier> channelsIdentifiers) {
     streamService.createLiveStream(title, description, channelsIdentifiers).then(liveStream -> {
       liveStreams.add(0, liveStream);
@@ -87,17 +120,6 @@ public class HomeViewModel extends BaseViewModel {
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error removing live stream %s", liveStream.getId());
-      error.postValue(reason);
-      return null;
-    }));
-  }
-
-  public void disconnectChannel(ConnectedChannel connectedChannel) {
-    channelService.disconnectChannel(connectedChannel.getChannel()).then(liveStream -> {
-      connectedChannels.remove(connectedChannel);
-      return null;
-    })._catch((reason -> {
-      Timber.e(reason, "Error disconnecting channel %s", connectedChannel.getChannel().getIdentifier());
       error.postValue(reason);
       return null;
     }));

@@ -10,12 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -23,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import io.livestream.R;
+import io.livestream.api.enums.ChannelIdentifier;
 import io.livestream.api.model.ConnectedChannel;
 import io.livestream.common.adapter.base.BaseViewHolder;
 import io.livestream.util.ImageUtils;
@@ -31,8 +34,7 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
 
   private Context context;
   private List<ConnectedChannel> connectedChannels;
-
-  private Map<ConnectedChannel, Boolean> enableStates = new HashMap<>();
+  private Set<ChannelIdentifier> enabledChannels = new HashSet<>();
 
   @Inject
   public ConnectedChannelsSelectionAdapter(Context context) {
@@ -41,20 +43,11 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
 
   public void setConnectedChannels(List<ConnectedChannel> connectedChannels) {
     this.connectedChannels = connectedChannels;
-    enableStates.clear();
-    for (ConnectedChannel connectedChannel : connectedChannels) {
-      enableStates.put(connectedChannel, true);
-    }
+    enabledChannels = Stream.of(connectedChannels).map(connectedChannel -> connectedChannel.getChannel().getIdentifier()).collect(Collectors.toSet());
   }
 
-  public List<ConnectedChannel> getEnabledChannels() {
-    List<ConnectedChannel> enabledConnectedChannels = new ArrayList<>();
-    for (Map.Entry<ConnectedChannel, Boolean> entry : enableStates.entrySet()) {
-      if (entry.getValue()) {
-        enabledConnectedChannels.add(entry.getKey());
-      }
-    }
-    return enabledConnectedChannels;
+  public List<ChannelIdentifier> getEnabledChannels() {
+    return new ArrayList<>(enabledChannels);
   }
 
   @NonNull
@@ -96,7 +89,11 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
     @OnCheckedChanged(R.id.channel_enabled)
     void onChannelEnabledChanged() {
       ConnectedChannel connectedChannel = connectedChannels.get(getAdapterPosition());
-      enableStates.put(connectedChannel, channelEnabledView.isChecked());
+      if (channelEnabledView.isChecked()) {
+        enabledChannels.add(connectedChannel.getChannel().getIdentifier());
+      } else {
+        enabledChannels.remove(connectedChannel.getChannel().getIdentifier());
+      }
     }
   }
 }

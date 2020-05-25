@@ -81,6 +81,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     super.onResume();
     Window window = getWindow();
     window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
   }
 
   @Override

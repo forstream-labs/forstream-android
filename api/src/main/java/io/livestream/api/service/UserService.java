@@ -1,9 +1,11 @@
 package io.livestream.api.service;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.onehilltech.promises.Promise;
 
+import java.io.File;
 import java.util.List;
 
 import io.livestream.api.model.ConnectedChannel;
@@ -13,6 +15,9 @@ import io.livestream.api.model.payload.AccessTokenPayload;
 import io.livestream.api.model.payload.AuthCodePayload;
 import io.livestream.api.service.api.UserApi;
 import io.livestream.api.util.PromiseUtils;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import static com.onehilltech.promises.Promise.value;
 
@@ -28,6 +33,21 @@ public class UserService {
 
   public Promise<User> getMyUser() {
     return PromiseUtils.build(api.getMyUser());
+  }
+
+  public Promise<User> updateMyUser(User user) {
+    return PromiseUtils.build(api.updateMyUser(user));
+  }
+
+  public Promise<User> updateMyUserImage(Uri imageUri) {
+    File imageFile = new File(imageUri.getPath());
+    RequestBody imageBody = RequestBody.create(MediaType.parse("image/*"), imageFile);
+    MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), imageBody);
+    return PromiseUtils.build(api.updateMyUserImage(imagePart));
+  }
+
+  public Promise<List<ConnectedChannel>> listMyConnectedChannels() {
+    return PromiseUtils.build(api.listMyConnectedChannels(null));
   }
 
   public Promise<List<ConnectedChannel>> listMyConnectedChannels(String populate) {

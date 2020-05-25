@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -21,12 +22,13 @@ import io.livestream.R;
 import io.livestream.api.model.Channel;
 import io.livestream.common.adapter.base.BaseViewHolder;
 import io.livestream.util.ImageUtils;
+import io.livestream.util.UIUtils;
 
 public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHolder> {
 
   private Context context;
   private Listener listener;
-  private List<Channel> channels;
+  private List<ChannelsViewModel.ViewItem> viewItems;
 
   @Inject
   public ChannelsAdapter(Context context) {
@@ -37,8 +39,8 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
     this.listener = listener;
   }
 
-  public void setChannels(List<Channel> channels) {
-    this.channels = channels;
+  public void setViewItems(List<ChannelsViewModel.ViewItem> viewItems) {
+    this.viewItems = viewItems;
   }
 
   @NonNull
@@ -50,13 +52,13 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    Channel channel = channels.get(position);
-    holder.bindView(channel);
+    ChannelsViewModel.ViewItem viewItem = viewItems.get(position);
+    holder.bindView(viewItem);
   }
 
   @Override
   public int getItemCount() {
-    return channels != null ? channels.size() : 0;
+    return viewItems != null ? viewItems.size() : 0;
   }
 
   public interface Listener {
@@ -65,10 +67,11 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
 
   }
 
-  class ViewHolder extends BaseViewHolder<Channel> {
+  class ViewHolder extends BaseViewHolder<ChannelsViewModel.ViewItem> {
 
     @BindView(R.id.channel_image) ImageView channelImageView;
     @BindView(R.id.channel_name) TextView channelNameView;
+    @BindView(R.id.channel_connected) TextView channelConnectedView;
 
     ViewHolder(View view) {
       super(view);
@@ -76,15 +79,22 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
     }
 
     @Override
-    public void bindView(Channel channel) {
+    public void bindView(ChannelsViewModel.ViewItem viewItem) {
+      Channel channel = viewItem.getChannel();
       channelNameView.setText(channel.getName());
       ImageUtils.loadImage(context, channel, channelImageView);
+      if (viewItem.isConnected()) {
+        UIUtils.setColorFilter(channelConnectedView.getBackground(), ContextCompat.getColor(context, R.color.channel_connected));
+        channelConnectedView.setVisibility(View.VISIBLE);
+      } else {
+        channelConnectedView.setVisibility(View.GONE);
+      }
     }
 
     @OnClick(R.id.channel_view)
     void onChannelViewClick() {
       if (listener != null) {
-        listener.onChannelClick(channels.get(getAdapterPosition()));
+        listener.onChannelClick(viewItems.get(getAdapterPosition()).getChannel());
       }
     }
   }

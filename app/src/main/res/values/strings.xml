@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+  <string name="app_file_provider" translatable="false">io.livestream.fileprovider</string>
+
   <!-- Google -->
   <string name="google_oauth2_client_id">385457463040-ov7cq2lk7d7h1h92htoo6utsqd1vd5q8.apps.googleusercontent.com</string>
 
@@ -25,11 +27,24 @@
   <string name="activity_intro_sign_in_with_google">Sign in with Google</string>
   <string name="activity_intro_sign_in_with_facebook">Sign in with Facebook</string>
 
+  <!-- Profile activity -->
+  <string name="activity_profile_first_name">First name</string>
+  <string name="activity_profile_edit">Edit</string>
+  <string name="activity_profile_last_name">Last name</string>
+  <string name="activity_profile_edit_photo">Edit photo</string>
+  <string name="activity_profile_select_image">Select image</string>
+  <string name="activity_profile_image_not_found">Image not found</string>
+
   <!-- Main activity -->
   <string name="activity_main_share_title">Share LiveStream</string>
   <string name="activity_main_share_message">This app is awesome: %1$s</string>
   <string name="activity_main_your_channels">Your channels</string>
   <string name="activity_main_your_lives">Your lives</string>
+  <string name="activity_main_connected">Connected</string>
+  <string name="activity_main_channels_get_started">Get started by connecting your favorite channels. Go live simultaneously in every channel you add.</string>
+  <string name="activity_main_connect_channels">Connect channels</string>
+  <string name="activity_main_go_live">Go live!</string>
+  <string name="activity_main_live_streams_get_started">You\'re ready to go live simultaneously in your favorite channels. This is awesome!</string>
   <string name="activity_main_title">Title</string>
   <string name="activity_main_description">Description</string>
   <string name="activity_main_create_live_stream">Create live stream</string>

@@ -16,7 +16,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
   public MainPagerAdapter(MainActivity activity) {
     super(activity.getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-    fragments.add(new HomeFragment());
+    fragments.add(new HomeFragment(activity.viewPager));
     fragments.add(new ChannelsFragment());
   }
 

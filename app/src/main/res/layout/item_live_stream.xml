@@ -58,9 +58,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
-        android:layout_margin="@dimen/margin_md"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@null"
+        android:padding="@dimen/margin_md"
         app:iiv_color="@android:color/white"
         app:iiv_icon="faw-ellipsis-v"
         app:iiv_size="@dimen/icon_md"/>

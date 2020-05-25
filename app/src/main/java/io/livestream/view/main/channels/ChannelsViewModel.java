@@ -2,30 +2,80 @@ package io.livestream.view.main.channels;
 
 import androidx.lifecycle.LiveData;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
+import com.onehilltech.promises.Promise;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import io.livestream.api.model.Channel;
+import io.livestream.api.model.ConnectedChannel;
 import io.livestream.api.service.ChannelService;
+import io.livestream.api.service.UserService;
 import io.livestream.common.livedata.list.ListHolder;
 import io.livestream.common.livedata.list.ListLiveData;
 import io.livestream.common.viewmodel.BaseViewModel;
+import io.livestream.service.NotificationService;
 import timber.log.Timber;
 
-public class ChannelsViewModel extends BaseViewModel {
+public class ChannelsViewModel extends BaseViewModel implements NotificationService.ChannelSubscriber {
 
+  private UserService userService;
   private ChannelService channelService;
+  private NotificationService notificationService;
 
-  private ListLiveData<Channel> channels = new ListLiveData<>();
+  private ListLiveData<ViewItem> viewItems = new ListLiveData<>();
 
-  public ChannelsViewModel(ChannelService channelService) {
+  public ChannelsViewModel(UserService userService, ChannelService channelService, NotificationService notificationService) {
+    this.userService = userService;
     this.channelService = channelService;
+    this.notificationService = notificationService;
+
+    notificationService.subscribeChannel(this);
   }
 
-  public LiveData<ListHolder<Channel>> getChannels() {
-    return channels;
+  public LiveData<ListHolder<ViewItem>> getViewItems() {
+    return viewItems;
   }
 
-  public void loadChannels() {
-    channelService.listChannels().then(channels -> {
-      this.channels.postValue(channels);
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    notificationService.unsubscribeChannel(this);
+  }
+
+  @Override
+  public void onChannelConnected(ConnectedChannel connectedChannel) {
+
+  }
+
+  @Override
+  public void onChannelDisconnected(ConnectedChannel connectedChannel) {
+    ViewItem viewItem = new ViewItem(connectedChannel.getChannel());
+    viewItem.setConnected(false);
+    int index = viewItems.indexOf(viewItem);
+    if (index >= 0) {
+      viewItems.set(index, viewItem);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public void loadViewItems() {
+    channelService.listChannels().then(channels -> Promise.all(Promise.value(channels), userService.listMyConnectedChannels())).then(value -> {
+      List<Channel> channels = (List<Channel>) value.get(0);
+      List<ConnectedChannel> connectedChannels = (List<ConnectedChannel>) value.get(1);
+      List<ViewItem> viewItems = new ArrayList<>();
+      for (Channel channel : channels) {
+        ViewItem viewItem = new ViewItem(channel);
+        Optional<ConnectedChannel> connectedChannelOptional = Stream.of(connectedChannels)
+          .filter(currentConnectedChannel -> currentConnectedChannel.getChannel().equals(channel))
+          .findFirst();
+        viewItem.setConnected(connectedChannelOptional.isPresent());
+        viewItems.add(viewItem);
+      }
+      this.viewItems.postValue(viewItems);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error loading channels");
@@ -34,12 +84,11 @@ public class ChannelsViewModel extends BaseViewModel {
     }));
   }
 
-  public void loadConnectedChannels() {
-
-  }
-
   public void connectYouTubeChannel(String authCode) {
-    channelService.connectYouTubeChannel(authCode).then(connectedChannel -> null)._catch((reason -> {
+    channelService.connectYouTubeChannel(authCode).then(connectedChannel -> {
+      updateChannel(connectedChannel);
+      return null;
+    })._catch((reason -> {
       Timber.e(reason, "Error connecting YouTube channel");
       error.postValue(reason);
       return null;
@@ -47,10 +96,66 @@ public class ChannelsViewModel extends BaseViewModel {
   }
 
   public void connectFacebookChannel(String accessToken) {
-    channelService.connectFacebookChannel(accessToken).then(connectedChannel -> null)._catch((reason -> {
+    channelService.connectFacebookChannel(accessToken).then(connectedChannel -> {
+      updateChannel(connectedChannel);
+      return null;
+    })._catch((reason -> {
       Timber.e(reason, "Error connecting Facebook channel");
       error.postValue(reason);
       return null;
     }));
+  }
+
+  private void updateChannel(ConnectedChannel connectedChannel) {
+    ViewItem viewItem = new ViewItem(connectedChannel.getChannel());
+    viewItem.setConnected(true);
+    int index = viewItems.indexOf(viewItem);
+    if (index >= 0) {
+      viewItems.set(index, viewItem);
+    }
+    notificationService.notifyChannelConnected(connectedChannel);
+  }
+
+  public static class ViewItem {
+
+    private Channel channel;
+    private boolean connected;
+
+    public ViewItem(Channel channel) {
+      this.channel = channel;
+    }
+
+    public Channel getChannel() {
+      return channel;
+    }
+
+    public void setChannel(Channel channel) {
+      this.channel = channel;
+    }
+
+    public boolean isConnected() {
+      return connected;
+    }
+
+    public void setConnected(boolean connected) {
+      this.connected = connected;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      ViewItem viewItem = (ViewItem) o;
+      return channel.equals(viewItem.channel);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(channel);
+    }
   }
 }

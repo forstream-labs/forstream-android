@@ -37,6 +37,7 @@
       android:layout_height="wrap_content"
       android:background="?attr/selectableItemBackgroundBorderless"
       android:contentDescription="@null"
+      android:padding="@dimen/margin_xsm"
       app:iiv_color="@color/text_secondary_dark"
       app:iiv_icon="faw-ellipsis-v"
       app:iiv_size="@dimen/icon_md"/>

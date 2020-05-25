@@ -27,6 +27,7 @@ import io.livestream.common.adapter.base.BaseViewHolder;
 import io.livestream.service.AuthenticatedUser;
 import io.livestream.util.AppUtils;
 import io.livestream.util.ImageUtils;
+import io.livestream.util.StringUtils;
 import io.livestream.util.UIUtils;
 
 public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.ViewHolder> {
@@ -95,6 +96,7 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
       ImageUtils.loadImage(context, authenticatedUser.get(), liveStreamThumbnail);
       liveStreamTitleView.setText(liveStream.getTitle());
       liveStreamDescriptionView.setText(liveStream.getDescription());
+      liveStreamDescriptionView.setVisibility(!StringUtils.isEmpty(liveStream.getDescription()) ? View.VISIBLE : View.GONE);
       liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
       UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
 

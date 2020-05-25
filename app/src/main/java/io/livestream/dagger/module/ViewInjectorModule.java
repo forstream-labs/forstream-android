@@ -5,11 +5,13 @@ import dagger.android.ContributesAndroidInjector;
 import io.livestream.dagger.module.view.intro.IntroActivityModule;
 import io.livestream.dagger.module.view.livestream.LiveStreamActivityModule;
 import io.livestream.dagger.module.view.main.MainActivityModule;
+import io.livestream.dagger.module.view.profile.ProfileActivityModule;
 import io.livestream.dagger.module.view.splash.SplashActivityModule;
 import io.livestream.dagger.scope.ActivityScope;
 import io.livestream.view.intro.IntroActivity;
 import io.livestream.view.livestream.LiveStreamActivity;
 import io.livestream.view.main.MainActivity;
+import io.livestream.view.profile.ProfileActivity;
 import io.livestream.view.splash.SplashActivity;
 
 @Module
@@ -22,6 +24,10 @@ public abstract class ViewInjectorModule {
   @ActivityScope
   @ContributesAndroidInjector(modules = IntroActivityModule.class)
   abstract IntroActivity injectIntroActivity();
+
+  @ActivityScope
+  @ContributesAndroidInjector(modules = ProfileActivityModule.class)
+  abstract ProfileActivity injectProfileActivity();
 
   @ActivityScope
   @ContributesAndroidInjector(modules = MainActivityModule.class)

@@ -63,7 +63,6 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center|bottom"
       android:layout_margin="@dimen/margin_md"
-      android:visibility="gone"
       app:backgroundTint="@color/button_start_stream"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -73,7 +72,6 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center|bottom"
       android:layout_margin="@dimen/margin_md"
-      android:visibility="gone"
       app:backgroundTint="@color/button_end_stream"/>
 
   </FrameLayout>

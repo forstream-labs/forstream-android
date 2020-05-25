@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -37,15 +38,17 @@ import io.livestream.api.model.Channel;
 import io.livestream.common.BaseFragment;
 import io.livestream.common.livedata.list.ListUpdateType;
 import io.livestream.util.AlertUtils;
+import io.livestream.util.UIUtils;
 import io.livestream.util.component.SpaceItemDecoration;
 
-public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Listener {
+public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ChannelsAdapter.Listener {
 
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
 
   private static final String YOUTUBE_MANAGE_SCOPE = "https://www.googleapis.com/auth/youtube";
   private static final String FACEBOOK_PUBLISH_VIDEO_SCOPE = "publish_video";
 
+  @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
   @BindView(R.id.channels_view) RecyclerView channelsView;
 
   @Inject Context context;
@@ -61,6 +64,7 @@ public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Li
     View view = inflater.inflate(R.layout.fragment_channels, container, false);
     ButterKnife.bind(this, view);
 
+    UIUtils.defaultSwipeRefreshLayout(swipeRefreshLayout, this);
     setupObservers();
     setupViews();
     setupYouTubeChannelSignIn();
@@ -82,9 +86,15 @@ public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Li
   }
 
   @Override
+  public void onRefresh() {
+    setupContent();
+  }
+
+  @Override
   public void onChannelClick(Channel channel) {
     switch (channel.getIdentifier()) {
       case YOUTUBE:
+        youtubeChannelSignInClient.revokeAccess();
         Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
         break;
@@ -97,13 +107,17 @@ public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Li
   }
 
   private void setupObservers() {
-    channelsViewModel.getChannels().observe(getViewLifecycleOwner(), channelsHolder -> {
+    channelsViewModel.getViewItems().observe(getViewLifecycleOwner(), channelsHolder -> {
       if (!ListUpdateType.NONE.equals(channelsHolder.getUpdateType())) {
-        channelsAdapter.setChannels(channelsHolder.getItems());
+        swipeRefreshLayout.setRefreshing(false);
+        channelsAdapter.setViewItems(channelsHolder.getItems());
         channelsHolder.applyChanges(channelsAdapter);
       }
     });
-    channelsViewModel.getError().observe(getViewLifecycleOwner(), throwable -> AlertUtils.alert(context, throwable));
+    channelsViewModel.getError().observe(getViewLifecycleOwner(), throwable -> {
+      swipeRefreshLayout.setRefreshing(false);
+      AlertUtils.alert(context, throwable);
+    });
   }
 
   private void setupViews() {
@@ -134,8 +148,7 @@ public class ChannelsFragment extends BaseFragment implements ChannelsAdapter.Li
   }
 
   private void setupContent() {
-    channelsViewModel.loadChannels();
-    channelsViewModel.loadConnectedChannels();
+    channelsViewModel.loadViewItems();
   }
 
   private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {

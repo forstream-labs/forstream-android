@@ -34,4 +34,7 @@
   <dimen name="icon_tab">32dp</dimen>
   <dimen name="icon_menu">24dp</dimen>
 
+  <dimen name="image_picker_peek_height">260dp</dimen>
+  <dimen name="image_picker_column_size">92dp</dimen>
+
 </resources>

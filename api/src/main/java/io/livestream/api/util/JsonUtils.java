@@ -10,7 +10,6 @@ public class JsonUtils {
 
   private static final Gson GSON = new GsonBuilder()
     .setDateFormat(DATE_FORMAT)
-    .serializeNulls()
     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
     .create();
 

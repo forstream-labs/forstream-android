@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
@@ -46,6 +47,42 @@
             android:clipToPadding="false"
             android:orientation="vertical"/>
 
+          <LinearLayout
+            android:id="@+id/no_channels_connected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/margin_md">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="@dimen/margin_lg"
+              android:contentDescription="@null"
+              app:iiv_color="@color/star"
+              app:iiv_icon="faw-star1"
+              app:iiv_size="@dimen/icon_xlg"/>
+
+            <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="@dimen/margin_lg"
+              android:gravity="center"
+              android:lineSpacingExtra="5dp"
+              android:text="@string/activity_main_channels_get_started"
+              android:textColor="@color/text_secondary"
+              android:textSize="@dimen/text_lg"/>
+
+            <com.google.android.material.button.MaterialButton
+              android:id="@+id/connect_channels_button"
+              style="@style/Button.Large"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/activity_main_connect_channels"/>
+
+          </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -73,6 +110,43 @@
             android:clipToPadding="false"
             android:orientation="vertical"/>
 
+          <LinearLayout
+            android:id="@+id/no_live_streams"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/margin_md">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="@dimen/margin_lg"
+              android:contentDescription="@null"
+              app:iiv_color="@color/stream_status_live"
+              app:iiv_icon="faw-video"
+              app:iiv_size="@dimen/icon_xlg"/>
+
+            <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="@dimen/margin_lg"
+              android:gravity="center"
+              android:lineSpacingExtra="5dp"
+              android:text="@string/activity_main_live_streams_get_started"
+              android:textColor="@color/text_secondary"
+              android:textSize="@dimen/text_lg"/>
+
+            <com.google.android.material.button.MaterialButton
+              android:id="@+id/go_live_button"
+              style="@style/Button.Large"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/activity_main_go_live"
+              app:backgroundTint="@color/primary"/>
+
+          </LinearLayout>
+
         </LinearLayout>
 
       </LinearLayout>
@@ -86,6 +160,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|end"
-    android:layout_margin="@dimen/margin_md"/>
+    android:layout_margin="@dimen/margin_md"
+    android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

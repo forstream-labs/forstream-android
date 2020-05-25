@@ -17,7 +17,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -77,10 +76,7 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
   @OnClick(R.id.create_live_stream_button)
   void onCreateLiveStreamButtonClick() {
     if (listener != null) {
-      List<ChannelIdentifier> channelsIdentifiers = new ArrayList<>();
-      for (ConnectedChannel connectedChannel : connectedChannelsSelectionAdapter.getEnabledChannels()) {
-        channelsIdentifiers.add(connectedChannel.getChannel().getIdentifier());
-      }
+      List<ChannelIdentifier> channelsIdentifiers = connectedChannelsSelectionAdapter.getEnabledChannels();
       listener.onCreateLiveStreamButtonClick(liveStreamTitleInput.getText().toString(), liveStreamDescriptionInput.getText().toString(), channelsIdentifiers);
     }
   }

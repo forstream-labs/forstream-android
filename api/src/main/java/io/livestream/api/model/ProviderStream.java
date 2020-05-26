@@ -9,12 +9,21 @@ public class ProviderStream extends Entity implements Serializable {
 
   private static final long serialVersionUID = -429385756607589770L;
 
+  private Channel channel;
   private ConnectedChannel connectedChannel;
   private Boolean enabled;
   private String broadcastId;
   private String streamUrl;
   private StreamStatus streamStatus;
   private List<ProviderMessage> messages;
+
+  public Channel getChannel() {
+    return channel;
+  }
+
+  public void setChannel(Channel channel) {
+    this.channel = channel;
+  }
 
   public ConnectedChannel getConnectedChannel() {
     return connectedChannel;

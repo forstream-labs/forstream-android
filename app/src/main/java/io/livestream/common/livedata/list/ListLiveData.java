@@ -32,6 +32,13 @@ public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
     setValue(new ListHolder<>(items, reversed));
   }
 
+  public void set(T item) {
+    if (getValue() != null) {
+      getValue().set(item);
+      updateValue();
+    }
+  }
+
   public void set(int index, T item) {
     if (getValue() != null) {
       getValue().set(index, item);

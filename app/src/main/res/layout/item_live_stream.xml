@@ -77,7 +77,6 @@
         android:id="@+id/live_stream_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_sm"
         android:textColor="@color/text_primary"
         android:textSize="@dimen/text_md"/>
 
@@ -85,6 +84,7 @@
         android:id="@+id/live_stream_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_sm"
         android:textColor="@color/text_secondary"
         android:textSize="@dimen/text_sm"/>
 

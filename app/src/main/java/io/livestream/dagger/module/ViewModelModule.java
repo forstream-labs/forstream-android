@@ -67,7 +67,7 @@ public class ViewModelModule {
   @Provides
   @IntoMap
   @ViewModelKey(LiveStreamViewModel.class)
-  ViewModel provideLiveStreamViewModel(AuthenticatedUser authenticatedUser, StreamService streamService) {
-    return new LiveStreamViewModel(authenticatedUser, streamService);
+  ViewModel provideLiveStreamViewModel(AuthenticatedUser authenticatedUser, StreamService streamService, NotificationService notificationService) {
+    return new LiveStreamViewModel(authenticatedUser, streamService, notificationService);
   }
 }

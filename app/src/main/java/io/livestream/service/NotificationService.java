@@ -6,12 +6,14 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import io.livestream.api.model.ConnectedChannel;
+import io.livestream.api.model.LiveStream;
 import io.livestream.dagger.scope.AppScope;
 
 @AppScope
 public class NotificationService {
 
   private Set<ChannelSubscriber> channelSubscribers = new HashSet<>();
+  private Set<LiveStreamSubscriber> liveStreamSubscribers = new HashSet<>();
 
   @Inject
   public NotificationService() {
@@ -26,6 +28,14 @@ public class NotificationService {
     channelSubscribers.remove(subscriber);
   }
 
+  public void subscribeLiveStream(LiveStreamSubscriber subscriber) {
+    liveStreamSubscribers.add(subscriber);
+  }
+
+  public void unsubscribeLiveStream(LiveStreamSubscriber subscriber) {
+    liveStreamSubscribers.remove(subscriber);
+  }
+
   public void notifyChannelConnected(ConnectedChannel connectedChannel) {
     for (ChannelSubscriber subscriber : channelSubscribers) {
       subscriber.onChannelConnected(connectedChannel);
@@ -38,11 +48,23 @@ public class NotificationService {
     }
   }
 
+  public void notifyLiveStreamUpdated(LiveStream liveStream) {
+    for (LiveStreamSubscriber subscriber : liveStreamSubscribers) {
+      subscriber.onLiveStreamUpdated(liveStream);
+    }
+  }
+
   public interface ChannelSubscriber {
 
     void onChannelConnected(ConnectedChannel connectedChannel);
 
     void onChannelDisconnected(ConnectedChannel connectedChannel);
+
+  }
+
+  public interface LiveStreamSubscriber {
+
+    void onLiveStreamUpdated(LiveStream liveStream);
 
   }
 }

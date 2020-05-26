@@ -31,6 +31,16 @@ public class ListHolder<T> {
     return indexChanged;
   }
 
+  void set(T item) {
+    int index = items.indexOf(item);
+    if (index >= 0) {
+      set(index, item);
+    } else {
+      indexChanged = index;
+      updateType = ListUpdateType.NONE;
+    }
+  }
+
   void set(int index, T item) {
     items.set(index, item);
     indexChanged = index;
@@ -67,7 +77,7 @@ public class ListHolder<T> {
 
   void remove(T item) {
     int index = items.indexOf(item);
-    if (index != -1) {
+    if (index >= 0) {
       remove(index);
     } else {
       indexChanged = index;

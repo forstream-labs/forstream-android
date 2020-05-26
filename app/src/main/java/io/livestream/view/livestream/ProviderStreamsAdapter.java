@@ -10,15 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
-
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import io.livestream.R;
 import io.livestream.api.model.ProviderStream;
 import io.livestream.common.adapter.base.BaseViewHolder;
@@ -76,7 +73,7 @@ public class ProviderStreamsAdapter extends RecyclerView.Adapter<ProviderStreams
 
     @BindView(R.id.channel_image) ImageView channelImageView;
     @BindView(R.id.channel_name) TextView channelNameView;
-    @BindView(R.id.channel_enabled) SwitchMaterial channelEnabledView;
+    //    @BindView(R.id.channel_enabled) SwitchMaterial channelEnabledView;
 
     ViewHolder(View view) {
       super(view);
@@ -85,20 +82,20 @@ public class ProviderStreamsAdapter extends RecyclerView.Adapter<ProviderStreams
 
     @Override
     public void bindView(ProviderStream providerStream) {
-      ImageUtils.loadImage(context, providerStream.getConnectedChannel().getChannel(), channelImageView);
-      channelNameView.setText(providerStream.getConnectedChannel().getChannel().getName());
-      channelEnabledView.setChecked(providerStream.getEnabled());
-      channelEnabledView.setEnabled(stateSwitchEnabled);
+      ImageUtils.loadImage(context, providerStream.getChannel(), channelImageView);
+      channelNameView.setText(providerStream.getChannel().getName());
+      //      channelEnabledView.setChecked(providerStream.getEnabled());
+      //      channelEnabledView.setEnabled(stateSwitchEnabled);
     }
 
-    @OnCheckedChanged(R.id.channel_enabled)
-    void onChannelEnabledChanged() {
-      ProviderStream providerStream = providerStreams.get(getAdapterPosition());
-      boolean stateChanged = providerStream.getEnabled() != channelEnabledView.isChecked();
-      providerStream.setEnabled(channelEnabledView.isChecked());
-      if (listener != null && stateChanged) {
-        listener.onProviderStreamEnabledChanged(providerStream);
-      }
-    }
+    //    @OnCheckedChanged(R.id.channel_enabled)
+    //    void onChannelEnabledChanged() {
+    //      ProviderStream providerStream = providerStreams.get(getAdapterPosition());
+    //      boolean stateChanged = providerStream.getEnabled() != channelEnabledView.isChecked();
+    //      providerStream.setEnabled(channelEnabledView.isChecked());
+    //      if (listener != null && stateChanged) {
+    //        listener.onProviderStreamEnabledChanged(providerStream);
+    //      }
+    //    }
   }
 }

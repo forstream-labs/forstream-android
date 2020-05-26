@@ -55,10 +55,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
   public void onChannelDisconnected(ConnectedChannel connectedChannel) {
     ViewItem viewItem = new ViewItem(connectedChannel.getChannel());
     viewItem.setConnected(false);
-    int index = viewItems.indexOf(viewItem);
-    if (index >= 0) {
-      viewItems.set(index, viewItem);
-    }
+    viewItems.set(viewItem);
   }
 
   @SuppressWarnings("unchecked")
@@ -109,10 +106,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
   private void updateChannel(ConnectedChannel connectedChannel) {
     ViewItem viewItem = new ViewItem(connectedChannel.getChannel());
     viewItem.setConnected(true);
-    int index = viewItems.indexOf(viewItem);
-    if (index >= 0) {
-      viewItems.set(index, viewItem);
-    }
+    viewItems.set(viewItem);
     notificationService.notifyChannelConnected(connectedChannel);
   }
 

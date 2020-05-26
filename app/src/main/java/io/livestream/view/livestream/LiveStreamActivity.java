@@ -16,6 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
 import com.pedro.encoder.input.video.CameraHelper;
+import com.pedro.rtplibrary.util.BitrateAdapter;
 import com.pedro.rtplibrary.util.SensorRotationManager;
 import com.pedro.rtplibrary.view.OpenGlView;
 
@@ -56,6 +57,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   private LiveStream liveStream;
   private RtmpCamera rtmpCamera;
   private SensorRotationManager sensorRotationManager;
+  private BitrateAdapter bitrateAdapter;
   private CameraHelper.Facing cameraFacing = CameraHelper.Facing.BACK;
 
   @Override
@@ -107,6 +109,8 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   @Override
   public void onConnectionSuccessRtmp() {
     runOnUiThread(() -> AlertUtils.alert(LiveStreamActivity.this, "Connection success"));
+    bitrateAdapter = new BitrateAdapter(bitrate -> rtmpCamera.setVideoBitrateOnFly(bitrate));
+    bitrateAdapter.setMaxBitrate(rtmpCamera.getBitrate());
   }
 
   @Override
@@ -123,7 +127,9 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
 
   @Override
   public void onNewBitrateRtmp(long bitrate) {
-
+    if (bitrateAdapter != null) {
+      bitrateAdapter.adaptBitrate(bitrate);
+    }
   }
 
   @Override
@@ -191,7 +197,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
         urlsBuilder.append(providerStream.getStreamUrl()).append(",");
       }
       rtmpCamera.setupMuxers(liveStream.getProviders().size());
-      if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo(1280, 720, 30, 3000 * 1024, false, CameraHelper.getCameraOrientation(this))) {
+      if (prepareAudio() && prepareVideo()) {
         rtmpCamera.startStream(urlsBuilder.toString());
       } else {
         // TODO: What to do when device can't go live?
@@ -203,6 +209,20 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
       updateContent();
     });
     liveStreamViewModel.getError().observe(this, throwable -> AlertUtils.alert(this, throwable));
+  }
+
+  private boolean prepareAudio() {
+    int bitrate = 128 * 1024;
+    int sampleRate = 48 * 1000;
+    return rtmpCamera.prepareAudio(bitrate, sampleRate, true, false, false);
+  }
+
+  private boolean prepareVideo() {
+    int width = 1280;
+    int height = 720;
+    int fps = 30;
+    int bitrate = 3000 * 1024;
+    return rtmpCamera.prepareVideo(width, height, fps, bitrate, false, CameraHelper.getCameraOrientation(this));
   }
 
   private void setupViews() {

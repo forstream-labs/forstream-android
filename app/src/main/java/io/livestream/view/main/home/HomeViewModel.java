@@ -17,10 +17,10 @@ import io.livestream.common.viewmodel.BaseViewModel;
 import io.livestream.service.NotificationService;
 import timber.log.Timber;
 
-public class HomeViewModel extends BaseViewModel implements NotificationService.ChannelSubscriber {
+public class HomeViewModel extends BaseViewModel implements NotificationService.ChannelSubscriber, NotificationService.LiveStreamSubscriber {
 
   private static final String CONNECTED_CHANNELS_POPULATE = "channel";
-  private static final String LIVE_STREAM_POPULATE = "providers->connected_channel.channel";
+  private static final String LIVE_STREAM_POPULATE = "providers->channel providers->connected_channel";
 
   private UserService userService;
   private ChannelService channelService;
@@ -38,6 +38,7 @@ public class HomeViewModel extends BaseViewModel implements NotificationService.
     this.notificationService = notificationService;
 
     notificationService.subscribeChannel(this);
+    notificationService.subscribeLiveStream(this);
   }
 
   public LiveData<ListHolder<ConnectedChannel>> getConnectedChannels() {
@@ -66,6 +67,11 @@ public class HomeViewModel extends BaseViewModel implements NotificationService.
   @Override
   public void onChannelDisconnected(ConnectedChannel connectedChannel) {
 
+  }
+
+  @Override
+  public void onLiveStreamUpdated(LiveStream liveStream) {
+    liveStreams.set(liveStream);
   }
 
   public void loadConnectedChannels() {

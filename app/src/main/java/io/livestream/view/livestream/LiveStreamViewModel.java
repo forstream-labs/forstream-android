@@ -9,23 +9,26 @@ import io.livestream.api.model.User;
 import io.livestream.api.service.StreamService;
 import io.livestream.common.viewmodel.BaseViewModel;
 import io.livestream.service.AuthenticatedUser;
+import io.livestream.service.NotificationService;
 import timber.log.Timber;
 
 public class LiveStreamViewModel extends BaseViewModel {
 
-  private static final String LIVE_STREAM_POPULATE = "providers->connected_channel.channel";
+  private static final String LIVE_STREAM_POPULATE = "providers->channel providers->connected_channel";
 
   private AuthenticatedUser authenticatedUser;
   private StreamService streamService;
+  private NotificationService notificationService;
 
   private MutableLiveData<LiveStream> liveStream = new MutableLiveData<>();
   private MutableLiveData<LiveStream> startLiveStream = new MutableLiveData<>();
   private MutableLiveData<LiveStream> endLiveStream = new MutableLiveData<>();
   private MutableLiveData<LiveStream> enableDisableLiveStream = new MutableLiveData<>();
 
-  public LiveStreamViewModel(AuthenticatedUser authenticatedUser, StreamService streamService) {
+  public LiveStreamViewModel(AuthenticatedUser authenticatedUser, StreamService streamService, NotificationService notificationService) {
     this.authenticatedUser = authenticatedUser;
     this.streamService = streamService;
+    this.notificationService = notificationService;
   }
 
   public LiveData<LiveStream> getLiveStream() {
@@ -61,6 +64,7 @@ public class LiveStreamViewModel extends BaseViewModel {
   public void startLiveStream(LiveStream liveStream) {
     streamService.startLiveStream(liveStream).then(updatedLiveStream -> {
       startLiveStream.postValue(updatedLiveStream);
+      notificationService.notifyLiveStreamUpdated(liveStream);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error starting live stream %s", liveStream.getId());
@@ -72,6 +76,7 @@ public class LiveStreamViewModel extends BaseViewModel {
   public void endLiveStream(LiveStream liveStream) {
     streamService.endLiveStream(liveStream).then(updatedLiveStream -> {
       endLiveStream.postValue(updatedLiveStream);
+      notificationService.notifyLiveStreamUpdated(liveStream);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error ending live stream %s", liveStream.getId());
@@ -85,7 +90,7 @@ public class LiveStreamViewModel extends BaseViewModel {
       enableDisableLiveStream.postValue(updatedLiveStream);
       return null;
     })._catch((reason -> {
-      Timber.e(reason, "Error enabling provider %s of live stream %s ", providerStream.getConnectedChannel().getChannel().getIdentifier(), liveStream.getId());
+      Timber.e(reason, "Error enabling provider %s of live stream %s ", providerStream.getChannel().getIdentifier(), liveStream.getId());
       error.postValue(reason);
       return null;
     }));
@@ -96,7 +101,7 @@ public class LiveStreamViewModel extends BaseViewModel {
       enableDisableLiveStream.postValue(updatedLiveStream);
       return null;
     })._catch((reason -> {
-      Timber.e(reason, "Error disabling provider %s of live stream %s ", providerStream.getConnectedChannel().getChannel().getIdentifier(), liveStream.getId());
+      Timber.e(reason, "Error disabling provider %s of live stream %s ", providerStream.getChannel().getIdentifier(), liveStream.getId());
       error.postValue(reason);
       return null;
     }));

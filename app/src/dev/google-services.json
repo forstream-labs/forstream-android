@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "705205169175",
+    "firebase_url": "https://appforstream.firebaseio.com",
+    "project_id": "appforstream",
+    "storage_bucket": "appforstream.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705205169175:android:4022c41df787ce07034052",
+        "android_client_info": {
+          "package_name": "io.forstream.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705205169175-gmi743ebi50c3hsaf355bap8apf8596b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.forstream.dev",
+            "certificate_hash": "ddea202b6f5500e664d4e399122aa6e5a46d21cc"
+          }
+        },
+        {
+          "client_id": "705205169175-6qqucli6vung8672r2kei7gc5nl0k37d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAacrsBJV-dDoDdE6F91A5idi9vl66eqw"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

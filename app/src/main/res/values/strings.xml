@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <string name="app_file_provider" translatable="false">io.livestream.fileprovider</string>
-
-  <!-- Google -->
-  <string name="google_oauth2_client_id">385457463040-ov7cq2lk7d7h1h92htoo6utsqd1vd5q8.apps.googleusercontent.com</string>
+  <string name="app_file_provider" translatable="false">io.forstream.fileprovider</string>
 
   <!-- Facebook -->
   <string name="facebook_app_id" translatable="false">2605017349737935</string>

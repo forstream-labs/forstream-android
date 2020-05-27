@@ -135,7 +135,7 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   }
 
   private void setupYouTubeChannelSignIn() {
-    String googleAuthClientId = getString(R.string.google_oauth2_client_id);
+    String googleAuthClientId = getString(R.string.default_web_client_id);
     GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestId()
       .requestEmail()

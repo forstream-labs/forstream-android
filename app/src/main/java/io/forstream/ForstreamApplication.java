@@ -1,14 +1,19 @@
 package io.forstream;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
+import io.forstream.api.exception.ApiException;
 import io.forstream.dagger.DaggerAppComponent;
 import timber.log.Timber;
 
@@ -21,6 +26,9 @@ public class ForstreamApplication extends Application implements HasAndroidInjec
     super.onCreate();
     setupDagger();
     setupTimber();
+    FirebaseApp.initializeApp(getApplicationContext());
+    FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
+    FirebaseCrashlytics.getInstance().sendUnsentReports();
   }
 
   @Override
@@ -43,15 +51,15 @@ public class ForstreamApplication extends Application implements HasAndroidInjec
   private static class ReleaseTree extends Timber.Tree {
     @Override
     protected void log(int priority, String tag, @NonNull String message, Throwable throwable) {
-      //      if (priority == Log.ERROR || priority == Log.WARN) {
-      //        FirebaseCrashlytics.getInstance().log(message);
-      //        if (throwable != null) {
-      //          if (throwable instanceof ApiException) {
-      //            FirebaseCrashlytics.getInstance().log(((ApiException) throwable).getErrorBody());
-      //          }
-      //          FirebaseCrashlytics.getInstance().recordException(throwable);
-      //        }
-      //      }
+      if (priority == Log.ERROR || priority == Log.WARN) {
+        FirebaseCrashlytics.getInstance().log(message);
+        if (throwable != null) {
+          if (throwable instanceof ApiException) {
+            FirebaseCrashlytics.getInstance().log(((ApiException) throwable).getErrorBody());
+          }
+          FirebaseCrashlytics.getInstance().recordException(throwable);
+        }
+      }
     }
   }
 }

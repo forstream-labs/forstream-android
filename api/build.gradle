@@ -10,15 +10,25 @@ android {
     versionName '1.0.0'
   }
 
+  flavorDimensions 'version'
+  productFlavors {
+    prod {
+      dimension 'version'
+      buildConfigField 'String', 'API_URL', "\"${System.getProperty("FORSTREAM_PROD_API_URL")}\""
+    }
+    dev {
+      dimension 'version'
+      buildConfigField 'String', 'API_URL', "\"${System.getProperty("FORSTREAM_DEV_API_URL")}\""
+    }
+  }
+
   buildTypes {
     release {
-      buildConfigField 'String', 'API_URL', "\"${System.getProperty("FORSTREAM_RELEASE_API_URL")}\""
       minifyEnabled false
       shrinkResources false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
     debug {
-      buildConfigField 'String', 'API_URL', "\"${System.getProperty("FORSTREAM_DEBUG_API_URL")}\""
       minifyEnabled false
       shrinkResources false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

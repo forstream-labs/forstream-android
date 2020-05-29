@@ -1,21 +1,44 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+### Project Source ###
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-keep class io.forstream.api.model.** { *; }
+-keep class io.forstream.api.enums.** { *; }
+-keep class io.forstream.api.exception.ApiException { *; }
+-keep public class * extends java.lang.Exception
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepclassmembers class io.forstream.api.model.** implements android.os.Parcelable {
+  static ** CREATOR;
+}
+-keepclassmembers class io.forstream.api.model.** implements java.io.Serializable {
+  static final long serialVersionUID;
+  private static final java.io.ObjectStreamField[] serialPersistentFields;
+  !static !transient <fields>;
+  !private <fields>;
+  !private <methods>;
+  private void writeObject(java.io.ObjectOutputStream);
+  private void readObject(java.io.ObjectInputStream);
+  java.lang.Object writeReplace();
+  java.lang.Object readResolve();
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keepattributes Signature
+-keepattributes Annotation
+-keepattributes InnerClasses
+-keepattributes Exceptions
+-keepattributes SourceFile
+-keepattributes LineNumberTable
+-renamesourcefileattribute SourceFile
+
+### Iconics ###
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}
+
+### Ucrop ###
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }
+
+### Crashlytics ###
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**

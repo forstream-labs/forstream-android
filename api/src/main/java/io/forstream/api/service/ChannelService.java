@@ -36,4 +36,8 @@ public class ChannelService {
   public Promise<Void> disconnectChannel(Channel channel) {
     return PromiseUtils.build(api.disconnectChannel(channel.getIdentifier()));
   }
+
+  public Promise<ConnectedChannel> getConnectedChannel(String id, String populate) {
+    return PromiseUtils.build(api.getConnectedChannel(id, populate));
+  }
 }

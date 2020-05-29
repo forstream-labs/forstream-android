@@ -12,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ChannelApi {
 
@@ -26,5 +27,8 @@ public interface ChannelApi {
 
   @POST("channels/{channel}/disconnect")
   Call<Void> disconnectChannel(@Path("channel") ChannelIdentifier channelIdentifier);
+
+  @GET("connected_channels/{connected_channel}")
+  Call<ConnectedChannel> getConnectedChannel(@Path("connected_channel") String id, @Query("populate") String populate);
 
 }

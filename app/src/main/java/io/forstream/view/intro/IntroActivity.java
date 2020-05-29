@@ -30,6 +30,7 @@ import butterknife.OnClick;
 import io.forstream.R;
 import io.forstream.common.BaseActivity;
 import io.forstream.util.AlertUtils;
+import io.forstream.util.FirebaseUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.view.main.MainActivity;
 
@@ -101,12 +102,14 @@ public class IntroActivity extends BaseActivity implements FacebookCallback<Logi
 
   private void setupObservers() {
     introViewModel.getSignInWithFacebook().observe(this, user -> {
+      FirebaseUtils.logSignInWithFacebook(this, user);
       Intent intent = new Intent(this, MainActivity.class);
       startActivity(intent);
       finish();
     });
     introViewModel.getSignInWithGoogle().observe(this, user -> {
       Intent intent = new Intent(this, MainActivity.class);
+      FirebaseUtils.logSignInWithGoogle(this, user);
       startActivity(intent);
       finish();
     });

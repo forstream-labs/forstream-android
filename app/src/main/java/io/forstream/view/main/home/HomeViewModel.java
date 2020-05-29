@@ -61,7 +61,14 @@ public class HomeViewModel extends BaseViewModel implements NotificationService.
 
   @Override
   public void onChannelConnected(ConnectedChannel connectedChannel) {
-    connectedChannels.add(connectedChannel);
+    channelService.getConnectedChannel(connectedChannel.getId(), CONNECTED_CHANNELS_POPULATE).then(updatedConnectedChannel -> {
+      connectedChannels.add(updatedConnectedChannel);
+      return null;
+    })._catch(reason -> {
+      Timber.e(reason, "Error loading connected channel");
+      error.postValue(reason);
+      return null;
+    });
   }
 
   @Override

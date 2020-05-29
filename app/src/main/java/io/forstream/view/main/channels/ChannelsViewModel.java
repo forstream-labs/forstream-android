@@ -54,8 +54,12 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
   @Override
   public void onChannelDisconnected(ConnectedChannel connectedChannel) {
     ViewItem viewItem = new ViewItem(connectedChannel.getChannel());
-    viewItem.setConnected(false);
-    viewItems.set(viewItem);
+    int index = viewItems.indexOf(viewItem);
+    if (index >= 0) {
+      viewItem = viewItems.get(index);
+      viewItem.setConnected(false);
+      viewItems.set(viewItem);
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -83,7 +87,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
 
   public void connectYouTubeChannel(String authCode) {
     channelService.connectYouTubeChannel(authCode).then(connectedChannel -> {
-      updateChannel(connectedChannel);
+      updateChannelConnected(connectedChannel);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error connecting YouTube channel");
@@ -94,7 +98,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
 
   public void connectFacebookChannel(String accessToken) {
     channelService.connectFacebookChannel(accessToken).then(connectedChannel -> {
-      updateChannel(connectedChannel);
+      updateChannelConnected(connectedChannel);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error connecting Facebook channel");
@@ -103,10 +107,14 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     }));
   }
 
-  private void updateChannel(ConnectedChannel connectedChannel) {
+  private void updateChannelConnected(ConnectedChannel connectedChannel) {
     ViewItem viewItem = new ViewItem(connectedChannel.getChannel());
-    viewItem.setConnected(true);
-    viewItems.set(viewItem);
+    int index = viewItems.indexOf(viewItem);
+    if (index >= 0) {
+      viewItem = viewItems.get(index);
+      viewItem.setConnected(true);
+      viewItems.set(viewItem);
+    }
     notificationService.notifyChannelConnected(connectedChannel);
   }
 

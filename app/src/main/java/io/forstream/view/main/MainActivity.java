@@ -20,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.IconicsSize;
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
@@ -34,6 +35,7 @@ import io.forstream.R;
 import io.forstream.api.model.User;
 import io.forstream.common.BaseActivity;
 import io.forstream.util.AlertUtils;
+import io.forstream.util.FirebaseUtils;
 import io.forstream.util.ImageUtils;
 import io.forstream.view.intro.IntroActivity;
 import io.forstream.view.profile.ProfileActivity;
@@ -61,6 +63,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     setupDrawer();
     setupNavigation();
     setupObservers();
+    setupCrashlytics();
   }
 
   @Override
@@ -178,11 +181,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
   private void setupObservers() {
     mainViewModel.getSignOut().observe(this, user -> {
+      FirebaseUtils.logSignOut(this, user);
       Intent intent = new Intent(this, IntroActivity.class);
       startActivity(intent);
       finish();
     });
     mainViewModel.getError().observe(this, throwable -> AlertUtils.alert(this, throwable));
+  }
+
+  private void setupCrashlytics() {
+    FirebaseCrashlytics.getInstance().setUserId(mainViewModel.getAuthenticatedUser().getId());
   }
 
   private void updateToolbarTitle(int position) {

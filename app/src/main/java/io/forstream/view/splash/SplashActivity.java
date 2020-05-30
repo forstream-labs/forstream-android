@@ -11,7 +11,6 @@ import io.forstream.R;
 import io.forstream.api.exception.ApiException;
 import io.forstream.common.BaseActivity;
 import io.forstream.util.AlertUtils;
-import io.forstream.util.UIUtils;
 import io.forstream.view.intro.IntroActivity;
 import io.forstream.view.main.MainActivity;
 
@@ -27,7 +26,6 @@ public class SplashActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
 
-    UIUtils.changeStatusBarColor(this, android.R.color.darker_gray);
     setupObservers();
     setupUser();
   }

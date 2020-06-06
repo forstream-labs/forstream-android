@@ -33,13 +33,15 @@
   <string name="activity_profile_image_not_found">Image not found</string>
 
   <!-- Main activity -->
-  <string name="activity_main_share_title">Share LiveStream</string>
+  <string name="activity_main_share_title">Share Forstream</string>
   <string name="activity_main_share_message">This app is awesome: %1$s</string>
   <string name="activity_main_your_channels">Your channels</string>
   <string name="activity_main_your_lives">Your lives</string>
   <string name="activity_main_connected">Connected</string>
   <string name="activity_main_channels_get_started">Get started by connecting your favorite channels. Go live simultaneously in every channel you add.</string>
   <string name="activity_main_connect_channels">Connect channels</string>
+  <string name="activity_main_connect">Connect</string>
+  <string name="activity_main_select_target">Where do you want to go live?</string>
   <string name="activity_main_go_live">Go live!</string>
   <string name="activity_main_live_streams_get_started">You\'re ready to go live simultaneously in your favorite channels. This is awesome!</string>
   <string name="activity_main_title">Title</string>

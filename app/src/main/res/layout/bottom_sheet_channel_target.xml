@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:padding="@dimen/margin_md">
+
+  <ImageView
+    android:id="@+id/channel_image"
+    android:layout_width="@dimen/image_xlg"
+    android:layout_height="@dimen/image_xlg"
+    android:layout_gravity="center"
+    android:layout_marginBottom="@dimen/margin_sm"/>
+
+  <TextView
+    android:id="@+id/channel_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginBottom="@dimen/margin_md"
+    android:textColor="@color/text_primary"
+    android:textSize="@dimen/text_xlg"
+    android:textStyle="bold"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margin_xsm"
+    android:text="@string/activity_main_select_target"
+    android:textColor="@color/text_secondary"
+    android:textSize="@dimen/text_xlg"/>
+
+  <com.google.android.material.textfield.TextInputLayout
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margin_sm">
+
+    <AutoCompleteTextView
+      android:id="@+id/channel_target_input"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      tools:ignore="LabelFor"/>
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/connect_target_button"
+    style="@style/Button.Large"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/activity_main_connect"/>
+
+</LinearLayout>

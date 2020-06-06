@@ -119,9 +119,7 @@ public class IntroActivity extends BaseActivity implements FacebookCallback<Logi
   private void setupGoogleSignIn() {
     String googleAuthClientId = getString(R.string.default_web_client_id);
     GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestId()
       .requestEmail()
-      .requestProfile()
       .requestIdToken(googleAuthClientId)
       .requestServerAuthCode(googleAuthClientId)
       .build();

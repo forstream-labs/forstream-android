@@ -1,4 +1,4 @@
-package io.forstream.view.main.home;
+package io.forstream.view.main.home.connectedchannels;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,52 +8,46 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 import io.forstream.R;
-import io.forstream.api.enums.ChannelIdentifier;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.common.adapter.base.BaseViewHolder;
 import io.forstream.util.ImageUtils;
 
-public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<ConnectedChannelsSelectionAdapter.ViewHolder> {
+public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChannelsAdapter.ViewHolder> {
 
   private Context context;
+  private Listener listener;
   private List<ConnectedChannel> connectedChannels;
-  private Set<ChannelIdentifier> enabledChannels = new HashSet<>();
 
   @Inject
-  public ConnectedChannelsSelectionAdapter(Context context) {
+  public ConnectedChannelsAdapter(Context context) {
     this.context = context;
   }
 
   public void setConnectedChannels(List<ConnectedChannel> connectedChannels) {
     this.connectedChannels = connectedChannels;
-    enabledChannels = Stream.of(connectedChannels).map(connectedChannel -> connectedChannel.getChannel().getIdentifier()).collect(Collectors.toSet());
   }
 
-  public List<ChannelIdentifier> getEnabledChannels() {
-    return new ArrayList<>(enabledChannels);
+  public void setListener(Listener listener) {
+    this.listener = listener;
   }
 
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view = LayoutInflater.from(context).inflate(R.layout.item_connected_channel_selection, parent, false);
+    View view = LayoutInflater.from(context).inflate(R.layout.item_connected_channel, parent, false);
     return new ViewHolder(view);
   }
 
@@ -68,11 +62,18 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
     return connectedChannels != null ? connectedChannels.size() : 0;
   }
 
+
+  public interface Listener {
+
+    void onRemoveConnectedChannelClick(ConnectedChannel connectedChannel);
+
+  }
+
   class ViewHolder extends BaseViewHolder<ConnectedChannel> {
 
     @BindView(R.id.channel_image) ImageView channelImageView;
     @BindView(R.id.channel_name) TextView channelNameView;
-    @BindView(R.id.channel_enabled) SwitchMaterial channelEnabledView;
+    @BindView(R.id.channel_menu) View channelMenuView;
 
     ViewHolder(View view) {
       super(view);
@@ -83,17 +84,25 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
     public void bindView(ConnectedChannel connectedChannel) {
       ImageUtils.loadImage(context, connectedChannel.getChannel(), channelImageView);
       channelNameView.setText(connectedChannel.getChannel().getName());
-      channelEnabledView.setChecked(true);
     }
 
-    @OnCheckedChanged(R.id.channel_enabled)
-    void onChannelEnabledChanged() {
+    @OnClick(R.id.channel_menu)
+    void onChannelMenuClick() {
       ConnectedChannel connectedChannel = connectedChannels.get(getAdapterPosition());
-      if (channelEnabledView.isChecked()) {
-        enabledChannels.add(connectedChannel.getChannel().getIdentifier());
-      } else {
-        enabledChannels.remove(connectedChannel.getChannel().getIdentifier());
-      }
+      PopupMenu popup = new PopupMenu(context, channelMenuView);
+      popup.inflate(R.menu.menu_connected_channel);
+      popup.setOnMenuItemClickListener(item -> {
+        if (item.getItemId() == R.id.remove_connected_channel) {
+          MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.activity_main_dialog_remove_connected_channel_message)
+            .setPositiveButton(R.string.remove, (dialog, which) -> listener.onRemoveConnectedChannelClick(connectedChannel))
+            .setNegativeButton(R.string.cancel, null);
+          dialogBuilder.create().show();
+          return true;
+        }
+        return false;
+      });
+      popup.show();
     }
   }
 }

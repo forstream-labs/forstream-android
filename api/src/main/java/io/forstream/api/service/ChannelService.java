@@ -6,10 +6,11 @@ import com.onehilltech.promises.Promise;
 
 import java.util.List;
 
-import io.forstream.api.model.payload.AuthCodePayload;
 import io.forstream.api.model.Channel;
+import io.forstream.api.model.ChannelTarget;
 import io.forstream.api.model.ConnectedChannel;
-import io.forstream.api.model.payload.AccessTokenPayload;
+import io.forstream.api.model.payload.AuthCodePayload;
+import io.forstream.api.model.payload.ConnectFacebookPayload;
 import io.forstream.api.service.api.ChannelApi;
 import io.forstream.api.util.PromiseUtils;
 
@@ -29,8 +30,12 @@ public class ChannelService {
     return PromiseUtils.build(api.connectYouTubeChannel(new AuthCodePayload(authCode)));
   }
 
-  public Promise<ConnectedChannel> connectFacebookChannel(String accessToken) {
-    return PromiseUtils.build(api.connectFacebookChannel(new AccessTokenPayload(accessToken)));
+  public Promise<List<ChannelTarget>> listFacebookChannelTargets(String accessToken) {
+    return PromiseUtils.build(api.listFacebookChannelTargets(accessToken));
+  }
+
+  public Promise<ConnectedChannel> connectFacebookChannel(String accessToken, String targetId) {
+    return PromiseUtils.build(api.connectFacebookChannel(new ConnectFacebookPayload(accessToken, targetId)));
   }
 
   public Promise<Void> disconnectChannel(Channel channel) {

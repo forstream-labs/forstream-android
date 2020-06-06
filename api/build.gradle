@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
-Properties properties = new Properties()
-File propertiesFile = project.rootProject.file('local.properties')
+def properties = new Properties()
+def propertiesFile = project.rootProject.file('local.properties')
 if (propertiesFile.canRead()) {
   properties.load(propertiesFile.newDataInputStream())
 }

@@ -37,6 +37,9 @@ import io.forstream.util.AlertUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
 import io.forstream.view.livestream.LiveStreamActivity;
+import io.forstream.view.main.home.connectedchannels.ConnectedChannelsAdapter;
+import io.forstream.view.main.home.livestream.CreateLiveStreamDialogFragment;
+import io.forstream.view.main.home.livestream.LiveStreamsAdapter;
 
 public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener, ConnectedChannelsAdapter.Listener {
 

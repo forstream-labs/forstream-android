@@ -1,4 +1,4 @@
-package io.forstream.view.main.home;
+package io.forstream.view.main.home.livestream;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,6 +29,7 @@ import io.forstream.R;
 import io.forstream.api.enums.ChannelIdentifier;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.util.component.SpaceItemDecoration;
+import io.forstream.view.main.home.connectedchannels.ConnectedChannelsSelectionAdapter;
 
 public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
 

@@ -1,6 +1,7 @@
 package io.forstream.view.main.channels;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 import io.forstream.api.model.Channel;
+import io.forstream.api.model.ChannelTarget;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.service.ChannelService;
 import io.forstream.api.service.UserService;
@@ -27,6 +29,8 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
   private NotificationService notificationService;
 
   private ListLiveData<ViewItem> viewItems = new ListLiveData<>();
+  private MutableLiveData<List<ChannelTarget>> facebookTargets = new MutableLiveData<>();
+  private MutableLiveData<ConnectedChannel> channelConnected = new MutableLiveData<>();
 
   public ChannelsViewModel(UserService userService, ChannelService channelService, NotificationService notificationService) {
     this.userService = userService;
@@ -38,6 +42,14 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
 
   public LiveData<ListHolder<ViewItem>> getViewItems() {
     return viewItems;
+  }
+
+  public LiveData<List<ChannelTarget>> getFacebookTargets() {
+    return facebookTargets;
+  }
+
+  public LiveData<ConnectedChannel> getChannelConnected() {
+    return channelConnected;
   }
 
   @Override
@@ -96,8 +108,19 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     }));
   }
 
-  public void connectFacebookChannel(String accessToken) {
-    channelService.connectFacebookChannel(accessToken).then(connectedChannel -> {
+  public void listFacebookTargets(String accessToken) {
+    channelService.listFacebookChannelTargets(accessToken).then(facebookTargets -> {
+      this.facebookTargets.postValue(facebookTargets);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error listing Facebook targets");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void connectFacebookChannel(String accessToken, String targetId) {
+    channelService.connectFacebookChannel(accessToken, targetId).then(connectedChannel -> {
       updateChannelConnected(connectedChannel);
       return null;
     })._catch((reason -> {
@@ -115,6 +138,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
       viewItem.setConnected(true);
       viewItems.set(viewItem);
     }
+    channelConnected.postValue(connectedChannel);
     notificationService.notifyChannelConnected(connectedChannel);
   }
 

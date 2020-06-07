@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "705205169175-3aptrmrf767k6cvfrqfjn5v7l59h5g8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.forstream",
+            "certificate_hash": "604b05410061bc8e8af2eacb06:aa89ee32ad6a9d"
+          }
+        },
+        {
           "client_id": "705205169175-6qqucli6vung8672r2kei7gc5nl0k37d.apps.googleusercontent.com",
           "client_type": 3
         }

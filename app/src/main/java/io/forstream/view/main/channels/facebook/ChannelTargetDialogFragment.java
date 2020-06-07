@@ -19,8 +19,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -41,7 +39,6 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
   private List<ChannelTarget> channelTargets;
   private ChannelTarget selectedChannelTarget;
 
-  @Inject
   public ChannelTargetDialogFragment(Context context) {
     this.context = context;
   }
@@ -66,6 +63,7 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
 
   public void setChannelTargets(List<ChannelTarget> channelTargets) {
     this.channelTargets = channelTargets;
+    selectedChannelTarget = channelTargets.get(0);
   }
 
   @OnClick(R.id.connect_target_button)
@@ -76,8 +74,6 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
   }
 
   private void setupViews() {
-    selectedChannelTarget = channelTargets.get(0);
-
     channelNameView.setText(channel.getName());
     ImageUtils.loadImage(context, channel, channelImageView);
 
@@ -86,7 +82,7 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
     channelTargetInput.setAdapter(adapter);
     channelTargetInput.setKeyListener(null);
     channelTargetInput.setOnItemClickListener((parent, view, position, id) -> selectedChannelTarget = channelTargets.get(position));
-    channelTargetInput.setText(targetsNames.get(0), false);
+    channelTargetInput.post(() -> channelTargetInput.setText(targetsNames.get(0), false));
   }
 
   public interface Listener {

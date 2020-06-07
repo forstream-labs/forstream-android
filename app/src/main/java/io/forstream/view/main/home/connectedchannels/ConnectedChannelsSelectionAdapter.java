@@ -33,12 +33,17 @@ import io.forstream.util.ImageUtils;
 public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<ConnectedChannelsSelectionAdapter.ViewHolder> {
 
   private Context context;
+  private Listener listener;
   private List<ConnectedChannel> connectedChannels;
   private Set<ChannelIdentifier> enabledChannels = new HashSet<>();
 
   @Inject
   public ConnectedChannelsSelectionAdapter(Context context) {
     this.context = context;
+  }
+
+  public void setListener(Listener listener) {
+    this.listener = listener;
   }
 
   public void setConnectedChannels(List<ConnectedChannel> connectedChannels) {
@@ -68,6 +73,12 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
     return connectedChannels != null ? connectedChannels.size() : 0;
   }
 
+  public interface Listener {
+
+    void onConnectedChannelCheckedChanged(ConnectedChannel connectedChannel, boolean checked);
+
+  }
+
   class ViewHolder extends BaseViewHolder<ConnectedChannel> {
 
     @BindView(R.id.channel_image) ImageView channelImageView;
@@ -93,6 +104,9 @@ public class ConnectedChannelsSelectionAdapter extends RecyclerView.Adapter<Conn
         enabledChannels.add(connectedChannel.getChannel().getIdentifier());
       } else {
         enabledChannels.remove(connectedChannel.getChannel().getIdentifier());
+      }
+      if (listener != null) {
+        listener.onConnectedChannelCheckedChanged(connectedChannel, channelEnabledView.isChecked());
       }
     }
   }

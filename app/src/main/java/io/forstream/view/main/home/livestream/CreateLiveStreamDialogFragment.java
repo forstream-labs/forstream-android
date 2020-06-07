@@ -31,7 +31,7 @@ import io.forstream.api.model.ConnectedChannel;
 import io.forstream.util.component.SpaceItemDecoration;
 import io.forstream.view.main.home.connectedchannels.ConnectedChannelsSelectionAdapter;
 
-public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
+public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment implements ConnectedChannelsSelectionAdapter.Listener {
 
   @BindView(R.id.live_stream_title_layout) TextInputLayout liveStreamTitleLayout;
   @BindView(R.id.live_stream_title_input) TextInputEditText liveStreamTitleInput;
@@ -68,6 +68,11 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
     connectedChannelsSelectionAdapter.setConnectedChannels(connectedChannels);
   }
 
+  @Override
+  public void onConnectedChannelCheckedChanged(ConnectedChannel connectedChannel, boolean checked) {
+    updateCreateLiveStreamButtonState();
+  }
+
   @OnTextChanged(R.id.live_stream_title_input)
   void onLiveStreamTitleInputChanged() {
     liveStreamTitleLayout.setError(liveStreamTitleInput.getText().toString().isEmpty() ? " " : null);
@@ -83,6 +88,7 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
   }
 
   private void setupViews() {
+    connectedChannelsSelectionAdapter.setListener(this);
     onLiveStreamTitleInputChanged();
     updateCreateLiveStreamButtonState();
   }
@@ -100,7 +106,9 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment {
   }
 
   private void updateCreateLiveStreamButtonState() {
-    createLiveStreamButton.setEnabled(!liveStreamTitleInput.getText().toString().isEmpty());
+    boolean noChannelsEnabled = connectedChannelsSelectionAdapter.getEnabledChannels().isEmpty();
+    boolean emptyTitle = liveStreamTitleInput.getText().toString().isEmpty();
+    createLiveStreamButton.setEnabled(!emptyTitle && !noChannelsEnabled);
   }
 
   public interface Listener {

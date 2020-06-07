@@ -48,9 +48,12 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
 
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
 
-  private static final String YOUTUBE_MANAGE_SCOPE = "https://www.googleapis.com/auth/youtube";
-  private static final String FACEBOOK_PUBLISH_VIDEO_SCOPE = "publish_video";
-  private static final String FACEBOOK_PAGES_SHOW_LIST_SCOPE = "pages_show_list";
+  private static final String YOUTUBE_SCOPE_MANAGE = "https://www.googleapis.com/auth/youtube";
+
+  private static final String FACEBOOK_SCOPE_PUBLISH_VIDEO = "publish_video";
+  private static final String FACEBOOK_SCOPE_PAGES_SHOW_LIST = "pages_show_list";
+  private static final String FACEBOOK_SCOPE_PAGES_READ_ENGAGEMENT = "pages_read_engagement";
+  private static final String FACEBOOK_SCOPE_PAGES_MANAGE_POST = "pages_manage_posts";
 
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
   @BindView(R.id.channels_view) RecyclerView channelsView;
@@ -58,10 +61,10 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   @Inject Context context;
   @Inject ChannelsViewModel channelsViewModel;
   @Inject ChannelsAdapter channelsAdapter;
-  @Inject ChannelTargetDialogFragment channelTargetDialogFragment;
 
   private GoogleSignInClient youtubeChannelSignInClient;
   private CallbackManager callbackManager = CallbackManager.Factory.create();
+  private ChannelTargetDialogFragment channelTargetDialogFragment;
   private Channel selectedChannel;
   private String selectedAccessToken;
 
@@ -108,8 +111,10 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
         break;
       case FACEBOOK:
         List<String> scopes = new ArrayList<>();
-        scopes.add(FACEBOOK_PUBLISH_VIDEO_SCOPE);
-        scopes.add(FACEBOOK_PAGES_SHOW_LIST_SCOPE);
+        scopes.add(FACEBOOK_SCOPE_PUBLISH_VIDEO);
+        scopes.add(FACEBOOK_SCOPE_PAGES_SHOW_LIST);
+        scopes.add(FACEBOOK_SCOPE_PAGES_READ_ENGAGEMENT);
+        scopes.add(FACEBOOK_SCOPE_PAGES_MANAGE_POST);
         LoginManager loginManager = LoginManager.getInstance();
         loginManager.registerCallback(callbackManager, new ConnectFacebookCallback());
         loginManager.logIn(this, scopes);
@@ -134,12 +139,18 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
       if (channelTargets.size() == 1) {
         channelsViewModel.connectFacebookChannel(selectedAccessToken, channelTargets.get(0).getId());
       } else {
+        channelTargetDialogFragment = new ChannelTargetDialogFragment(context);
+        channelTargetDialogFragment.setListener(this);
         channelTargetDialogFragment.setChannel(selectedChannel);
         channelTargetDialogFragment.setChannelTargets(channelTargets);
         channelTargetDialogFragment.show(getActivity().getSupportFragmentManager(), ChannelsFragment.class.getSimpleName());
       }
     });
-    channelsViewModel.getChannelConnected().observe(getViewLifecycleOwner(), connectedChannel -> channelTargetDialogFragment.dismiss());
+    channelsViewModel.getChannelConnected().observe(getViewLifecycleOwner(), connectedChannel -> {
+      if (channelTargetDialogFragment != null) {
+        channelTargetDialogFragment.dismiss();
+      }
+    });
     channelsViewModel.getError().observe(getViewLifecycleOwner(), throwable -> {
       swipeRefreshLayout.setRefreshing(false);
       AlertUtils.alert(context, throwable);
@@ -148,7 +159,6 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
 
   private void setupViews() {
     channelsAdapter.setListener(this);
-    channelTargetDialogFragment.setListener(this);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
     SpaceItemDecoration itemDecoration = new SpaceItemDecoration(context.getResources().getDimensionPixelSize(R.dimen.margin_md), layoutManager.getOrientation());
@@ -167,7 +177,7 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
       .requestEmail()
       .requestIdToken(googleAuthClientId)
       .requestServerAuthCode(googleAuthClientId)
-      .requestScopes(new Scope(YOUTUBE_MANAGE_SCOPE))
+      .requestScopes(new Scope(YOUTUBE_SCOPE_MANAGE))
       .build();
     youtubeChannelSignInClient = GoogleSignIn.getClient(context, signInOptions);
   }

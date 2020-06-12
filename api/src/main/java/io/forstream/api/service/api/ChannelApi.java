@@ -17,22 +17,22 @@ import retrofit2.http.Query;
 
 public interface ChannelApi {
 
-  @GET("channels")
+  @GET("v1/channels")
   Call<List<Channel>> listChannels();
 
-  @POST("channels/youtube/connect")
+  @POST("v1/channels/youtube/connect")
   Call<ConnectedChannel> connectYouTubeChannel(@Body AuthCodePayload payload);
 
-  @GET("channels/facebook/targets")
+  @GET("v1/channels/facebook/targets")
   Call<List<ChannelTarget>> listFacebookChannelTargets(@Query("access_token") String accessToken);
 
-  @POST("channels/facebook/connect")
+  @POST("v1/channels/facebook/connect")
   Call<ConnectedChannel> connectFacebookChannel(@Body ConnectFacebookPayload payload);
 
-  @POST("channels/{channel}/disconnect")
+  @POST("v1/channels/{channel}/disconnect")
   Call<Void> disconnectChannel(@Path("channel") ChannelIdentifier channelIdentifier);
 
-  @GET("connected_channels/{connected_channel}")
+  @GET("v1/connected_channels/{connected_channel}")
   Call<ConnectedChannel> getConnectedChannel(@Path("connected_channel") String id, @Query("populate") String populate);
 
 }

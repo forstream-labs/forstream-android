@@ -70,7 +70,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     if (index >= 0) {
       viewItem = viewItems.get(index);
       viewItem.setConnected(false);
-      viewItems.set(viewItem);
+      viewItems.set(index, viewItem);
     }
   }
 
@@ -136,7 +136,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     if (index >= 0) {
       viewItem = viewItems.get(index);
       viewItem.setConnected(true);
-      viewItems.set(viewItem);
+      viewItems.set(index, viewItem);
     }
     channelConnected.postValue(connectedChannel);
     notificationService.notifyChannelConnected(connectedChannel);

@@ -23,12 +23,20 @@ public class ListHolder<T> {
     this.updateType = updateType;
   }
 
-  public ListUpdateType getUpdateType() {
-    return updateType;
+  public List<T> getItems() {
+    return items;
   }
 
   public int getIndexChanged() {
     return indexChanged;
+  }
+
+  public ListUpdateType getUpdateType() {
+    return updateType;
+  }
+
+  public void applyChanges(RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter) {
+    updateType.notifyChange(adapter, indexChanged);
   }
 
   void set(T item) {
@@ -77,7 +85,7 @@ public class ListHolder<T> {
 
   void remove(T item) {
     int index = items.indexOf(item);
-    if (index >= 0) {
+    if (index != -1) {
       remove(index);
     } else {
       indexChanged = index;
@@ -105,13 +113,5 @@ public class ListHolder<T> {
 
   int size() {
     return items.size();
-  }
-
-  public List<T> getItems() {
-    return items;
-  }
-
-  public void applyChanges(RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter) {
-    updateType.notifyChange(adapter, indexChanged);
   }
 }

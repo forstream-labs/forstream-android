@@ -21,35 +21,35 @@ import retrofit2.http.Query;
 
 public interface UserApi {
 
-  @GET("users/me")
+  @GET("v1/users/me")
   Call<User> getMyUser();
 
-  @PUT("users/me")
+  @PUT("v1/users/me")
   Call<User> updateMyUser(@Body User user);
 
   @Multipart
-  @PUT("users/me/images")
+  @PUT("v1/users/me/images")
   Call<User> updateMyUserImage(@Part MultipartBody.Part imagePart);
 
-  @GET("users/me/channels")
+  @GET("v1/users/me/channels")
   Call<List<ConnectedChannel>> listMyConnectedChannels(@Query("populate") String populate);
 
-  @GET("users/me/streams")
+  @GET("v1/users/me/streams")
   Call<List<LiveStream>> listMyLiveStreams(@Query("populate") String populate);
 
-  @POST("users/sign_in/google")
+  @POST("v1/users/sign_in/google")
   Call<SignInResult> signInWithGoogle(@Body AuthCodePayload payload);
 
-  @POST("users/sign_in/facebook")
+  @POST("v1/users/sign_in/facebook")
   Call<SignInResult> signInWithFacebook(@Body AccessTokenPayload payload);
 
-  @POST("users/sign_out")
+  @POST("v1/users/sign_out")
   Call<Void> signOut();
 
-  @POST("users/channels/youtube")
+  @POST("v1/users/channels/youtube")
   Call<ConnectedChannel> connectYouTubeChannel(@Body AuthCodePayload payload);
 
-  @POST("users/channels/facebook")
+  @POST("v1/users/channels/facebook")
   Call<ConnectedChannel> connectFacebookChannel(@Body AccessTokenPayload payload);
 
   @POST("users/streams")

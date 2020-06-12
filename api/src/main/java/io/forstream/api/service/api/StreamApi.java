@@ -13,25 +13,25 @@ import retrofit2.http.Query;
 
 public interface StreamApi {
 
-  @POST("streams")
+  @POST("v1/streams")
   Call<LiveStream> createLiveStream(@Body CreateLiveStreamPayload payload);
 
-  @GET("streams/{live_stream}")
+  @GET("v1/streams/{live_stream}")
   Call<LiveStream> getLiveStream(@Path("live_stream") String liveStreamId, @Query("populate") String populate);
 
-  @DELETE("streams/{live_stream}")
+  @DELETE("v1/streams/{live_stream}")
   Call<LiveStream> removeLiveStream(@Path("live_stream") String liveStreamId);
 
-  @POST("streams/{live_stream}/start")
+  @POST("v1/streams/{live_stream}/start")
   Call<LiveStream> startLiveStream(@Path("live_stream") String liveStreamId);
 
-  @POST("streams/{live_stream}/end")
+  @POST("v1/streams/{live_stream}/end")
   Call<LiveStream> endLiveStream(@Path("live_stream") String liveStreamId);
 
-  @POST("streams/{live_stream}/providers/{provider}/enable")
+  @POST("v1/streams/{live_stream}/providers/{provider}/enable")
   Call<LiveStream> enableLiveStreamProvider(@Path("live_stream") String liveStreamId, @Path("provider") ChannelIdentifier channelIdentifier);
 
-  @POST("streams/{live_stream}/providers/{provider}/disable")
+  @POST("v1/streams/{live_stream}/providers/{provider}/disable")
   Call<LiveStream> disableLiveStreamProvider(@Path("live_stream") String liveStreamId, @Path("provider") ChannelIdentifier channelIdentifier);
 
 }

@@ -7,20 +7,14 @@ import java.util.List;
 
 public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
 
-  private boolean postByDefault;
   private boolean reversed;
 
   public ListLiveData() {
-    this(true);
+    this(false);
   }
 
-  public ListLiveData(boolean postByDefault) {
-    this(postByDefault, false);
-  }
-
-  public ListLiveData(boolean postByDefault, boolean reversed) {
+  public ListLiveData(boolean reversed) {
     super(new ListHolder<>(new ArrayList<>(), reversed));
-    this.postByDefault = postByDefault;
     this.reversed = reversed;
   }
 
@@ -85,12 +79,12 @@ public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
     return getValue() != null ? getValue().get(index) : null;
   }
 
-  public boolean isEmpty() {
-    return getValue() == null || getValue().isEmpty();
-  }
-
   public int indexOf(T item) {
     return getValue() != null ? getValue().indexOf(item) : -1;
+  }
+
+  public boolean isEmpty() {
+    return getValue() == null || getValue().isEmpty();
   }
 
   public int size() {
@@ -99,11 +93,7 @@ public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
 
   private void updateValue() {
     if (getValue() != null && !ListUpdateType.NONE.equals(getValue().getUpdateType())) {
-      if (postByDefault) {
-        postValue(getValue());
-      } else {
-        setValue(getValue());
-      }
+      postValue(getValue());
     }
   }
 }

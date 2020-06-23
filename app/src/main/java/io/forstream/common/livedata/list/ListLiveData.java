@@ -1,29 +1,29 @@
 package io.forstream.common.livedata.list;
 
-import androidx.lifecycle.MutableLiveData;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
+import io.forstream.common.livedata.SingleLiveData;
 
-  private boolean reversed;
+public class ListLiveData<T> extends SingleLiveData<ListHolder<T>> {
+
+  private boolean postByDefault;
 
   public ListLiveData() {
-    this(false);
+    this(true);
   }
 
-  public ListLiveData(boolean reversed) {
-    super(new ListHolder<>(new ArrayList<>(), reversed));
-    this.reversed = reversed;
+  public ListLiveData(boolean postByDefault) {
+    super(new ListHolder<>(new ArrayList<>(), ListUpdateType.CHANGE_ALL));
+    this.postByDefault = postByDefault;
   }
 
   public void postValue(List<T> items) {
-    postValue(new ListHolder<>(items, reversed, ListUpdateType.CHANGE_ALL));
+    postValue(new ListHolder<>(items, ListUpdateType.CHANGE_ALL));
   }
 
   public void setValue(List<T> items) {
-    setValue(new ListHolder<>(items, reversed));
+    setValue(new ListHolder<>(items, ListUpdateType.CHANGE_ALL));
   }
 
   public void set(T item) {
@@ -54,9 +54,9 @@ public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
     }
   }
 
-  public void add(List<T> items) {
+  public void addAll(List<T> items) {
     if (getValue() != null) {
-      getValue().add(items);
+      getValue().addAll(items);
       updateValue();
     }
   }
@@ -93,7 +93,11 @@ public class ListLiveData<T> extends MutableLiveData<ListHolder<T>> {
 
   private void updateValue() {
     if (getValue() != null && !ListUpdateType.NONE.equals(getValue().getUpdateType())) {
-      postValue(getValue());
+      if (postByDefault) {
+        postValue(getValue());
+      } else {
+        setValue(getValue());
+      }
     }
   }
 }

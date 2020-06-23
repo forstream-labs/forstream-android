@@ -29,6 +29,9 @@ public interface ChannelApi {
   @POST("v1/channels/facebook/connect")
   Call<ConnectedChannel> connectFacebookChannel(@Body ConnectFacebookPayload payload);
 
+  @POST("v1/channels/twitch/connect")
+  Call<ConnectedChannel> connectTwitchChannel(@Body AuthCodePayload payload);
+
   @POST("v1/channels/{channel}/disconnect")
   Call<Void> disconnectChannel(@Path("channel") ChannelIdentifier channelIdentifier);
 

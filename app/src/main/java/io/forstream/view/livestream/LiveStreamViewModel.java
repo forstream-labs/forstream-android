@@ -1,12 +1,12 @@
 package io.forstream.view.livestream;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import io.forstream.api.model.LiveStream;
 import io.forstream.api.model.ProviderStream;
 import io.forstream.api.model.User;
 import io.forstream.api.service.StreamService;
+import io.forstream.common.livedata.SingleLiveData;
 import io.forstream.common.viewmodel.BaseViewModel;
 import io.forstream.service.AuthenticatedUser;
 import io.forstream.service.NotificationService;
@@ -20,10 +20,10 @@ public class LiveStreamViewModel extends BaseViewModel {
   private StreamService streamService;
   private NotificationService notificationService;
 
-  private MutableLiveData<LiveStream> liveStream = new MutableLiveData<>();
-  private MutableLiveData<LiveStream> startLiveStream = new MutableLiveData<>();
-  private MutableLiveData<LiveStream> endLiveStream = new MutableLiveData<>();
-  private MutableLiveData<LiveStream> enableDisableLiveStream = new MutableLiveData<>();
+  private SingleLiveData<LiveStream> liveStream = new SingleLiveData<>();
+  private SingleLiveData<LiveStream> startLiveStream = new SingleLiveData<>();
+  private SingleLiveData<LiveStream> endLiveStream = new SingleLiveData<>();
+  private SingleLiveData<LiveStream> enableDisableLiveStream = new SingleLiveData<>();
 
   public LiveStreamViewModel(AuthenticatedUser authenticatedUser, StreamService streamService, NotificationService notificationService) {
     this.authenticatedUser = authenticatedUser;
@@ -64,7 +64,7 @@ public class LiveStreamViewModel extends BaseViewModel {
   public void startLiveStream(LiveStream liveStream) {
     streamService.startLiveStream(liveStream).then(updatedLiveStream -> {
       startLiveStream.postValue(updatedLiveStream);
-      notificationService.notifyLiveStreamUpdated(liveStream);
+      notificationService.notifyLiveStreamUpdated(updatedLiveStream);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error starting live stream %s", liveStream.getId());
@@ -76,7 +76,7 @@ public class LiveStreamViewModel extends BaseViewModel {
   public void endLiveStream(LiveStream liveStream) {
     streamService.endLiveStream(liveStream).then(updatedLiveStream -> {
       endLiveStream.postValue(updatedLiveStream);
-      notificationService.notifyLiveStreamUpdated(liveStream);
+      notificationService.notifyLiveStreamUpdated(updatedLiveStream);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error ending live stream %s", liveStream.getId());

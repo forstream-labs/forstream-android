@@ -4,9 +4,10 @@ import android.content.Context;
 
 import androidx.core.content.ContextCompat;
 
+import com.pedro.rtplibrary.rtmp.RtmpCamera2;
+
 import io.forstream.R;
 import io.forstream.api.enums.StreamStatus;
-import io.forstream.util.component.RtmpCamera;
 
 public class AppUtils {
 
@@ -14,11 +15,11 @@ public class AppUtils {
 
   }
 
-  public static String getStreamStatusName(Context context, StreamStatus streamStatus, RtmpCamera rtmpCamera) {
+  public static String getStreamStatusName(Context context, StreamStatus streamStatus, RtmpCamera2 rtmpCamera) {
     return getString(context, "stream_status_" + (streamStatus.equals(StreamStatus.LIVE) && rtmpCamera != null && !rtmpCamera.isStreaming() ? "paused" : streamStatus.name().toLowerCase()));
   }
 
-  public static int getStreamStatusColor(Context context, StreamStatus streamStatus, RtmpCamera rtmpCamera) {
+  public static int getStreamStatusColor(Context context, StreamStatus streamStatus, RtmpCamera2 rtmpCamera) {
     int color = 0;
     switch (streamStatus) {
       case READY:

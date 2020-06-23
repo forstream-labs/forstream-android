@@ -9,17 +9,11 @@ public class ListHolder<T> {
   private static final int NO_INDEX_CHANGED = -1;
 
   private List<T> items;
-  private boolean reversed;
   private ListUpdateType updateType;
   private int indexChanged = NO_INDEX_CHANGED;
 
-  ListHolder(List<T> items, boolean reversed) {
-    this(items, reversed, ListUpdateType.NONE);
-  }
-
-  ListHolder(List<T> items, boolean reversed, ListUpdateType updateType) {
+  ListHolder(List<T> items, ListUpdateType updateType) {
     this.items = items;
-    this.reversed = reversed;
     this.updateType = updateType;
   }
 
@@ -44,7 +38,7 @@ public class ListHolder<T> {
     if (index >= 0) {
       set(index, item);
     } else {
-      indexChanged = index;
+      indexChanged = NO_INDEX_CHANGED;
       updateType = ListUpdateType.NONE;
     }
   }
@@ -56,13 +50,8 @@ public class ListHolder<T> {
   }
 
   void add(T item) {
-    if (!reversed) {
-      items.add(item);
-      indexChanged = items.size() - 1;
-    } else {
-      items.add(0, item);
-      indexChanged = 0;
-    }
+    items.add(item);
+    indexChanged = items.size() - 1;
     updateType = ListUpdateType.INSERT;
   }
 
@@ -72,23 +61,18 @@ public class ListHolder<T> {
     updateType = ListUpdateType.INSERT;
   }
 
-  void add(List<T> items) {
-    if (!items.isEmpty()) {
-      indexChanged = this.items.size();
-      updateType = ListUpdateType.INSERT_MANY;
-      this.items.addAll(items);
-    } else {
-      indexChanged = NO_INDEX_CHANGED;
-      updateType = ListUpdateType.NONE;
-    }
+  void addAll(List<T> items) {
+    indexChanged = this.items.size();
+    updateType = ListUpdateType.INSERT_MANY;
+    this.items.addAll(items);
   }
 
   void remove(T item) {
     int index = items.indexOf(item);
-    if (index != -1) {
+    if (index >= 0) {
       remove(index);
     } else {
-      indexChanged = index;
+      indexChanged = NO_INDEX_CHANGED;
       updateType = ListUpdateType.NONE;
     }
   }

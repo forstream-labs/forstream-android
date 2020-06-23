@@ -2,6 +2,7 @@ package io.forstream.view.main.channels;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.annimon.stream.Stream;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -23,12 +25,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationRequest;
+import net.openid.appauth.AuthorizationResponse;
+import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.AuthorizationServiceConfiguration;
+import net.openid.appauth.ResponseTypeValues;
 
 import javax.inject.Inject;
 
@@ -38,22 +43,16 @@ import io.forstream.R;
 import io.forstream.api.model.Channel;
 import io.forstream.api.model.ChannelTarget;
 import io.forstream.common.BaseFragment;
-import io.forstream.common.livedata.list.ListUpdateType;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
 import io.forstream.view.main.channels.facebook.ChannelTargetDialogFragment;
+import timber.log.Timber;
 
 public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ChannelsAdapter.Listener, ChannelTargetDialogFragment.Listener {
 
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
-
-  private static final String YOUTUBE_SCOPE_MANAGE = "https://www.googleapis.com/auth/youtube";
-
-  private static final String FACEBOOK_SCOPE_PUBLISH_VIDEO = "publish_video";
-  private static final String FACEBOOK_SCOPE_PAGES_SHOW_LIST = "pages_show_list";
-  private static final String FACEBOOK_SCOPE_PAGES_READ_ENGAGEMENT = "pages_read_engagement";
-  private static final String FACEBOOK_SCOPE_PAGES_MANAGE_POST = "pages_manage_posts";
+  private static final int TWITCH_CHANNEL_REQUEST_CODE = 2;
 
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
   @BindView(R.id.channels_view) RecyclerView channelsView;
@@ -62,9 +61,8 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   @Inject ChannelsViewModel channelsViewModel;
   @Inject ChannelsAdapter channelsAdapter;
 
-  private GoogleSignInClient youtubeChannelSignInClient;
-  private CallbackManager callbackManager = CallbackManager.Factory.create();
   private ChannelTargetDialogFragment channelTargetDialogFragment;
+  private CallbackManager callbackManager = CallbackManager.Factory.create();
   private Channel selectedChannel;
   private String selectedAccessToken;
 
@@ -77,7 +75,6 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     UIUtils.defaultSwipeRefreshLayout(swipeRefreshLayout, this);
     setupObservers();
     setupViews();
-    setupYouTubeChannelSignIn();
     setupContent();
     return view;
   }
@@ -86,11 +83,12 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     callbackManager.onActivityResult(requestCode, resultCode, data);
-    super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode) {
       case YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE:
-        Task<GoogleSignInAccount> youtubeChannelSignInTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-        handleYouTubeChannelSignInResult(youtubeChannelSignInTask);
+        handleYouTubeChannelSignInResult(data);
+        break;
+      case TWITCH_CHANNEL_REQUEST_CODE:
+        handleTwitchChannelSignInResult(data);
         break;
     }
   }
@@ -105,19 +103,13 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     selectedChannel = channel;
     switch (channel.getIdentifier()) {
       case YOUTUBE:
-        youtubeChannelSignInClient.revokeAccess();
-        Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
+        onYouTubeChannelClick(channel);
         break;
       case FACEBOOK:
-        List<String> scopes = new ArrayList<>();
-        scopes.add(FACEBOOK_SCOPE_PUBLISH_VIDEO);
-        scopes.add(FACEBOOK_SCOPE_PAGES_SHOW_LIST);
-        scopes.add(FACEBOOK_SCOPE_PAGES_READ_ENGAGEMENT);
-        scopes.add(FACEBOOK_SCOPE_PAGES_MANAGE_POST);
-        LoginManager loginManager = LoginManager.getInstance();
-        loginManager.registerCallback(callbackManager, new ConnectFacebookCallback());
-        loginManager.logIn(this, scopes);
+        onFacebookChannelClick(channel);
+        break;
+      case TWITCH:
+        onTwitchChannelClick(channel);
         break;
     }
   }
@@ -129,11 +121,9 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
 
   private void setupObservers() {
     channelsViewModel.getViewItems().observe(getViewLifecycleOwner(), channelsHolder -> {
-      if (!ListUpdateType.NONE.equals(channelsHolder.getUpdateType())) {
-        swipeRefreshLayout.setRefreshing(false);
-        channelsAdapter.setViewItems(channelsHolder.getItems());
-        channelsHolder.applyChanges(channelsAdapter);
-      }
+      swipeRefreshLayout.setRefreshing(false);
+      channelsAdapter.setViewItems(channelsHolder.getItems());
+      channelsHolder.applyChanges(channelsAdapter);
     });
     channelsViewModel.getFacebookTargets().observe(getViewLifecycleOwner(), channelTargets -> {
       if (channelTargets.size() == 1) {
@@ -171,28 +161,74 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     }
   }
 
-  private void setupYouTubeChannelSignIn() {
+  private void setupContent() {
+    channelsViewModel.loadViewItems();
+  }
+
+  private void onYouTubeChannelClick(Channel channel) {
+    Scope scope = new Scope(channel.getRequiredScopes().get(0));
+    Scope[] scopes = Stream.of(channel.getRequiredScopes()).skip(1).map(Scope::new).toArray(Scope[]::new);
     String googleAuthClientId = getString(R.string.default_web_client_id);
     GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestEmail()
       .requestIdToken(googleAuthClientId)
       .requestServerAuthCode(googleAuthClientId)
-      .requestScopes(new Scope(YOUTUBE_SCOPE_MANAGE))
+      .requestScopes(scope, scopes)
       .build();
-    youtubeChannelSignInClient = GoogleSignIn.getClient(context, signInOptions);
+    GoogleSignInClient youtubeChannelSignInClient = GoogleSignIn.getClient(context, signInOptions);
+    youtubeChannelSignInClient.revokeAccess();
+    Intent signInIntent = youtubeChannelSignInClient.getSignInIntent();
+    startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
   }
 
-  private void setupContent() {
-    channelsViewModel.loadViewItems();
+  private void onFacebookChannelClick(Channel channel) {
+    LoginManager loginManager = LoginManager.getInstance();
+    loginManager.registerCallback(callbackManager, new ConnectFacebookCallback());
+    loginManager.logIn(this, channel.getRequiredScopes());
   }
 
-  private void handleYouTubeChannelSignInResult(Task<GoogleSignInAccount> completedTask) {
+  private void onTwitchChannelClick(Channel channel) {
+    AuthorizationServiceConfiguration.fetchFromIssuer(Uri.parse("https://id.twitch.tv/oauth2"), (serviceConfiguration, authorizationException) -> {
+      if (authorizationException != null) {
+        Timber.e("Error fetching oauth2 config from Twitch: %s %s", authorizationException.error, authorizationException.errorDescription);
+        AlertUtils.alert(context, R.string.twitch_error_sign_in);
+        return;
+      }
+      AuthorizationRequest.Builder authorizationRequestBuilder = new AuthorizationRequest.Builder(
+        serviceConfiguration,
+        getString(R.string.twitch_client_id),
+        ResponseTypeValues.CODE,
+        Uri.parse(getString(R.string.twitch_redirect_url))
+      );
+      AuthorizationRequest authorizationRequest = authorizationRequestBuilder
+        .setScopes(channel.getRequiredScopes())
+        .build();
+      AuthorizationService authorizationService = new AuthorizationService(context);
+      Intent authorizationIntent = authorizationService.getAuthorizationRequestIntent(authorizationRequest);
+      startActivityForResult(authorizationIntent, TWITCH_CHANNEL_REQUEST_CODE);
+    });
+  }
+
+  private void handleYouTubeChannelSignInResult(Intent data) {
     try {
-      GoogleSignInAccount googleSignInAccount = completedTask.getResult(ApiException.class);
+      Task<GoogleSignInAccount> youtubeChannelSignInTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+      GoogleSignInAccount googleSignInAccount = youtubeChannelSignInTask.getResult(RuntimeException.class);
       channelsViewModel.connectYouTubeChannel(googleSignInAccount.getServerAuthCode());
-    } catch (ApiException e) {
-      e.printStackTrace();
+    } catch (RuntimeException e) {
+      Timber.e(e, "Error signing in with YouTube");
+      AlertUtils.alert(context, R.string.youtube_error_sign_in);
     }
+  }
+
+  private void handleTwitchChannelSignInResult(Intent data) {
+    AuthorizationException authorizationException = AuthorizationException.fromIntent(data);
+    if (authorizationException != null) {
+      Timber.e("Error executing oauth2 flow with Twitch: %s %s", authorizationException.error, authorizationException.errorDescription);
+      AlertUtils.alert(context, R.string.twitch_error_sign_in);
+      return;
+    }
+    AuthorizationResponse authorizationResponse = AuthorizationResponse.fromIntent(data);
+    channelsViewModel.connectTwitchChannel(authorizationResponse.authorizationCode);
   }
 
   private class ConnectFacebookCallback implements FacebookCallback<LoginResult> {

@@ -108,8 +108,8 @@ public class IntroActivity extends BaseActivity implements FacebookCallback<Logi
       finish();
     });
     introViewModel.getSignInWithGoogle().observe(this, user -> {
-      Intent intent = new Intent(this, MainActivity.class);
       FirebaseUtils.logSignInWithGoogle(this, user);
+      Intent intent = new Intent(this, MainActivity.class);
       startActivity(intent);
       finish();
     });

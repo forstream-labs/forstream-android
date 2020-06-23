@@ -7,6 +7,8 @@ public enum ChannelIdentifier {
   @SerializedName("youtube")
   YOUTUBE,
   @SerializedName("facebook")
-  FACEBOOK
+  FACEBOOK,
+  @SerializedName("twitch")
+  TWITCH
 
 }

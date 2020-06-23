@@ -1,7 +1,6 @@
 package io.forstream.view.main.channels;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
@@ -16,6 +15,7 @@ import io.forstream.api.model.ChannelTarget;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.service.ChannelService;
 import io.forstream.api.service.UserService;
+import io.forstream.common.livedata.SingleLiveData;
 import io.forstream.common.livedata.list.ListHolder;
 import io.forstream.common.livedata.list.ListLiveData;
 import io.forstream.common.viewmodel.BaseViewModel;
@@ -29,8 +29,8 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
   private NotificationService notificationService;
 
   private ListLiveData<ViewItem> viewItems = new ListLiveData<>();
-  private MutableLiveData<List<ChannelTarget>> facebookTargets = new MutableLiveData<>();
-  private MutableLiveData<ConnectedChannel> channelConnected = new MutableLiveData<>();
+  private SingleLiveData<List<ChannelTarget>> facebookTargets = new SingleLiveData<>();
+  private SingleLiveData<ConnectedChannel> channelConnected = new SingleLiveData<>();
 
   public ChannelsViewModel(UserService userService, ChannelService channelService, NotificationService notificationService) {
     this.userService = userService;
@@ -97,12 +97,23 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     }));
   }
 
-  public void connectYouTubeChannel(String authCode) {
-    channelService.connectYouTubeChannel(authCode).then(connectedChannel -> {
+  public void connectYouTubeChannel(String authorizationCode) {
+    channelService.connectYouTubeChannel(authorizationCode).then(connectedChannel -> {
       updateChannelConnected(connectedChannel);
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error connecting YouTube channel");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void connectTwitchChannel(String authorizationCode) {
+    channelService.connectTwitchChannel(authorizationCode).then(connectedChannel -> {
+      updateChannelConnected(connectedChannel);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error connecting Twitch channel");
       error.postValue(reason);
       return null;
     }));

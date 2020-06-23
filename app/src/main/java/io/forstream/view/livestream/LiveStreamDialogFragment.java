@@ -23,9 +23,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.forstream.R;
-import io.forstream.api.enums.StreamStatus;
 import io.forstream.api.model.LiveStream;
-import io.forstream.api.model.ProviderStream;
 import io.forstream.common.Constants;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.AppUtils;
@@ -34,7 +32,7 @@ import io.forstream.util.StringUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
 
-public class LiveStreamDialogFragment extends BottomSheetDialogFragment implements ProviderStreamsAdapter.Listener {
+public class LiveStreamDialogFragment extends BottomSheetDialogFragment {
 
   @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnailView;
   @BindView(R.id.live_stream_title) TextView liveStreamTitleView;
@@ -80,15 +78,6 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment implemen
     super.show(manager, tag);
   }
 
-  @Override
-  public void onProviderStreamEnabledChanged(ProviderStream providerStream) {
-    if (providerStream.getEnabled()) {
-      liveStreamViewModel.enableLiveStreamProvider(liveStream, providerStream);
-    } else {
-      liveStreamViewModel.disableLiveStreamProvider(liveStream, providerStream);
-    }
-  }
-
   private void setupLiveStream() {
     liveStream = (LiveStream) getArguments().getSerializable(Constants.LIVE_STREAM);
   }
@@ -97,15 +86,12 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment implemen
     liveStreamViewModel.getEnableDisableLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
       providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
-      providerStreamsAdapter.setStateSwitchEnabled(false);
       providerStreamsAdapter.notifyDataSetChanged();
     });
     liveStreamViewModel.getError().observe(this, throwable -> AlertUtils.alert(context, throwable));
   }
 
   private void setupViews() {
-    providerStreamsAdapter.setListener(this);
-
     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
     SpaceItemDecoration itemDecoration = new SpaceItemDecoration(getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());
     providerStreamsView.setLayoutManager(layoutManager);
@@ -120,7 +106,6 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment implemen
   private void setupContent() {
     updateContent();
     providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
-    providerStreamsAdapter.setStateSwitchEnabled(!liveStream.getStatus().equals(StreamStatus.COMPLETE));
     providerStreamsAdapter.notifyDataSetChanged();
   }
 
@@ -129,8 +114,8 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment implemen
     liveStreamTitleView.setText(liveStream.getTitle());
     liveStreamDescriptionView.setText(liveStream.getDescription());
     liveStreamDescriptionView.setVisibility(!StringUtils.isEmpty(liveStream.getDescription()) ? View.VISIBLE : View.GONE);
-    liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
-    UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
+    liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStreamStatus(), null));
+    UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStreamStatus(), null));
 
     if (liveStream.getStartDate() != null) {
       liveStreamDateView.setVisibility(View.VISIBLE);

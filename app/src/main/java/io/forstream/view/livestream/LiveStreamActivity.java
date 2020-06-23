@@ -16,6 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
 import com.pedro.encoder.input.video.CameraHelper;
+import com.pedro.rtplibrary.rtmp.RtmpCamera2;
 import com.pedro.rtplibrary.util.BitrateAdapter;
 import com.pedro.rtplibrary.util.SensorRotationManager;
 import com.pedro.rtplibrary.view.OpenGlView;
@@ -30,13 +31,11 @@ import butterknife.OnClick;
 import io.forstream.R;
 import io.forstream.api.enums.StreamStatus;
 import io.forstream.api.model.LiveStream;
-import io.forstream.api.model.ProviderStream;
 import io.forstream.common.BaseActivity;
 import io.forstream.common.Constants;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.AppUtils;
 import io.forstream.util.UIUtils;
-import io.forstream.util.component.RtmpCamera;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
@@ -55,7 +54,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   @Inject LiveStreamDialogFragment liveStreamDialogFragment;
 
   private LiveStream liveStream;
-  private RtmpCamera rtmpCamera;
+  private RtmpCamera2 rtmpCamera;
   private SensorRotationManager sensorRotationManager;
   private BitrateAdapter bitrateAdapter;
   private CameraHelper.Facing cameraFacing = CameraHelper.Facing.BACK;
@@ -192,13 +191,8 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     });
     liveStreamViewModel.getStartLiveStream().observe(this, liveStream -> {
       this.liveStream = liveStream;
-      StringBuilder urlsBuilder = new StringBuilder();
-      for (ProviderStream providerStream : liveStream.getProviders()) {
-        urlsBuilder.append(providerStream.getStreamUrl()).append(",");
-      }
-      rtmpCamera.setupMuxers(liveStream.getProviders().size());
       if (prepareAudio() && prepareVideo()) {
-        rtmpCamera.startStream(urlsBuilder.toString());
+        rtmpCamera.startStream(liveStream.getStreamUrl());
       } else {
         // TODO: What to do when device can't go live?
       }
@@ -226,7 +220,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   }
 
   private void setupViews() {
-    rtmpCamera = new RtmpCamera(liveStreamCameraView, this);
+    rtmpCamera = new RtmpCamera2(liveStreamCameraView, this);
     rtmpCamera.setReTries(10);
     sensorRotationManager = new SensorRotationManager(this, rotation -> rtmpCamera.getGlInterface().setStreamRotation(rotation));
     liveStreamCameraView.getHolder().addCallback(this);
@@ -262,14 +256,14 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
 
   private void updateContent() {
     liveStreamStatusView.setVisibility(View.VISIBLE);
-    liveStreamStatusView.setText(AppUtils.getStreamStatusName(this, liveStream.getStatus(), rtmpCamera));
-    UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(this, liveStream.getStatus(), rtmpCamera));
+    liveStreamStatusView.setText(AppUtils.getStreamStatusName(this, liveStream.getStreamStatus(), rtmpCamera));
+    UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(this, liveStream.getStreamStatus(), rtmpCamera));
 
     liveOptionsLayout.setVisibility(View.VISIBLE);
-    startLiveStreamButton.setVisibility(!liveStream.getStatus().equals(StreamStatus.COMPLETE) && (rtmpCamera == null || !rtmpCamera.isStreaming()) ? View.VISIBLE : View.GONE);
-    endLiveStreamButton.setVisibility(liveStream.getStatus().equals(StreamStatus.LIVE) && rtmpCamera != null && rtmpCamera.isStreaming() ? View.VISIBLE : View.GONE);
+    startLiveStreamButton.setVisibility(!liveStream.getStreamStatus().equals(StreamStatus.COMPLETE) && (rtmpCamera == null || !rtmpCamera.isStreaming()) ? View.VISIBLE : View.GONE);
+    endLiveStreamButton.setVisibility(liveStream.getStreamStatus().equals(StreamStatus.LIVE) && rtmpCamera != null && rtmpCamera.isStreaming() ? View.VISIBLE : View.GONE);
 
-    if (liveStream.getStatus().equals(StreamStatus.COMPLETE)) {
+    if (liveStream.getStreamStatus().equals(StreamStatus.COMPLETE)) {
       onOpenLiveStreamInfoButtonClick();
     }
   }

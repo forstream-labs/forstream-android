@@ -1,12 +1,6 @@
 package io.forstream.api.util;
 
-import com.onehilltech.promises.OnRejected;
-import com.onehilltech.promises.OnRejectedExecutor;
-import com.onehilltech.promises.OnResolved;
-import com.onehilltech.promises.OnResolvedExecutor;
 import com.onehilltech.promises.Promise;
-import com.onehilltech.promises.RejectedOnUIThread;
-import com.onehilltech.promises.ResolvedOnUIThread;
 
 import java.io.IOException;
 
@@ -45,13 +39,5 @@ public class PromiseUtils {
         settlement.reject(throwable);
       }
     }));
-  }
-
-  public static <T, U> OnResolvedExecutor<T, U> resolveOnUI(OnResolved<T, U> onResolved) {
-    return ResolvedOnUIThread.onUiThread(onResolved);
-  }
-
-  public static OnRejectedExecutor rejectOnUI(OnRejected onRejected) {
-    return RejectedOnUIThread.onUiThread(onRejected);
   }
 }

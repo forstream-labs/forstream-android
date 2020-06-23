@@ -1,10 +1,10 @@
 package io.forstream.view.splash;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import io.forstream.api.model.User;
 import io.forstream.api.service.UserService;
+import io.forstream.common.livedata.SingleLiveData;
 import io.forstream.common.viewmodel.BaseViewModel;
 import io.forstream.service.AuthenticatedUser;
 import timber.log.Timber;
@@ -14,7 +14,7 @@ public class SplashViewModel extends BaseViewModel {
   private final AuthenticatedUser authenticatedUser;
   private final UserService userService;
 
-  private MutableLiveData<User> user = new MutableLiveData<>();
+  private SingleLiveData<User> user = new SingleLiveData<>();
 
   public SplashViewModel(AuthenticatedUser authenticatedUser, UserService userService) {
     this.authenticatedUser = authenticatedUser;

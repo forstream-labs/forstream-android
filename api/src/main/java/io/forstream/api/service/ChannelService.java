@@ -26,8 +26,8 @@ public class ChannelService {
     return PromiseUtils.build(api.listChannels());
   }
 
-  public Promise<ConnectedChannel> connectYouTubeChannel(String authCode) {
-    return PromiseUtils.build(api.connectYouTubeChannel(new AuthCodePayload(authCode)));
+  public Promise<ConnectedChannel> connectYouTubeChannel(String authorizationCode) {
+    return PromiseUtils.build(api.connectYouTubeChannel(new AuthCodePayload(authorizationCode)));
   }
 
   public Promise<List<ChannelTarget>> listFacebookChannelTargets(String accessToken) {
@@ -36,6 +36,10 @@ public class ChannelService {
 
   public Promise<ConnectedChannel> connectFacebookChannel(String accessToken, String targetId) {
     return PromiseUtils.build(api.connectFacebookChannel(new ConnectFacebookPayload(accessToken, targetId)));
+  }
+
+  public Promise<ConnectedChannel> connectTwitchChannel(String authorizationCode) {
+    return PromiseUtils.build(api.connectTwitchChannel(new AuthCodePayload(authorizationCode)));
   }
 
   public Promise<Void> disconnectChannel(Channel channel) {

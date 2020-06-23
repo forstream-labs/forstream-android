@@ -32,7 +32,6 @@ import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.model.LiveStream;
 import io.forstream.common.BaseFragment;
 import io.forstream.common.Constants;
-import io.forstream.common.livedata.list.ListUpdateType;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
@@ -119,21 +118,17 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
   private void setupObservers() {
     homeViewModel.getConnectedChannels().observe(getViewLifecycleOwner(), connectedChannelsHolder -> {
-      if (!ListUpdateType.NONE.equals(connectedChannelsHolder.getUpdateType())) {
-        swipeRefreshLayout.setRefreshing(false);
-        updateLayouts();
-        createLiveStreamDialogFragment.setConnectedChannels(connectedChannelsHolder.getItems());
-        connectedChannelsAdapter.setConnectedChannels(connectedChannelsHolder.getItems());
-        connectedChannelsHolder.applyChanges(connectedChannelsAdapter);
-      }
+      swipeRefreshLayout.setRefreshing(false);
+      updateLayouts();
+      createLiveStreamDialogFragment.setConnectedChannels(connectedChannelsHolder.getItems());
+      connectedChannelsAdapter.setConnectedChannels(connectedChannelsHolder.getItems());
+      connectedChannelsHolder.applyChanges(connectedChannelsAdapter);
     });
     homeViewModel.getLiveStreams().observe(getViewLifecycleOwner(), liveStreamsHolder -> {
-      if (!ListUpdateType.NONE.equals(liveStreamsHolder.getUpdateType())) {
-        swipeRefreshLayout.setRefreshing(false);
-        updateLayouts();
-        liveStreamsAdapter.setLiveStreams(liveStreamsHolder.getItems());
-        liveStreamsHolder.applyChanges(liveStreamsAdapter);
-      }
+      swipeRefreshLayout.setRefreshing(false);
+      updateLayouts();
+      liveStreamsAdapter.setLiveStreams(liveStreamsHolder.getItems());
+      liveStreamsHolder.applyChanges(liveStreamsAdapter);
     });
     homeViewModel.getCreateLiveStream().observe(getViewLifecycleOwner(), liveStream -> {
       createLiveStreamDialogFragment.dismiss();

@@ -97,8 +97,8 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
       liveStreamTitleView.setText(liveStream.getTitle());
       liveStreamDescriptionView.setText(liveStream.getDescription());
       liveStreamDescriptionView.setVisibility(!StringUtils.isEmpty(liveStream.getDescription()) ? View.VISIBLE : View.GONE);
-      liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStatus(), null));
-      UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStatus(), null));
+      liveStreamStatusView.setText(AppUtils.getStreamStatusName(context, liveStream.getStreamStatus(), null));
+      UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(context, liveStream.getStreamStatus(), null));
 
       if (liveStream.getStartDate() != null) {
         liveStreamDateView.setVisibility(View.VISIBLE);

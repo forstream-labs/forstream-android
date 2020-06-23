@@ -1,7 +1,6 @@
 package io.forstream.view.main.home;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
@@ -11,6 +10,7 @@ import io.forstream.api.model.LiveStream;
 import io.forstream.api.service.ChannelService;
 import io.forstream.api.service.StreamService;
 import io.forstream.api.service.UserService;
+import io.forstream.common.livedata.SingleLiveData;
 import io.forstream.common.livedata.list.ListHolder;
 import io.forstream.common.livedata.list.ListLiveData;
 import io.forstream.common.viewmodel.BaseViewModel;
@@ -29,7 +29,7 @@ public class HomeViewModel extends BaseViewModel implements NotificationService.
 
   private ListLiveData<ConnectedChannel> connectedChannels = new ListLiveData<>();
   private ListLiveData<LiveStream> liveStreams = new ListLiveData<>();
-  private MutableLiveData<LiveStream> createLiveStream = new MutableLiveData<>();
+  private SingleLiveData<LiveStream> createLiveStream = new SingleLiveData<>();
 
   public HomeViewModel(UserService userService, ChannelService channelService, StreamService streamService, NotificationService notificationService) {
     this.userService = userService;
@@ -61,14 +61,7 @@ public class HomeViewModel extends BaseViewModel implements NotificationService.
 
   @Override
   public void onChannelConnected(ConnectedChannel connectedChannel) {
-    channelService.getConnectedChannel(connectedChannel.getId(), CONNECTED_CHANNELS_POPULATE).then(updatedConnectedChannel -> {
-      connectedChannels.add(updatedConnectedChannel);
-      return null;
-    })._catch(reason -> {
-      Timber.e(reason, "Error loading connected channel");
-      error.postValue(reason);
-      return null;
-    });
+    loadConnectedChannels();
   }
 
   @Override

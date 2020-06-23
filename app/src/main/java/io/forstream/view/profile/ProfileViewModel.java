@@ -3,17 +3,17 @@ package io.forstream.view.profile;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import io.forstream.api.model.User;
 import io.forstream.api.service.UserService;
+import io.forstream.common.livedata.SingleLiveData;
 import io.forstream.common.viewmodel.BaseViewModel;
 import io.forstream.service.AuthenticatedUser;
 import timber.log.Timber;
 
 public class ProfileViewModel extends BaseViewModel {
 
-  private MutableLiveData<User> user = new MutableLiveData<>();
+  private SingleLiveData<User> user = new SingleLiveData<>();
 
   private AuthenticatedUser authenticatedUser;
   private UserService userService;

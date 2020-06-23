@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
   compileSdkVersion 29
-
   defaultConfig {
     applicationId 'io.forstream'
     minSdkVersion 21
@@ -10,6 +9,9 @@ android {
     versionCode 2
     versionName '1.0.1'
     multiDexEnabled true
+    manifestPlaceholders = [
+      'appAuthRedirectScheme': 'io.forstream.api'
+    ]
   }
 
   flavorDimensions 'version'
@@ -17,11 +19,15 @@ android {
     prod {
       dimension 'version'
       resValue 'string', 'app_name', 'Forstream'
+      resValue 'string', 'facebook_app_id', '2605017349737935'
+      resValue 'string', 'facebook_login_protocol_scheme', 'fb2605017349737935'
     }
     dev {
       dimension 'version'
       applicationIdSuffix '.dev'
       resValue 'string', 'app_name', 'Forstream DEV'
+      resValue 'string', 'facebook_app_id', '276919856844001'
+      resValue 'string', 'facebook_login_protocol_scheme', 'fb276919856844001'
     }
   }
 
@@ -80,7 +86,7 @@ dependencies {
   // Android X and support libraries
   implementation 'androidx.appcompat:appcompat:1.1.0'
   implementation 'androidx.cardview:cardview:1.0.0'
-  implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta6'
+  implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta7'
   implementation 'androidx.core:core:1.3.0'
   implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
   implementation 'androidx.preference:preference:1.1.1'
@@ -109,6 +115,7 @@ dependencies {
   implementation 'com.mikepenz:iconics-core:4.0.2'
   implementation 'com.mikepenz:iconics-views:4.0.2'
   implementation 'com.mikhaellopez:circularimageview:3.2.0'
+  implementation 'net.openid:appauth:0.7.1'
   implementation 'org.permissionsdispatcher:permissionsdispatcher:4.3.1'
   // Annotation processors
   annotationProcessor 'com.google.dagger:dagger-android-processor:2.27'

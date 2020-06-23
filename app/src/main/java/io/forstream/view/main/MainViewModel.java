@@ -1,10 +1,10 @@
 package io.forstream.view.main;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import io.forstream.api.model.User;
 import io.forstream.api.service.UserService;
+import io.forstream.common.livedata.SingleLiveData;
 import io.forstream.common.viewmodel.BaseViewModel;
 import io.forstream.service.AuthenticatedUser;
 import timber.log.Timber;
@@ -14,7 +14,7 @@ public class MainViewModel extends BaseViewModel {
   private AuthenticatedUser authenticatedUser;
   private UserService userService;
 
-  private MutableLiveData<User> signOut = new MutableLiveData<>();
+  private SingleLiveData<User> signOut = new SingleLiveData<>();
 
   public MainViewModel(AuthenticatedUser authenticatedUser, UserService userService) {
     this.authenticatedUser = authenticatedUser;

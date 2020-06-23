@@ -12,7 +12,9 @@ public class LiveStream extends Entity {
   private User owner;
   private String title;
   private String description;
-  private StreamStatus status;
+  private String streamKey;
+  private String streamUrl;
+  private StreamStatus streamStatus;
   private List<ProviderStream> providers;
   private Date startDate;
   private Date endDate;
@@ -42,12 +44,28 @@ public class LiveStream extends Entity {
     this.description = description;
   }
 
-  public StreamStatus getStatus() {
-    return status;
+  public String getStreamKey() {
+    return streamKey;
   }
 
-  public void setStatus(StreamStatus status) {
-    this.status = status;
+  public void setStreamKey(String streamKey) {
+    this.streamKey = streamKey;
+  }
+
+  public String getStreamUrl() {
+    return streamUrl;
+  }
+
+  public void setStreamUrl(String streamUrl) {
+    this.streamUrl = streamUrl;
+  }
+
+  public StreamStatus getStreamStatus() {
+    return streamStatus;
+  }
+
+  public void setStreamStatus(StreamStatus streamStatus) {
+    this.streamStatus = streamStatus;
   }
 
   public List<ProviderStream> getProviders() {

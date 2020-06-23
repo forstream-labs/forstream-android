@@ -3,9 +3,13 @@
 
   <string name="app_file_provider" translatable="false">io.forstream.fileprovider</string>
 
-  <!-- Facebook -->
-  <string name="facebook_app_id" translatable="false">2605017349737935</string>
-  <string name="facebook_login_protocol_scheme" translatable="false">fb2605017349737935</string>
+  <!-- YouTube -->
+  <string name="youtube_error_sign_in">Could not sign in with YouTube, please try again later!</string>
+
+  <!-- Twitch -->
+  <string name="twitch_client_id" translatable="false">jf5nuztj2ehwws0oi8cztt8h0338mp</string>
+  <string name="twitch_redirect_url" translatable="false">io.forstream.api:/oauth2/twitch</string>
+  <string name="twitch_error_sign_in">Could not sign in with Twitch, please try again later!</string>
 
   <!-- Drawer menu -->
   <string name="menu_open">Open menu</string>

@@ -29,7 +29,7 @@ public interface ChannelApi {
   Call<ConnectedChannel> connectFacebookChannel(@Body ConnectFacebookPayload payload);
 
   @GET("v1/channels/facebook_page/targets")
-  Call<List<ChannelTarget>> listFacebookPageChannelTargets(@Header("access_token") String accessToken);
+  Call<List<ChannelTarget>> listFacebookPageChannelTargets(@Header("Access-Token") String accessToken);
 
   @POST("v1/channels/facebook_page/connect")
   Call<ConnectedChannel> connectFacebookPageChannel(@Body ConnectFacebookPayload payload);

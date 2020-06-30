@@ -1,6 +1,8 @@
 package io.forstream.view.main.home.connectedchannels;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +64,6 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
     return connectedChannels != null ? connectedChannels.size() : 0;
   }
 
-
   public interface Listener {
 
     void onRemoveConnectedChannelClick(ConnectedChannel connectedChannel);
@@ -91,16 +92,23 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
       ConnectedChannel connectedChannel = connectedChannels.get(getAdapterPosition());
       PopupMenu popup = new PopupMenu(context, channelMenuView);
       popup.inflate(R.menu.menu_connected_channel);
+      popup.getMenu().findItem(R.id.visit_channel).setVisible(connectedChannel.getTarget().getUrl() != null);
       popup.setOnMenuItemClickListener(item -> {
-        if (item.getItemId() == R.id.remove_connected_channel) {
-          MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.activity_main_dialog_remove_connected_channel_message)
-            .setPositiveButton(R.string.remove, (dialog, which) -> listener.onRemoveConnectedChannelClick(connectedChannel))
-            .setNegativeButton(R.string.cancel, null);
-          dialogBuilder.create().show();
-          return true;
+        switch (item.getItemId()) {
+          case R.id.visit_channel:
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(connectedChannel.getTarget().getUrl()));
+            context.startActivity(intent);
+            return true;
+          case R.id.remove_connected_channel:
+            MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
+              .setTitle(R.string.activity_main_dialog_remove_connected_channel_message)
+              .setPositiveButton(R.string.remove, (dialog, which) -> listener.onRemoveConnectedChannelClick(connectedChannel))
+              .setNegativeButton(R.string.cancel, null);
+            dialogBuilder.create().show();
+            return true;
+          default:
+            return false;
         }
-        return false;
       });
       popup.show();
     }

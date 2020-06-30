@@ -46,13 +46,16 @@ import io.forstream.common.BaseFragment;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
+import io.forstream.view.main.channels.customrtmp.ConnectRtmpDialogFragment;
 import io.forstream.view.main.channels.facebook.ChannelTargetDialogFragment;
 import timber.log.Timber;
 
-public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ChannelsAdapter.Listener, ChannelTargetDialogFragment.Listener {
+public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ChannelsAdapter.Listener, ChannelTargetDialogFragment.Listener, ConnectRtmpDialogFragment.Listener {
 
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
   private static final int TWITCH_CHANNEL_REQUEST_CODE = 2;
+
+  private static final String TWITCH_CHANNEL_OAUTH2_ISSUER = "https://id.twitch.tv/oauth2";
 
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
   @BindView(R.id.channels_view) RecyclerView channelsView;
@@ -62,6 +65,7 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   @Inject ChannelsAdapter channelsAdapter;
 
   private ChannelTargetDialogFragment channelTargetDialogFragment;
+  private ConnectRtmpDialogFragment connectRtmpDialogFragment;
   private CallbackManager callbackManager = CallbackManager.Factory.create();
   private Channel selectedChannel;
   private String selectedAccessToken;
@@ -103,20 +107,31 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     selectedChannel = channel;
     switch (channel.getIdentifier()) {
       case YOUTUBE:
-        onYouTubeChannelClick(channel);
+        onYouTubeChannelClick();
         break;
       case FACEBOOK:
-        onFacebookChannelClick(channel);
+        onFacebookChannelClick();
+        break;
+      case FACEBOOK_PAGE:
+        onFacebookPageChannelClick();
         break;
       case TWITCH:
-        onTwitchChannelClick(channel);
+        onTwitchChannelClick();
+        break;
+      case RTMP:
+        onRtmpChannelClick();
         break;
     }
   }
 
   @Override
-  public void onConnectButtonClick(ChannelTarget channelTarget) {
-    channelsViewModel.connectFacebookChannel(selectedAccessToken, channelTarget.getId());
+  public void onConnectTargetButtonClick(ChannelTarget channelTarget) {
+    channelsViewModel.connectFacebookPageChannel(selectedAccessToken, channelTarget.getId());
+  }
+
+  @Override
+  public void onConnectRtmpChannelButtonClick(String channelName, String rtmpUrl, String streamKey) {
+    channelsViewModel.connectRtmpChannel(channelName, rtmpUrl, streamKey);
   }
 
   private void setupObservers() {
@@ -125,9 +140,11 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
       channelsAdapter.setViewItems(channelsHolder.getItems());
       channelsHolder.applyChanges(channelsAdapter);
     });
-    channelsViewModel.getFacebookTargets().observe(getViewLifecycleOwner(), channelTargets -> {
-      if (channelTargets.size() == 1) {
-        channelsViewModel.connectFacebookChannel(selectedAccessToken, channelTargets.get(0).getId());
+    channelsViewModel.getFacebookPageTargets().observe(getViewLifecycleOwner(), channelTargets -> {
+      if (channelTargets.isEmpty()) {
+        AlertUtils.alert(context, getString(R.string.activity_main_no_facebook_page_found));
+      } else if (channelTargets.size() == 1) {
+        channelsViewModel.connectFacebookPageChannel(selectedAccessToken, channelTargets.get(0).getId());
       } else {
         channelTargetDialogFragment = new ChannelTargetDialogFragment(context);
         channelTargetDialogFragment.setListener(this);
@@ -139,6 +156,9 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     channelsViewModel.getChannelConnected().observe(getViewLifecycleOwner(), connectedChannel -> {
       if (channelTargetDialogFragment != null) {
         channelTargetDialogFragment.dismiss();
+      }
+      if (connectRtmpDialogFragment != null) {
+        connectRtmpDialogFragment.dismiss();
       }
     });
     channelsViewModel.getError().observe(getViewLifecycleOwner(), throwable -> {
@@ -165,9 +185,9 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     channelsViewModel.loadViewItems();
   }
 
-  private void onYouTubeChannelClick(Channel channel) {
-    Scope scope = new Scope(channel.getRequiredScopes().get(0));
-    Scope[] scopes = Stream.of(channel.getRequiredScopes()).skip(1).map(Scope::new).toArray(Scope[]::new);
+  private void onYouTubeChannelClick() {
+    Scope scope = new Scope(selectedChannel.getRequiredScopes().get(0));
+    Scope[] scopes = Stream.of(selectedChannel.getRequiredScopes()).skip(1).map(Scope::new).toArray(Scope[]::new);
     String googleAuthClientId = getString(R.string.default_web_client_id);
     GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestEmail()
@@ -181,14 +201,20 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
     startActivityForResult(signInIntent, YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE);
   }
 
-  private void onFacebookChannelClick(Channel channel) {
+  private void onFacebookChannelClick() {
     LoginManager loginManager = LoginManager.getInstance();
     loginManager.registerCallback(callbackManager, new ConnectFacebookCallback());
-    loginManager.logIn(this, channel.getRequiredScopes());
+    loginManager.logIn(this, selectedChannel.getRequiredScopes());
   }
 
-  private void onTwitchChannelClick(Channel channel) {
-    AuthorizationServiceConfiguration.fetchFromIssuer(Uri.parse("https://id.twitch.tv/oauth2"), (serviceConfiguration, authorizationException) -> {
+  private void onFacebookPageChannelClick() {
+    LoginManager loginManager = LoginManager.getInstance();
+    loginManager.registerCallback(callbackManager, new ConnectFacebookPageCallback());
+    loginManager.logIn(this, selectedChannel.getRequiredScopes());
+  }
+
+  private void onTwitchChannelClick() {
+    AuthorizationServiceConfiguration.fetchFromIssuer(Uri.parse(TWITCH_CHANNEL_OAUTH2_ISSUER), (serviceConfiguration, authorizationException) -> {
       if (authorizationException != null) {
         Timber.e("Error fetching oauth2 config from Twitch: %s %s", authorizationException.error, authorizationException.errorDescription);
         AlertUtils.alert(context, R.string.twitch_error_sign_in);
@@ -201,12 +227,19 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
         Uri.parse(getString(R.string.twitch_redirect_url))
       );
       AuthorizationRequest authorizationRequest = authorizationRequestBuilder
-        .setScopes(channel.getRequiredScopes())
+        .setScopes(selectedChannel.getRequiredScopes())
         .build();
       AuthorizationService authorizationService = new AuthorizationService(context);
       Intent authorizationIntent = authorizationService.getAuthorizationRequestIntent(authorizationRequest);
       startActivityForResult(authorizationIntent, TWITCH_CHANNEL_REQUEST_CODE);
     });
+  }
+
+  private void onRtmpChannelClick() {
+    connectRtmpDialogFragment = new ConnectRtmpDialogFragment(context);
+    connectRtmpDialogFragment.setListener(this);
+    connectRtmpDialogFragment.setChannel(selectedChannel);
+    connectRtmpDialogFragment.show(getActivity().getSupportFragmentManager(), ChannelsFragment.class.getSimpleName());
   }
 
   private void handleYouTubeChannelSignInResult(Intent data) {
@@ -234,8 +267,25 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   private class ConnectFacebookCallback implements FacebookCallback<LoginResult> {
     @Override
     public void onSuccess(LoginResult loginResult) {
+      channelsViewModel.connectFacebookChannel(loginResult.getAccessToken().getToken());
+    }
+
+    @Override
+    public void onCancel() {
+
+    }
+
+    @Override
+    public void onError(FacebookException error) {
+      AlertUtils.alert(context, error);
+    }
+  }
+
+  private class ConnectFacebookPageCallback implements FacebookCallback<LoginResult> {
+    @Override
+    public void onSuccess(LoginResult loginResult) {
       selectedAccessToken = loginResult.getAccessToken().getToken();
-      channelsViewModel.listFacebookTargets(selectedAccessToken);
+      channelsViewModel.listFacebookPageChannelTargets(selectedAccessToken);
     }
 
     @Override

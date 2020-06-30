@@ -32,6 +32,8 @@ import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.model.LiveStream;
 import io.forstream.common.BaseFragment;
 import io.forstream.common.Constants;
+import io.forstream.common.livedata.list.ListHolder;
+import io.forstream.common.livedata.list.ListUpdateType;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
@@ -181,12 +183,17 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
   }
 
   private void updateLayouts() {
-    List<ConnectedChannel> connectedChannels = homeViewModel.getConnectedChannels().getValue().getItems();
-    List<LiveStream> liveStreams = homeViewModel.getLiveStreams().getValue().getItems();
+    ListHolder<ConnectedChannel> connectedChannelsHolder = homeViewModel.getConnectedChannels().getValue();
+    ListHolder<LiveStream> liveStreamsHolder = homeViewModel.getLiveStreams().getValue();
+    if (connectedChannelsHolder.getUpdateType().equals(ListUpdateType.NONE) || liveStreamsHolder.getUpdateType().equals(ListUpdateType.NONE)) {
+      return;
+    }
 
+    List<ConnectedChannel> connectedChannels = connectedChannelsHolder.getItems();
+    List<LiveStream> liveStreams = liveStreamsHolder.getItems();
     connectedChannelsLayout.setVisibility(View.VISIBLE);
-    liveStreamsLayout.setVisibility(!liveStreams.isEmpty() || !connectedChannels.isEmpty() ? View.VISIBLE : View.GONE);
     noChannelsConnectedLayout.setVisibility(connectedChannels.isEmpty() ? View.VISIBLE : View.GONE);
+    liveStreamsLayout.setVisibility(!liveStreams.isEmpty() || !connectedChannels.isEmpty() ? View.VISIBLE : View.GONE);
     noLiveStreamsLayout.setVisibility(liveStreams.isEmpty() ? View.VISIBLE : View.GONE);
     createLiveStreamButton.setVisibility(!connectedChannels.isEmpty() && !liveStreams.isEmpty() ? View.VISIBLE : View.GONE);
   }

@@ -10,6 +10,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:aspectRatioMode="adjust_rotate"
+    app:isFlipHorizontal="false"
+    app:isFlipVertical="false"
     app:keepAspectRatio="true"/>
 
   <FrameLayout
@@ -35,15 +37,16 @@
       android:id="@+id/live_options_layout"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="end|top"
-      android:orientation="vertical"
-      android:visibility="gone">
+      android:layout_gravity="start|bottom"
+      android:layout_margin="@dimen/margin_md"
+      android:orientation="horizontal"
+      android:visibility="visible">
 
       <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/open_live_stream_info_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_sm"
+        android:layout_marginEnd="@dimen/margin_sm"
         app:backgroundTint="@color/button_stream_options"
         app:elevation="0dp"/>
 
@@ -61,7 +64,7 @@
       style="@style/Button.Large"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center|bottom"
+      android:layout_gravity="end|center"
       android:layout_margin="@dimen/margin_md"
       android:visibility="gone"
       app:backgroundTint="@color/button_start_stream"/>
@@ -71,7 +74,7 @@
       style="@style/Button.Large"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center|bottom"
+      android:layout_gravity="center|end"
       android:layout_margin="@dimen/margin_md"
       android:visibility="gone"
       app:backgroundTint="@color/button_end_stream"/>

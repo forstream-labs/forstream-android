@@ -22,6 +22,7 @@
   <!-- Menus -->
   <string name="menu_lives">Lives</string>
   <string name="menu_channels">Channels</string>
+  <string name="menu_visit_channel">Visit channel</string>
   <string name="menu_remove">Remove</string>
 
   <!-- Intro activity -->
@@ -46,11 +47,15 @@
   <string name="activity_main_connect_channels">Connect channels</string>
   <string name="activity_main_connect">Connect</string>
   <string name="activity_main_select_target">Where do you want to go live?</string>
+  <string name="activity_main_no_facebook_page_found">No Facebook page found</string>
   <string name="activity_main_go_live">Go live!</string>
   <string name="activity_main_live_streams_get_started">You\'re ready to go live simultaneously in your favorite channels. This is awesome!</string>
   <string name="activity_main_title">Title</string>
   <string name="activity_main_description">Description</string>
   <string name="activity_main_create_live_stream">Create live stream</string>
+  <string name="activity_main_channel_name">Channel name</string>
+  <string name="activity_main_rtmp_url">RTMP url</string>
+  <string name="activity_main_stream_key">Stream key</string>
   <string name="activity_main_dialog_remove_connected_channel_message">Are you sure you want to remove this channel?</string>
   <string name="activity_main_dialog_remove_live_stream_message">Are you sure you want to remove this live stream?</string>
 

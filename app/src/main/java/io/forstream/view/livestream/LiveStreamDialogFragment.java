@@ -6,7 +6,6 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,16 +24,13 @@ import butterknife.ButterKnife;
 import io.forstream.R;
 import io.forstream.api.model.LiveStream;
 import io.forstream.common.Constants;
-import io.forstream.util.AlertUtils;
 import io.forstream.util.AppUtils;
-import io.forstream.util.ImageUtils;
 import io.forstream.util.StringUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
 
 public class LiveStreamDialogFragment extends BottomSheetDialogFragment {
 
-  @BindView(R.id.live_stream_thumbnail) ImageView liveStreamThumbnailView;
   @BindView(R.id.live_stream_title) TextView liveStreamTitleView;
   @BindView(R.id.live_stream_description) TextView liveStreamDescriptionView;
   @BindView(R.id.live_stream_status) TextView liveStreamStatusView;
@@ -42,15 +38,13 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment {
   @BindView(R.id.provider_streams_view) RecyclerView providerStreamsView;
 
   private Context context;
-  private LiveStreamViewModel liveStreamViewModel;
   private ProviderStreamsAdapter providerStreamsAdapter;
 
   private LiveStream liveStream;
 
   @Inject
-  public LiveStreamDialogFragment(Context context, LiveStreamViewModel liveStreamViewModel, ProviderStreamsAdapter providerStreamsAdapter) {
+  public LiveStreamDialogFragment(Context context, ProviderStreamsAdapter providerStreamsAdapter) {
     this.context = context;
-    this.liveStreamViewModel = liveStreamViewModel;
     this.providerStreamsAdapter = providerStreamsAdapter;
   }
 
@@ -67,7 +61,6 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment {
     ButterKnife.bind(this, view);
 
     setupLiveStream();
-    setupObservers();
     setupViews();
     setupContent();
     return view;
@@ -80,15 +73,6 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment {
 
   private void setupLiveStream() {
     liveStream = (LiveStream) getArguments().getSerializable(Constants.LIVE_STREAM);
-  }
-
-  private void setupObservers() {
-    liveStreamViewModel.getEnableDisableLiveStream().observe(this, liveStream -> {
-      this.liveStream = liveStream;
-      providerStreamsAdapter.setProviderStreams(liveStream.getProviders());
-      providerStreamsAdapter.notifyDataSetChanged();
-    });
-    liveStreamViewModel.getError().observe(this, throwable -> AlertUtils.alert(context, throwable));
   }
 
   private void setupViews() {
@@ -110,7 +94,6 @@ public class LiveStreamDialogFragment extends BottomSheetDialogFragment {
   }
 
   private void updateContent() {
-    ImageUtils.loadImage(context, liveStreamViewModel.getAuthenticatedUser(), liveStreamThumbnailView);
     liveStreamTitleView.setText(liveStream.getTitle());
     liveStreamDescriptionView.setText(liveStream.getDescription());
     liveStreamDescriptionView.setVisibility(!StringUtils.isEmpty(liveStream.getDescription()) ? View.VISIBLE : View.GONE);

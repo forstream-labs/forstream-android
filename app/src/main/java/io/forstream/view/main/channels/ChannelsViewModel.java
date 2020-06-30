@@ -29,7 +29,7 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
   private NotificationService notificationService;
 
   private ListLiveData<ViewItem> viewItems = new ListLiveData<>();
-  private SingleLiveData<List<ChannelTarget>> facebookTargets = new SingleLiveData<>();
+  private SingleLiveData<List<ChannelTarget>> facebookPageTargets = new SingleLiveData<>();
   private SingleLiveData<ConnectedChannel> channelConnected = new SingleLiveData<>();
 
   public ChannelsViewModel(UserService userService, ChannelService channelService, NotificationService notificationService) {
@@ -44,8 +44,8 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     return viewItems;
   }
 
-  public LiveData<List<ChannelTarget>> getFacebookTargets() {
-    return facebookTargets;
+  public LiveData<List<ChannelTarget>> getFacebookPageTargets() {
+    return facebookPageTargets;
   }
 
   public LiveData<ConnectedChannel> getChannelConnected() {
@@ -108,6 +108,39 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     }));
   }
 
+  public void connectFacebookChannel(String accessToken) {
+    channelService.connectFacebookChannel(accessToken).then(connectedChannel -> {
+      updateChannelConnected(connectedChannel);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error connecting Facebook channel");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void listFacebookPageChannelTargets(String accessToken) {
+    channelService.listFacebookPageChannelTargets(accessToken).then(facebookTargets -> {
+      this.facebookPageTargets.postValue(facebookTargets);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error listing Facebook page channel targets");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void connectFacebookPageChannel(String accessToken, String targetId) {
+    channelService.connectFacebookPageChannel(accessToken, targetId).then(connectedChannel -> {
+      updateChannelConnected(connectedChannel);
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error connecting Facebook page channel");
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
   public void connectTwitchChannel(String authorizationCode) {
     channelService.connectTwitchChannel(authorizationCode).then(connectedChannel -> {
       updateChannelConnected(connectedChannel);
@@ -119,23 +152,12 @@ public class ChannelsViewModel extends BaseViewModel implements NotificationServ
     }));
   }
 
-  public void listFacebookTargets(String accessToken) {
-    channelService.listFacebookChannelTargets(accessToken).then(facebookTargets -> {
-      this.facebookTargets.postValue(facebookTargets);
-      return null;
-    })._catch((reason -> {
-      Timber.e(reason, "Error listing Facebook targets");
-      error.postValue(reason);
-      return null;
-    }));
-  }
-
-  public void connectFacebookChannel(String accessToken, String targetId) {
-    channelService.connectFacebookChannel(accessToken, targetId).then(connectedChannel -> {
+  public void connectRtmpChannel(String channelName, String rtmpUrl, String streamKey) {
+    channelService.connectRtmpChannel(channelName, rtmpUrl, streamKey).then(connectedChannel -> {
       updateChannelConnected(connectedChannel);
       return null;
     })._catch((reason -> {
-      Timber.e(reason, "Error connecting Facebook channel");
+      Timber.e(reason, "Error connecting RTMP channel");
       error.postValue(reason);
       return null;
     }));

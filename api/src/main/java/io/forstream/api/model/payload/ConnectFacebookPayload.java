@@ -14,10 +14,6 @@ public class ConnectFacebookPayload {
     return accessToken;
   }
 
-  public void setAccessToken(String accessToken) {
-    this.accessToken = accessToken;
-  }
-
   public String getTargetId() {
     return targetId;
   }

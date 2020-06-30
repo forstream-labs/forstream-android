@@ -8,7 +8,11 @@ public enum ChannelIdentifier {
   YOUTUBE,
   @SerializedName("facebook")
   FACEBOOK,
+  @SerializedName("facebook_page")
+  FACEBOOK_PAGE,
   @SerializedName("twitch")
-  TWITCH
+  TWITCH,
+  @SerializedName("rtmp")
+  RTMP
 
 }

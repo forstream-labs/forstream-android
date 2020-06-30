@@ -20,23 +20,11 @@ public class CreateLiveStreamPayload {
     return title;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   public String getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   public List<ChannelIdentifier> getChannels() {
     return channels;
-  }
-
-  public void setChannels(List<ChannelIdentifier> channels) {
-    this.channels = channels;
   }
 }

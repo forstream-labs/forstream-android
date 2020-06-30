@@ -14,7 +14,7 @@ public class ListLiveData<T> extends SingleLiveData<ListHolder<T>> {
   }
 
   public ListLiveData(boolean postByDefault) {
-    super(new ListHolder<>(new ArrayList<>(), ListUpdateType.CHANGE_ALL));
+    super(new ListHolder<>(new ArrayList<>(), ListUpdateType.NONE));
     this.postByDefault = postByDefault;
   }
 

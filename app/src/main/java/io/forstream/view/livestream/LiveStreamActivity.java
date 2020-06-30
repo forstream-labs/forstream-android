@@ -2,6 +2,7 @@ package io.forstream.view.livestream;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.util.Size;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import io.forstream.util.AlertUtils;
 import io.forstream.util.AppUtils;
 import io.forstream.util.UIUtils;
 import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.PermissionUtils;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
@@ -58,6 +60,7 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   private SensorRotationManager sensorRotationManager;
   private BitrateAdapter bitrateAdapter;
   private CameraHelper.Facing cameraFacing = CameraHelper.Facing.BACK;
+  private Size cameraResolution;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,7 +95,10 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
 
   @Override
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    rtmpCamera.startPreview(cameraFacing, 1280, 720);
+    cameraResolution = new Size(width, height);
+    if (PermissionUtils.hasSelfPermissions(this, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)) {
+      rtmpCamera.startPreview(cameraFacing, width, height);
+    }
     sensorRotationManager.start();
   }
 
@@ -148,6 +154,9 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
 
   @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO})
   void loadLiveStream() {
+    if (cameraResolution != null && !rtmpCamera.isOnPreview()) {
+      rtmpCamera.startPreview(cameraFacing, cameraResolution.getWidth(), cameraResolution.getHeight());
+    }
     liveStreamViewModel.loadLiveStream(liveStream.getId());
   }
 
@@ -158,7 +167,6 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     liveStreamDialogFragment.setArguments(arguments);
     liveStreamDialogFragment.show(getSupportFragmentManager(), LiveStreamActivity.class.getSimpleName());
   }
-
 
   @OnClick(R.id.switch_camera_button)
   void onSwitchCameraButtonClick() {
@@ -225,28 +233,25 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     sensorRotationManager = new SensorRotationManager(this, rotation -> rtmpCamera.getGlInterface().setStreamRotation(rotation));
     liveStreamCameraView.getHolder().addCallback(this);
 
-    int marginMd = getResources().getDimensionPixelSize(R.dimen.margin_md);
-    int marginTop = UIUtils.getStatusBarHeight(this) + UIUtils.convertDpToPixel(this, 20);
-    int marginBottom = UIUtils.getNavigationBarHeight(this, getRequestedOrientation()) + UIUtils.convertDpToPixel(this, 20);
-
-    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) liveStreamStatusView.getLayoutParams();
-    layoutParams.setMargins(marginMd, marginTop, 0, 0);
-    liveStreamStatusView.requestLayout();
-
-    layoutParams = (ViewGroup.MarginLayoutParams) liveOptionsLayout.getLayoutParams();
-    layoutParams.setMargins(0, marginTop, marginMd, 0);
-    liveOptionsLayout.requestLayout();
     openLiveStreamInfoButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_info));
     switchCameraButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_camera));
 
+    int marginMd = getResources().getDimensionPixelSize(R.dimen.margin_md);
+    int statusBarMargin = UIUtils.getStatusBarHeight(this) + UIUtils.convertDpToPixel(this, 20);
+    int navigationBarMargin = UIUtils.getNavigationBarHeight(this, getRequestedOrientation()) + UIUtils.convertDpToPixel(this, 20);
+
+    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) liveStreamStatusView.getLayoutParams();
+    layoutParams.setMargins(marginMd, statusBarMargin, 0, 0);
+    liveStreamStatusView.requestLayout();
+
     startLiveStreamButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_video));
     layoutParams = (ViewGroup.MarginLayoutParams) startLiveStreamButton.getLayoutParams();
-    layoutParams.setMargins(0, 0, 0, marginBottom);
+    layoutParams.setMargins(0, 0, navigationBarMargin, 0);
     startLiveStreamButton.requestLayout();
 
     endLiveStreamButton.setImageDrawable(new IconicsDrawable(this, FontAwesome.Icon.faw_stop));
     layoutParams = (ViewGroup.MarginLayoutParams) endLiveStreamButton.getLayoutParams();
-    layoutParams.setMargins(0, 0, 0, marginBottom);
+    layoutParams.setMargins(0, 0, navigationBarMargin, 0);
     endLiveStreamButton.requestLayout();
   }
 

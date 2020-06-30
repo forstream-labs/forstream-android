@@ -69,7 +69,7 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
   @OnClick(R.id.connect_target_button)
   void onConnectTargetButtonClick() {
     if (listener != null) {
-      listener.onConnectButtonClick(selectedChannelTarget);
+      listener.onConnectTargetButtonClick(selectedChannelTarget);
     }
   }
 
@@ -87,7 +87,7 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
 
   public interface Listener {
 
-    void onConnectButtonClick(ChannelTarget channelTarget);
+    void onConnectTargetButtonClick(ChannelTarget channelTarget);
 
   }
 }

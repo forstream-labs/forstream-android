@@ -28,8 +28,7 @@
       android:layout_marginEnd="@dimen/margin_sm"
       android:layout_weight="1"
       android:textColor="@color/text_primary"
-      android:textSize="@dimen/text_xlg"
-      android:textStyle="bold"/>
+      android:textSize="@dimen/text_xlg"/>
 
     <com.mikepenz.iconics.view.IconicsImageView
       android:id="@+id/channel_menu"

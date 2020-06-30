@@ -55,7 +55,7 @@
       android:configChanges="orientation|screenSize"/>
     <activity
       android:name=".view.livestream.LiveStreamActivity"
-      android:screenOrientation="portrait"
+      android:screenOrientation="landscape"
       tools:ignore="LockedOrientationActivity"/>
 
     <!-- Facebook activities -->

@@ -9,7 +9,7 @@ public class ConnectedChannel extends Entity implements Serializable {
 
   private User user;
   private Channel channel;
-  private String targetId;
+  private Target target;
   private Date registrationDate;
 
   public User getUser() {
@@ -28,12 +28,12 @@ public class ConnectedChannel extends Entity implements Serializable {
     this.channel = channel;
   }
 
-  public String getTargetId() {
-    return targetId;
+  public Target getTarget() {
+    return target;
   }
 
-  public void setTargetId(String targetId) {
-    this.targetId = targetId;
+  public void setTarget(Target target) {
+    this.target = target;
   }
 
   public Date getRegistrationDate() {

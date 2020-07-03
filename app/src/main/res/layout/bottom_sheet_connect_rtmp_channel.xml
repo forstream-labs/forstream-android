@@ -29,14 +29,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margin_xsm"
-    app:endIconMode="clear_text"
-    app:hintEnabled="false">
+    android:hint="@string/bottom_sheet_connect_rtmp_channel_name"
+    app:endIconMode="clear_text">
 
     <com.google.android.material.textfield.TextInputEditText
       android:id="@+id/rtmp_channel_name_input"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="@string/activity_main_channel_name"
+      android:hint="@string/bottom_sheet_connect_rtmp_channel_name_hint"
       android:inputType="textCapSentences"
       android:singleLine="true"
       android:textSize="@dimen/text_lg"/>
@@ -49,14 +49,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margin_xsm"
-    app:endIconMode="clear_text"
-    app:hintEnabled="false">
+    android:hint="@string/bottom_sheet_connect_rtmp_url"
+    app:endIconMode="clear_text">
 
     <com.google.android.material.textfield.TextInputEditText
       android:id="@+id/rtmp_url_input"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="@string/activity_main_rtmp_url"
+      android:hint="@string/bottom_sheet_connect_rtmp_url_hint"
       android:singleLine="true"
       android:textSize="@dimen/text_lg"/>
 
@@ -68,14 +68,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margin_xsm"
-    app:endIconMode="clear_text"
-    app:hintEnabled="false">
+    android:hint="@string/bottom_sheet_connect_rtmp_stream_key"
+    app:endIconMode="clear_text">
 
     <com.google.android.material.textfield.TextInputEditText
       android:id="@+id/rtmp_stream_key_input"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="@string/activity_main_stream_key"
+      android:hint="@string/bottom_sheet_connect_rtmp_stream_key_hint"
       android:singleLine="true"
       android:textSize="@dimen/text_lg"/>
 
@@ -87,6 +87,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:enabled="false"
-    android:text="@string/activity_main_connect"/>
+    android:text="@string/connect"/>
 
 </LinearLayout>

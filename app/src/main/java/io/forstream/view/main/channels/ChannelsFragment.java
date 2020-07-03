@@ -47,10 +47,10 @@ import io.forstream.util.AlertUtils;
 import io.forstream.util.UIUtils;
 import io.forstream.util.component.SpaceItemDecoration;
 import io.forstream.view.main.channels.customrtmp.ConnectRtmpDialogFragment;
-import io.forstream.view.main.channels.facebook.ChannelTargetDialogFragment;
+import io.forstream.view.main.channels.facebook.ConnectChannelTargetDialogFragment;
 import timber.log.Timber;
 
-public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ChannelsAdapter.Listener, ChannelTargetDialogFragment.Listener, ConnectRtmpDialogFragment.Listener {
+public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ChannelsAdapter.Listener, ConnectChannelTargetDialogFragment.Listener, ConnectRtmpDialogFragment.Listener {
 
   private static final int YOUTUBE_CHANNEL_SIGN_IN_REQUEST_CODE = 1;
   private static final int TWITCH_CHANNEL_REQUEST_CODE = 2;
@@ -64,7 +64,7 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
   @Inject ChannelsViewModel channelsViewModel;
   @Inject ChannelsAdapter channelsAdapter;
 
-  private ChannelTargetDialogFragment channelTargetDialogFragment;
+  private ConnectChannelTargetDialogFragment connectChannelTargetDialogFragment;
   private ConnectRtmpDialogFragment connectRtmpDialogFragment;
   private CallbackManager callbackManager = CallbackManager.Factory.create();
   private Channel selectedChannel;
@@ -146,16 +146,16 @@ public class ChannelsFragment extends BaseFragment implements SwipeRefreshLayout
       } else if (channelTargets.size() == 1) {
         channelsViewModel.connectFacebookPageChannel(selectedAccessToken, channelTargets.get(0).getId());
       } else {
-        channelTargetDialogFragment = new ChannelTargetDialogFragment(context);
-        channelTargetDialogFragment.setListener(this);
-        channelTargetDialogFragment.setChannel(selectedChannel);
-        channelTargetDialogFragment.setChannelTargets(channelTargets);
-        channelTargetDialogFragment.show(getActivity().getSupportFragmentManager(), ChannelsFragment.class.getSimpleName());
+        connectChannelTargetDialogFragment = new ConnectChannelTargetDialogFragment(context);
+        connectChannelTargetDialogFragment.setListener(this);
+        connectChannelTargetDialogFragment.setChannel(selectedChannel);
+        connectChannelTargetDialogFragment.setChannelTargets(channelTargets);
+        connectChannelTargetDialogFragment.show(getActivity().getSupportFragmentManager(), ChannelsFragment.class.getSimpleName());
       }
     });
     channelsViewModel.getChannelConnected().observe(getViewLifecycleOwner(), connectedChannel -> {
-      if (channelTargetDialogFragment != null) {
-        channelTargetDialogFragment.dismiss();
+      if (connectChannelTargetDialogFragment != null) {
+        connectChannelTargetDialogFragment.dismiss();
       }
       if (connectRtmpDialogFragment != null) {
         connectRtmpDialogFragment.dismiss();

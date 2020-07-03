@@ -45,19 +45,27 @@
   <string name="activity_main_connected">Connected</string>
   <string name="activity_main_channels_get_started">Get started by connecting your favorite channels. Go live simultaneously in every channel you add.</string>
   <string name="activity_main_connect_channels">Connect channels</string>
-  <string name="activity_main_connect">Connect</string>
-  <string name="activity_main_select_target">Where do you want to go live?</string>
   <string name="activity_main_no_facebook_page_found">No Facebook page found</string>
   <string name="activity_main_go_live">Go live!</string>
   <string name="activity_main_live_streams_get_started">You\'re ready to go live simultaneously in your favorite channels. This is awesome!</string>
-  <string name="activity_main_title">Title</string>
-  <string name="activity_main_description">Description</string>
-  <string name="activity_main_create_live_stream">Create live stream</string>
-  <string name="activity_main_channel_name">Channel name</string>
-  <string name="activity_main_rtmp_url">RTMP url</string>
-  <string name="activity_main_stream_key">Stream key</string>
   <string name="activity_main_dialog_remove_connected_channel_message">Are you sure you want to remove this channel?</string>
   <string name="activity_main_dialog_remove_live_stream_message">Are you sure you want to remove this live stream?</string>
+
+  <!-- Create Live Stream bottom sheet -->
+  <string name="bottom_sheet_create_live_stream_title">Title</string>
+  <string name="bottom_sheet_create_live_stream_description">Description</string>
+  <string name="bottom_sheet_create_live_stream_create_live_stream">Create live stream</string>
+
+  <!-- Connect Channel Target bottom sheet -->
+  <string name="bottom_sheet_connect_channel_target_select_target">Where do you want to go live?</string>
+
+  <!-- Connect RTMP bottom sheet -->
+  <string name="bottom_sheet_connect_rtmp_channel_name">Channel name</string>
+  <string name="bottom_sheet_connect_rtmp_channel_name_hint">Platform X</string>
+  <string name="bottom_sheet_connect_rtmp_url">RTMP url</string>
+  <string name="bottom_sheet_connect_rtmp_url_hint">rtmp://live.example.com/app</string>
+  <string name="bottom_sheet_connect_rtmp_stream_key">Stream key</string>
+  <string name="bottom_sheet_connect_rtmp_stream_key_hint">Your private stream key</string>
 
   <!-- Stream statuses -->
   <string name="stream_status_ready">READY</string>
@@ -71,5 +79,6 @@
   <!-- Others -->
   <string name="remove">Remove</string>
   <string name="cancel">Cancel</string>
+  <string name="connect">Connect</string>
 
 </resources>

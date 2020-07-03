@@ -74,6 +74,7 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
 
     @BindView(R.id.channel_image) ImageView channelImageView;
     @BindView(R.id.channel_name) TextView channelNameView;
+    @BindView(R.id.channel_target) TextView channelTargetView;
     @BindView(R.id.channel_menu) View channelMenuView;
 
     ViewHolder(View view) {
@@ -85,6 +86,7 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
     public void bindView(ConnectedChannel connectedChannel) {
       ImageUtils.loadImage(context, connectedChannel.getChannel(), channelImageView);
       channelNameView.setText(connectedChannel.getChannel().getName());
+      channelTargetView.setText(connectedChannel.getTarget().getName());
     }
 
     @OnClick(R.id.channel_menu)

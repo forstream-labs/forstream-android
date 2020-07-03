@@ -10,8 +10,8 @@ import io.forstream.api.model.Channel;
 import io.forstream.api.model.ChannelTarget;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.model.payload.AuthCodePayload;
-import io.forstream.api.model.payload.ConnectRtmpChannelPayload;
 import io.forstream.api.model.payload.ConnectFacebookPayload;
+import io.forstream.api.model.payload.ConnectRtmpChannelPayload;
 import io.forstream.api.service.api.ChannelApi;
 import io.forstream.api.util.PromiseUtils;
 

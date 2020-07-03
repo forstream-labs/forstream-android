@@ -27,7 +27,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margin_xsm"
-    android:text="@string/activity_main_select_target"
+    android:text="@string/bottom_sheet_connect_channel_target_select_target"
     android:textColor="@color/text_secondary"
     android:textSize="@dimen/text_xlg"/>
 
@@ -50,6 +50,6 @@
     style="@style/Button.Large"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/activity_main_connect"/>
+    android:text="@string/connect"/>
 
 </LinearLayout>

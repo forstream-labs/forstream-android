@@ -18,7 +18,7 @@
       android:id="@+id/live_stream_title_input"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="@string/activity_main_title"
+      android:hint="@string/bottom_sheet_create_live_stream_title"
       android:inputType="textCapSentences"
       android:singleLine="true"
       android:textSize="@dimen/text_lg"/>
@@ -39,7 +39,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="top"
-      android:hint="@string/activity_main_description"
+      android:hint="@string/bottom_sheet_create_live_stream_description"
       android:inputType="textCapSentences|textMultiLine"
       android:lines="4"
       android:textSize="@dimen/text_lg"/>
@@ -59,6 +59,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:enabled="false"
-    android:text="@string/activity_main_create_live_stream"/>
+    android:text="@string/bottom_sheet_create_live_stream_create_live_stream"/>
 
 </LinearLayout>

@@ -27,7 +27,7 @@ import io.forstream.api.model.Channel;
 import io.forstream.api.model.ChannelTarget;
 import io.forstream.util.ImageUtils;
 
-public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
+public class ConnectChannelTargetDialogFragment extends BottomSheetDialogFragment {
 
   @BindView(R.id.channel_image) ImageView channelImageView;
   @BindView(R.id.channel_name) TextView channelNameView;
@@ -39,14 +39,14 @@ public class ChannelTargetDialogFragment extends BottomSheetDialogFragment {
   private List<ChannelTarget> channelTargets;
   private ChannelTarget selectedChannelTarget;
 
-  public ChannelTargetDialogFragment(Context context) {
+  public ConnectChannelTargetDialogFragment(Context context) {
     this.context = context;
   }
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.bottom_sheet_channel_target, container, false);
+    View view = inflater.inflate(R.layout.bottom_sheet_connect_channel_target, container, false);
     ButterKnife.bind(this, view);
 
     setupViews();

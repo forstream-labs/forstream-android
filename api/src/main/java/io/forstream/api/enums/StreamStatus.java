@@ -8,9 +8,11 @@ public enum StreamStatus {
   ERROR,
   @SerializedName("ready")
   READY,
+  @SerializedName("error_starting")
+  ERROR_STARTING,
   @SerializedName("live")
   LIVE,
-  @SerializedName("complete")
-  COMPLETE
+  @SerializedName("ended")
+  ENDED
 
 }

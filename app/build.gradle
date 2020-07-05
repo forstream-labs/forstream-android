@@ -6,8 +6,8 @@ android {
     applicationId 'io.forstream'
     minSdkVersion 21
     targetSdkVersion 29
-    versionCode 5
-    versionName '1.0.4'
+    versionCode 6
+    versionName '1.0.5'
     multiDexEnabled true
     manifestPlaceholders = [
       'appAuthRedirectScheme': 'io.forstream.api'
@@ -75,9 +75,9 @@ android {
 }
 
 dependencies {
-  implementation 'com.github.pedroSG94:encoder-release:1.8.3@aar'
-  implementation 'com.github.pedroSG94:rtplibrary-release:1.8.3@aar'
-  implementation 'com.github.pedroSG94:rtmp-release:1.8.3@aar'
+  implementation(name: 'encoder-release', ext: 'aar')
+  implementation(name: 'rtplibrary-release', ext: 'aar')
+  implementation(name: 'rtmp-release', ext: 'aar')
 
   // Api and exposed dependencies
   implementation project(':api')

@@ -28,7 +28,7 @@ public class AppUtils {
       case LIVE:
         color = ContextCompat.getColor(context, rtmpCamera != null && !rtmpCamera.isStreaming() ? R.color.stream_status_paused : R.color.stream_status_live);
         break;
-      case COMPLETE:
+      case ENDED:
         color = ContextCompat.getColor(context, R.color.stream_status_complete);
         break;
     }

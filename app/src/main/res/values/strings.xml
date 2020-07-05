@@ -71,7 +71,7 @@
   <string name="stream_status_ready">READY</string>
   <string name="stream_status_live">LIVE</string>
   <string name="stream_status_paused">PAUSED</string>
-  <string name="stream_status_complete">COMPLETE</string>
+  <string name="stream_status_ended">ENDED</string>
 
   <!-- Errors -->
   <string name="error_unexpected">An unexpected error happened, please try again later.</string>

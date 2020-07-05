@@ -265,10 +265,10 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     UIUtils.setColorFilter(liveStreamStatusView.getBackground(), AppUtils.getStreamStatusColor(this, liveStream.getStreamStatus(), rtmpCamera));
 
     liveOptionsLayout.setVisibility(View.VISIBLE);
-    startLiveStreamButton.setVisibility(!liveStream.getStreamStatus().equals(StreamStatus.COMPLETE) && (rtmpCamera == null || !rtmpCamera.isStreaming()) ? View.VISIBLE : View.GONE);
+    startLiveStreamButton.setVisibility(!liveStream.getStreamStatus().equals(StreamStatus.ENDED) && (rtmpCamera == null || !rtmpCamera.isStreaming()) ? View.VISIBLE : View.GONE);
     endLiveStreamButton.setVisibility(liveStream.getStreamStatus().equals(StreamStatus.LIVE) && rtmpCamera != null && rtmpCamera.isStreaming() ? View.VISIBLE : View.GONE);
 
-    if (liveStream.getStreamStatus().equals(StreamStatus.COMPLETE)) {
+    if (liveStream.getStreamStatus().equals(StreamStatus.ENDED)) {
       onOpenLiveStreamInfoButtonClick();
     }
   }

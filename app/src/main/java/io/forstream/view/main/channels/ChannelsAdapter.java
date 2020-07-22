@@ -71,7 +71,7 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
 
     @BindView(R.id.channel_image) ImageView channelImageView;
     @BindView(R.id.channel_name) TextView channelNameView;
-    @BindView(R.id.channel_connected) TextView channelConnectedView;
+    @BindView(R.id.channel_status) TextView channelStatusView;
 
     ViewHolder(View view) {
       super(view);
@@ -83,18 +83,24 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
       Channel channel = viewItem.getChannel();
       channelNameView.setText(channel.getName());
       ImageUtils.loadImage(context, channel, channelImageView);
-      if (viewItem.isConnected()) {
-        UIUtils.setColorFilter(channelConnectedView.getBackground(), ContextCompat.getColor(context, R.color.channel_connected));
-        channelConnectedView.setVisibility(View.VISIBLE);
+      if (viewItem.getChannel().isComingSoon()) {
+        UIUtils.setColorFilter(channelStatusView.getBackground(), ContextCompat.getColor(context, R.color.channel_coming_soon));
+        channelStatusView.setText(context.getString(R.string.activity_main_coming_soon));
+        channelStatusView.setVisibility(View.VISIBLE);
+      } else if (viewItem.isConnected()) {
+        UIUtils.setColorFilter(channelStatusView.getBackground(), ContextCompat.getColor(context, R.color.channel_connected));
+        channelStatusView.setText(context.getString(R.string.activity_main_connected));
+        channelStatusView.setVisibility(View.VISIBLE);
       } else {
-        channelConnectedView.setVisibility(View.GONE);
+        channelStatusView.setVisibility(View.GONE);
       }
     }
 
     @OnClick(R.id.channel_view)
     void onChannelViewClick() {
-      if (listener != null) {
-        listener.onChannelClick(viewItems.get(getAdapterPosition()).getChannel());
+      Channel channel = viewItems.get(getAdapterPosition()).getChannel();
+      if (listener != null && !channel.isComingSoon()) {
+        listener.onChannelClick(channel);
       }
     }
   }

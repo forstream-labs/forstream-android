@@ -43,6 +43,7 @@
   <string name="activity_main_your_channels">Your channels</string>
   <string name="activity_main_your_lives">Your lives</string>
   <string name="activity_main_connected">Connected</string>
+  <string name="activity_main_coming_soon">Coming soon</string>
   <string name="activity_main_channels_get_started">Get started by connecting your favorite channels. Go live simultaneously in every channel you add.</string>
   <string name="activity_main_connect_channels">Connect channels</string>
   <string name="activity_main_no_facebook_page_found">No Facebook page found</string>

@@ -33,13 +33,12 @@
     </LinearLayout>
 
     <TextView
-      android:id="@+id/channel_connected"
+      android:id="@+id/channel_status"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="end|top"
       android:background="@drawable/rounded_corner"
       android:padding="@dimen/margin_xsm"
-      android:text="@string/activity_main_connected"
       android:textColor="@android:color/white"
       android:textSize="@dimen/text_xsm"
       android:textStyle="bold"/>

@@ -19,6 +19,7 @@
   <color name="star">#ffc107</color>
 
   <color name="channel_connected">#4caf50</color>
+  <color name="channel_coming_soon">#757575</color>
 
   <color name="stream_status_ready">#4caf50</color>
   <color name="stream_status_live">#ed4956</color>

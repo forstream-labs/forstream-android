@@ -14,6 +14,7 @@ public class Channel extends Entity implements Serializable {
   private String name;
   private String imageUrl;
   private List<String> requiredScopes;
+  private boolean comingSoon;
   private Date registrationDate;
 
   public ChannelIdentifier getIdentifier() {
@@ -46,6 +47,14 @@ public class Channel extends Entity implements Serializable {
 
   public void setRequiredScopes(List<String> requiredScopes) {
     this.requiredScopes = requiredScopes;
+  }
+
+  public boolean isComingSoon() {
+    return comingSoon;
+  }
+
+  public void setComingSoon(boolean comingSoon) {
+    this.comingSoon = comingSoon;
   }
 
   public Date getRegistrationDate() {

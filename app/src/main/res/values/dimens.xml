@@ -17,6 +17,7 @@
   <dimen name="text_xxlg">24sp</dimen>
   <dimen name="text_xxxlg">30sp</dimen>
 
+  <dimen name="image_xxsm">25dp</dimen>
   <dimen name="image_xsm">33dp</dimen>
   <dimen name="image_sm">40dp</dimen>
   <dimen name="image_md">50dp</dimen>

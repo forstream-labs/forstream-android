@@ -6,6 +6,8 @@
   <color name="secondary">#6200ee</color>
   <color name="secondary_dark">#3700b3</color>
 
+  <color name="info">#03a9f4</color>
+  <color name="warning">#ffc107</color>
   <color name="error">#ed4956</color>
   <color name="success">#4caf50</color>
 
@@ -35,7 +37,7 @@
   <array name="tile_colors">
     <item>#ed4956</item>
     <item>#ff9800</item>
-    <item>#03A9f4</item>
+    <item>#03a9f4</item>
     <item>#ff5722</item>
     <item>#9c27b0</item>
     <item>#4caf50</item>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -23,9 +24,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.forstream.R;
+import io.forstream.api.model.ChannelAlert;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.common.adapter.base.BaseViewHolder;
 import io.forstream.util.ImageUtils;
+import io.forstream.util.component.SpaceItemDecoration;
 
 public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChannelsAdapter.ViewHolder> {
 
@@ -68,14 +71,17 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
 
     void onRemoveConnectedChannelClick(ConnectedChannel connectedChannel);
 
+    void onChannelAlertClick(ConnectedChannel connectedChannel, ChannelAlert channelAlert);
+
   }
 
-  class ViewHolder extends BaseViewHolder<ConnectedChannel> {
+  class ViewHolder extends BaseViewHolder<ConnectedChannel> implements ConnectedChannelAlertsAdapter.Listener {
 
     @BindView(R.id.channel_image) ImageView channelImageView;
     @BindView(R.id.channel_name) TextView channelNameView;
     @BindView(R.id.channel_target) TextView channelTargetView;
     @BindView(R.id.channel_menu) View channelMenuView;
+    @BindView(R.id.channel_alerts_view) RecyclerView channelAlertsView;
 
     ViewHolder(View view) {
       super(view);
@@ -87,6 +93,21 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
       ImageUtils.loadImage(context, connectedChannel.getChannel(), channelImageView);
       channelNameView.setText(connectedChannel.getChannel().getName());
       channelTargetView.setText(connectedChannel.getTarget().getName());
+
+      ConnectedChannelAlertsAdapter connectedChannelAlertsAdapter = new ConnectedChannelAlertsAdapter(context);
+      connectedChannelAlertsAdapter.setConnectedChannel(connectedChannel);
+      connectedChannelAlertsAdapter.setListener(this);
+      if (connectedChannelAlertsAdapter.getItemCount() > 0) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        SpaceItemDecoration itemDecoration = new SpaceItemDecoration(context.getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());
+        channelAlertsView.setLayoutManager(layoutManager);
+        channelAlertsView.addItemDecoration(itemDecoration);
+        channelAlertsView.setAdapter(connectedChannelAlertsAdapter);
+        channelAlertsView.setVisibility(View.VISIBLE);
+        connectedChannelAlertsAdapter.notifyDataSetChanged();
+      } else {
+        channelAlertsView.setVisibility(View.GONE);
+      }
     }
 
     @OnClick(R.id.channel_menu)
@@ -103,7 +124,7 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
             return true;
           case R.id.remove_connected_channel:
             MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
-              .setTitle(R.string.activity_main_dialog_remove_connected_channel_message)
+              .setTitle(R.string.activity_main_dialog_remove_connected_channel_title)
               .setPositiveButton(R.string.remove, (dialog, which) -> listener.onRemoveConnectedChannelClick(connectedChannel))
               .setNegativeButton(R.string.cancel, null);
             dialogBuilder.create().show();
@@ -113,6 +134,13 @@ public class ConnectedChannelsAdapter extends RecyclerView.Adapter<ConnectedChan
         }
       });
       popup.show();
+    }
+
+    @Override
+    public void onChannelAlertClick(ConnectedChannel connectedChannel, ChannelAlert channelAlert) {
+      if (listener != null) {
+        listener.onChannelAlertClick(connectedChannel, channelAlert);
+      }
     }
   }
 }

@@ -77,7 +77,7 @@ public class ConnectChannelTargetDialogFragment extends BottomSheetDialogFragmen
     channelNameView.setText(channel.getName());
     ImageUtils.loadImage(context, channel, channelImageView);
 
-    List<String> targetsNames = Stream.of(channelTargets).map(ChannelTarget::getName).collect(Collectors.toList());
+    List<String> targetsNames = Stream.of(channelTargets).map(ChannelTarget::getName).toList();
     ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, targetsNames);
     channelTargetInput.setAdapter(adapter);
     channelTargetInput.setKeyListener(null);

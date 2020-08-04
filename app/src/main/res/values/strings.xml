@@ -49,8 +49,8 @@
   <string name="activity_main_no_facebook_page_found">No Facebook page found</string>
   <string name="activity_main_go_live">Go live!</string>
   <string name="activity_main_live_streams_get_started">You\'re ready to go live simultaneously in your favorite channels. This is awesome!</string>
-  <string name="activity_main_dialog_remove_connected_channel_message">Are you sure you want to remove this channel?</string>
-  <string name="activity_main_dialog_remove_live_stream_message">Are you sure you want to remove this live stream?</string>
+  <string name="activity_main_dialog_remove_connected_channel_title">Are you sure you want to remove this channel?</string>
+  <string name="activity_main_dialog_remove_live_stream_title">Are you sure you want to remove this live stream?</string>
 
   <!-- Create Live Stream bottom sheet -->
   <string name="bottom_sheet_create_live_stream_title">Title</string>
@@ -74,6 +74,16 @@
   <string name="stream_status_paused">PAUSED</string>
   <string name="stream_status_ended">ENDED</string>
 
+  <!-- Channel alerts -->
+  <string name="channel_alert_youtube_enable_live_streaming">Is live streaming enabled on your YouTube channel?</string>
+  <string name="channel_alert_youtube_enable_live_streaming_dialog_title">Enable YouTube live streaming</string>
+  <string name="channel_alert_youtube_enable_live_streaming_dialog_text_1">Go to https://www.youtube.com/features, find \"Live streaming\" and click on \"Enable\" button.</string>
+  <string name="channel_alert_youtube_enable_live_streaming_dialog_text_2">If you haven\'t already, follow the prompts to verify your channel.</string>
+  <string name="channel_alert_youtube_enable_live_streaming_dialog_text_3">Enabling your first live stream may take up to 24 hours. Once enabled, you can live stream instantly.</string>
+
+  <!-- Provider stream messages -->
+  <string name="provider_stream_message_youtube_live_streaming_not_enabled">Your YouTube channel is not enable for live streaming</string>
+
   <!-- Errors -->
   <string name="error_unexpected">An unexpected error happened, please try again later.</string>
 
@@ -81,5 +91,7 @@
   <string name="remove">Remove</string>
   <string name="cancel">Cancel</string>
   <string name="connect">Connect</string>
+  <string name="accept">Accept</string>
+  <string name="close">Close</string>
 
 </resources>

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -32,17 +34,21 @@ import butterknife.OnClick;
 import io.forstream.R;
 import io.forstream.api.enums.StreamStatus;
 import io.forstream.api.model.LiveStream;
+import io.forstream.api.model.ProviderMessage;
+import io.forstream.api.model.ProviderStream;
 import io.forstream.common.BaseActivity;
 import io.forstream.common.Constants;
 import io.forstream.util.AlertUtils;
 import io.forstream.util.AppUtils;
 import io.forstream.util.UIUtils;
+import io.forstream.util.component.SpaceItemDecoration;
+import io.forstream.view.main.home.livestream.LiveStreamAlertsAdapter;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.PermissionUtils;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback {
+public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRtmp, SurfaceHolder.Callback, LiveStreamAlertsAdapter.Listener {
 
   @BindView(R.id.live_stream_camera) OpenGlView liveStreamCameraView;
   @BindView(R.id.live_stream_status) TextView liveStreamStatusView;
@@ -51,11 +57,14 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   @BindView(R.id.switch_camera_button) FloatingActionButton switchCameraButton;
   @BindView(R.id.start_live_stream_button) FloatingActionButton startLiveStreamButton;
   @BindView(R.id.end_live_stream_button) FloatingActionButton endLiveStreamButton;
+  @BindView(R.id.live_stream_alerts_view) RecyclerView liveStreamAlertsView;
 
   @Inject LiveStreamViewModel liveStreamViewModel;
   @Inject LiveStreamDialogFragment liveStreamDialogFragment;
+  @Inject LiveStreamAlertsAdapter liveStreamAlertsAdapter;
 
   private LiveStream liveStream;
+
   private RtmpCamera2 rtmpCamera;
   private SensorRotationManager sensorRotationManager;
   private BitrateAdapter bitrateAdapter;
@@ -71,7 +80,16 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     setupLiveStream();
     setupObservers();
     setupViews();
+    setupLiveStreamAlertsView();
     setupContent();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    Window window = getWindow();
+    window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
   }
 
   @Override
@@ -81,11 +99,8 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
-    Window window = getWindow();
-    window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+  public void onProviderMessageClick(ProviderStream providerStream, ProviderMessage providerMessage) {
+
   }
 
   @Override
@@ -255,6 +270,15 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     endLiveStreamButton.requestLayout();
   }
 
+  private void setupLiveStreamAlertsView() {
+    liveStreamAlertsAdapter.setListener(this);
+    LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+    SpaceItemDecoration itemDecoration = new SpaceItemDecoration(this.getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());
+    liveStreamAlertsView.setLayoutManager(layoutManager);
+    liveStreamAlertsView.addItemDecoration(itemDecoration);
+    liveStreamAlertsView.setAdapter(liveStreamAlertsAdapter);
+  }
+
   private void setupContent() {
     LiveStreamActivityPermissionsDispatcher.loadLiveStreamWithPermissionCheck(this);
   }
@@ -271,5 +295,8 @@ public class LiveStreamActivity extends BaseActivity implements ConnectCheckerRt
     if (liveStream.getStreamStatus().equals(StreamStatus.ENDED)) {
       onOpenLiveStreamInfoButtonClick();
     }
+
+    liveStreamAlertsAdapter.setLiveStream(liveStream);
+    liveStreamAlertsAdapter.notifyDataSetChanged();
   }
 }

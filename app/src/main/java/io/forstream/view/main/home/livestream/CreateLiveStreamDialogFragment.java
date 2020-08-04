@@ -88,12 +88,12 @@ public class CreateLiveStreamDialogFragment extends BottomSheetDialogFragment im
   }
 
   private void setupViews() {
-    connectedChannelsSelectionAdapter.setListener(this);
     onLiveStreamTitleInputChanged();
     updateCreateLiveStreamButtonState();
   }
 
   private void setupConnectedChannelsView() {
+    connectedChannelsSelectionAdapter.setListener(this);
     LinearLayoutManager layoutManager = new LinearLayoutManager(context);
     SpaceItemDecoration itemDecoration = new SpaceItemDecoration(context.getResources().getDimensionPixelSize(R.dimen.margin_sm), layoutManager.getOrientation());
     connectedChannelsView.setLayoutManager(layoutManager);

@@ -2,6 +2,7 @@ package io.forstream.api.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class ConnectedChannel extends Entity implements Serializable {
 
@@ -10,6 +11,7 @@ public class ConnectedChannel extends Entity implements Serializable {
   private User user;
   private Channel channel;
   private ChannelTarget target;
+  private List<ChannelAlert> alerts;
   private Date registrationDate;
 
   public User getUser() {
@@ -34,6 +36,14 @@ public class ConnectedChannel extends Entity implements Serializable {
 
   public void setTarget(ChannelTarget target) {
     this.target = target;
+  }
+
+  public List<ChannelAlert> getAlerts() {
+    return alerts;
+  }
+
+  public void setAlerts(List<ChannelAlert> alerts) {
+    this.alerts = alerts;
   }
 
   public Date getRegistrationDate() {

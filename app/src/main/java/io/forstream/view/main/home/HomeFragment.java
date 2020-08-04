@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.forstream.R;
 import io.forstream.api.enums.ChannelIdentifier;
+import io.forstream.api.model.ChannelAlert;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.model.LiveStream;
 import io.forstream.common.BaseFragment;
@@ -43,6 +45,8 @@ import io.forstream.view.main.home.livestream.CreateLiveStreamDialogFragment;
 import io.forstream.view.main.home.livestream.LiveStreamsAdapter;
 
 public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, CreateLiveStreamDialogFragment.Listener, LiveStreamsAdapter.Listener, ConnectedChannelsAdapter.Listener {
+
+  private static final String CHANNEL_ALERT_ENABLE_LIVE_STREAMING = "enable_live_streaming";
 
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
   @BindView(R.id.connected_channels_layout) View connectedChannelsLayout;
@@ -83,6 +87,18 @@ public class HomeFragment extends BaseFragment implements SwipeRefreshLayout.OnR
   @Override
   public void onRemoveConnectedChannelClick(ConnectedChannel connectedChannel) {
     homeViewModel.disconnectChannel(connectedChannel);
+  }
+
+  @Override
+  public void onChannelAlertClick(ConnectedChannel connectedChannel, ChannelAlert channelAlert) {
+    if (ChannelIdentifier.YOUTUBE.equals(connectedChannel.getChannel().getIdentifier()) && CHANNEL_ALERT_ENABLE_LIVE_STREAMING.equals(channelAlert.getId())) {
+      MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
+        .setTitle(R.string.channel_alert_youtube_enable_live_streaming_dialog_title)
+        .setView(R.layout.view_channel_alert_enable_youtube_live_streaming)
+        .setPositiveButton(R.string.accept, (dialog, which) -> homeViewModel.checkChannelAlert(connectedChannel, channelAlert))
+        .setNegativeButton(R.string.close, null);
+      dialogBuilder.create().show();
+    }
   }
 
   @Override

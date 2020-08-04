@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import io.forstream.api.enums.ChannelIdentifier;
+import io.forstream.api.model.ChannelAlert;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.model.LiveStream;
 import io.forstream.api.service.ChannelService;
@@ -126,6 +127,22 @@ public class HomeViewModel extends BaseViewModel implements NotificationService.
       return null;
     })._catch((reason -> {
       Timber.e(reason, "Error removing live stream %s", liveStream.getId());
+      error.postValue(reason);
+      return null;
+    }));
+  }
+
+  public void checkChannelAlert(ConnectedChannel connectedChannel, ChannelAlert channelAlert) {
+    channelService.checkConnectedChannelAlert(connectedChannel, channelAlert).then(updatedConnectedChannel -> {
+      int index = connectedChannel.getAlerts().indexOf(channelAlert);
+      if (index >= 0) {
+        channelAlert.setChecked(true);
+        connectedChannel.getAlerts().set(index, channelAlert);
+        connectedChannels.postValue(connectedChannels.getValue());
+      }
+      return null;
+    })._catch((reason -> {
+      Timber.e(reason, "Error accepting connected channel %s alert %s", connectedChannel.getId(), channelAlert.getId());
       error.postValue(reason);
       return null;
     }));

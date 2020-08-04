@@ -46,4 +46,6 @@ public interface ChannelApi {
   @GET("v1/connected_channels/{connected_channel}")
   Call<ConnectedChannel> getConnectedChannel(@Path("connected_channel") String id, @Query("populate") String populate);
 
+  @POST("v1/connected_channels/{connected_channel}/alerts/{alert}/check")
+  Call<ConnectedChannel> checkConnectedChannelAlert(@Path("connected_channel") String id, @Path("alert") String alertId);
 }

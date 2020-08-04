@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:padding="@dimen/margin_md">
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margin_sm"
+    android:autoLink="web"
+    android:text="@string/channel_alert_youtube_enable_live_streaming_dialog_text_1"
+    android:textSize="@dimen/text_md"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margin_sm"
+    android:text="@string/channel_alert_youtube_enable_live_streaming_dialog_text_2"
+    android:textSize="@dimen/text_md"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/channel_alert_youtube_enable_live_streaming_dialog_text_3"
+    android:textSize="@dimen/text_md"/>
+
+</LinearLayout>

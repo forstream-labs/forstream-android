@@ -127,7 +127,7 @@ public class LiveStreamsAdapter extends RecyclerView.Adapter<LiveStreamsAdapter.
       popup.setOnMenuItemClickListener(item -> {
         if (item.getItemId() == R.id.remove_connected_channel) {
           MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.activity_main_dialog_remove_live_stream_message)
+            .setTitle(R.string.activity_main_dialog_remove_live_stream_title)
             .setPositiveButton(R.string.remove, (dialog, which) -> listener.onRemoveLiveStreamClick(liveStream))
             .setNegativeButton(R.string.cancel, null);
           dialogBuilder.create().show();

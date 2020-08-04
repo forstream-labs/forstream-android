@@ -7,6 +7,7 @@ import com.onehilltech.promises.Promise;
 import java.util.List;
 
 import io.forstream.api.model.Channel;
+import io.forstream.api.model.ChannelAlert;
 import io.forstream.api.model.ChannelTarget;
 import io.forstream.api.model.ConnectedChannel;
 import io.forstream.api.model.payload.AuthCodePayload;
@@ -57,5 +58,9 @@ public class ChannelService {
 
   public Promise<ConnectedChannel> getConnectedChannel(String id, String populate) {
     return PromiseUtils.build(api.getConnectedChannel(id, populate));
+  }
+
+  public Promise<ConnectedChannel> checkConnectedChannelAlert(ConnectedChannel connectedChannel, ChannelAlert channelAlert) {
+    return PromiseUtils.build(api.checkConnectedChannelAlert(connectedChannel.getId(), channelAlert.getId()));
   }
 }

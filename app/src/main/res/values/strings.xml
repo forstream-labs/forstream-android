@@ -81,8 +81,8 @@
   <string name="channel_alert_youtube_enable_live_streaming_dialog_text_2">If you haven\'t already, follow the prompts to verify your channel.</string>
   <string name="channel_alert_youtube_enable_live_streaming_dialog_text_3">Enabling your first live stream may take up to 24 hours. Once enabled, you can live stream instantly.</string>
 
-  <!-- Provider stream messages -->
-  <string name="provider_stream_message_youtube_live_streaming_not_enabled">Your YouTube channel is not enable for live streaming</string>
+  <!-- Live stream alerts -->
+  <string name="live_stream_alert_youtube_live_streaming_not_enabled">Your YouTube channel is not enable for live streaming</string>
 
   <!-- Errors -->
   <string name="error_unexpected">An unexpected error happened, please try again later.</string>
